@@ -18,19 +18,19 @@
             <span class="nav-group-title">活動管理</span>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/category">
+            <router-link class="nav-link" to="/app/category">
               <i class="bi bi-tag-fill me-2"></i>
               活動類別
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/company">
+            <router-link class="nav-link" to="/app/company">
               <i class="bi bi-building me-2"></i>
               宗親會檔案
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/product">
+            <router-link class="nav-link" to="/app/product">
               <i class="bi bi-box-seam me-2"></i>
               活動清單
             </router-link>
@@ -40,13 +40,13 @@
             <span class="nav-group-title">位置管理</span>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/kindness">
+            <router-link class="nav-link" to="/app/kindness">
               <i class="bi bi-door-closed me-2"></i>
               懐恩塔管理
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/ancestral">
+            <router-link class="nav-link" to="/app/ancestral">
               <i class="bi bi-diagram-3 me-2"></i>
               宗祠牌位管理
             </router-link>
@@ -56,13 +56,13 @@
             <span class="nav-group-title">系統管理</span>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/user">
+            <router-link class="nav-link" to="/app/user">
               <i class="bi bi-people-fill me-2"></i>
               會員管理
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/order">
+            <router-link class="nav-link" to="/app/order">
               <i class="bi bi-cart-check-fill me-2"></i>
               訂單管理
             </router-link>
@@ -75,13 +75,13 @@
             <span class="nav-group-title">查詢</span>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/kindness/query">
+            <router-link class="nav-link" to="/app/kindness/query">
               <i class="bi bi-search me-2"></i>
               懐恩塔查詢
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/ancestral/query">
+            <router-link class="nav-link" to="/app/ancestral/query">
               <i class="bi bi-search me-2"></i>
               宗祠牌位查詢
             </router-link>

@@ -22,6 +22,7 @@ namespace BulkyBookWeb.Controllers
         public class LoginRequest
         {
             public string? Email { get; set; }
+            public string? Username { get; set; }
             public string? Password { get; set; }
         }
 
@@ -29,12 +30,21 @@ namespace BulkyBookWeb.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest req)
         {
-            if (req == null || string.IsNullOrEmpty(req.Email) || string.IsNullOrEmpty(req.Password))
+            // Accept either email or username
+            var emailOrUsername = req.Email ?? req.Username;
+            
+            if (req == null || string.IsNullOrEmpty(emailOrUsername) || string.IsNullOrEmpty(req.Password))
             {
-                return BadRequest(new { message = "Email and password required" });
+                return BadRequest(new { message = "Email/Username and password required" });
             }
 
-            var user = await _userManager.FindByEmailAsync(req.Email);
+            // Try to find user by email first, then by username
+            var user = await _userManager.FindByEmailAsync(emailOrUsername);
+            if (user == null)
+            {
+                user = await _userManager.FindByNameAsync(emailOrUsername);
+            }
+            
             if (user == null)
             {
                 return Unauthorized(new { message = "Invalid credentials" });

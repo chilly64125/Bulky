@@ -11,7 +11,13 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const isAuthenticated = computed(() => !!user.value && !!token.value);
-  const hasRole = (role: string) => (user.value?.roles ?? []).includes(role);
+  const hasRole = (role: string) => {
+    const has = (user.value?.roles ?? []).includes(role);
+    console.log(
+      `🔐 hasRole('${role}'): ${has}, user.roles: ${JSON.stringify(user.value?.roles)}`
+    );
+    return has;
+  };
   const isAdmin = computed(() => hasRole("Admin"));
   const isCustomer = computed(() => hasRole("Customer"));
 
@@ -24,6 +30,9 @@ export const useAuthStore = defineStore("auth", () => {
 
       // normalize backend user shape to frontend `User` interface
       const rawUser: any = userData;
+      console.log("🔍 Login response user data:", rawUser);
+      console.log("🔍 Roles received:", rawUser.roles);
+
       const normalizedUser: User = {
         id: (rawUser.userId ?? rawUser.id ?? "") as string,
         username: (rawUser.username ??
@@ -36,6 +45,8 @@ export const useAuthStore = defineStore("auth", () => {
         roles: (rawUser.roles ?? []) as string[],
         isActive: true,
       };
+
+      console.log("✅ Normalized user:", normalizedUser);
 
       user.value = normalizedUser;
       token.value = tokenData;

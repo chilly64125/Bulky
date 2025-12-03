@@ -132,7 +132,15 @@ async function onSubmit() {
   loading.value = true;
   try {
     await authStore.login({ username: values.email, password: values.password });
-    router.push("/");
+
+    // Redirect based on role after successful login
+    if (authStore.isAdmin) {
+      router.push("/app/admin");
+    } else if (authStore.isCustomer) {
+      router.push("/app/customer");
+    } else {
+      router.push("/app/customer"); // Default to customer for safety
+    }
   } catch (e: any) {
     const message = e?.message || "登入失敗，請稍後再試";
     error.value = message;

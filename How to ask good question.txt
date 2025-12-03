@@ -1,0 +1,75 @@
+
+Here are tips for rephrasing your prompts for better results:
+
+1. Be Specific
+
+❌ "Fix the bug"
+✅ "The login page shows a 400 error when I enter credentials. The backend expects 'email' but frontend sends 'username'. Fix the mismatch."
+2. Include Context
+
+❌ "Add a feature"
+✅ "Add a logout button to the navbar that clears the auth token and redirects to login"
+3. State the Current Problem
+
+❌ "Doesn't work"
+✅ "The customer dashboard doesn't show the sidebar menu after login. I see the logout button but no navigation items."
+4. Describe Expected Outcome
+
+❌ "Make it better"
+✅ "After logging in as admin, I should see: Admin menu section with 'Activity Management', 'Position Management', and 'System Management' categories"
+5. Use Action Verbs
+
+✅ "Fix", "Add", "Update", "Remove", "Create", "Debug", "Verify"
+❌ Vague terms like "improve", "make better", "check"
+6. Provide Error Messages
+
+✅ "Error: 'Failed to load resource: 400 (Bad Request)' in console when logging in"
+❌ "Something's wrong"
+7. Break Complex Requests into Steps
+
+❌ "Set up everything"
+✅
+"Step 1: Create a Dockerfile for the Vue app"
+"Step 2: Build the Docker image"
+"Step 3: Push to Azure Container Registry"
+8. Give Examples
+
+✅ "Change the login redirect: Admin → /app/admin, Customer → /app/customer"
+❌ "Fix routing"
+Your Good Prompts (Examples):
+
+✅ "when login admin/customer, I don't see logout button and no respective permission menu."
+✅ "In 5173, I see... Failed to load resource: the server responded with a status of 400"
+✅ "please start frontend and backend in two external powershells. (stop the same processes before start them)"
+These are clear because they include: what, where, the problem, and what you see.
+
+What does this 'Sorry, the response hit the length limit' mean?
+
+"Sorry, the response hit the length limit" means:
+
+The AI has generated a response that exceeds the maximum token/character limit allowed in a single message. This typically happens when:
+
+Very Long Explanations - The response tries to explain too much detail at once
+Multiple Code Blocks - Large amounts of code or multiple files shown together
+Comprehensive Answers - Trying to cover all aspects of a complex topic in one response
+File Contents - Reading and displaying large files entirely
+How to avoid this:
+
+✅ Ask focused questions - Instead of "explain everything about Vue," ask "how do I use v-if in Vue?"
+✅ Request specific sections - Instead of "show me the entire auth flow," ask "explain the login function in authStore.ts"
+✅ Break it into steps - Instead of one big request, use multiple smaller requests
+✅ Be specific about what you need - "Show me just the error handling part" vs "show me everything"
+Example:
+
+❌ Too broad: "Explain the entire Vue project structure and how everything works together"
+
+✅ Better: "What's in the src/stores directory and why do we need Pinia?"
+
+✅ Even better: "Show me the authStore.ts file and explain the login function"
+
+In your case with this project, if you get that error, try:
+
+Ask about one component at a time
+Request fixes for one issue at a time
+Ask for specific code sections, not entire files
+Would you like me to help with something specific right now?

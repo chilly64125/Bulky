@@ -4,7 +4,7 @@
     <div class="main-content">
       <Sidebar />
       <div class="content-area">
-        <slot></slot>
+        <router-view />
         <ToastContainer />
       </div>
     </div>
