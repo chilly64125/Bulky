@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace BulkyBookWeb.Controllers.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/kindness")]
     [Authorize]
     public class KindnessApiController : ControllerBase
     {

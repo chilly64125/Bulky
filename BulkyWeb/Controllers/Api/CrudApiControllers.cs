@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace BulkyBookWeb.Controllers.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/category")]
     [Authorize]
     public class CategoryApiController : ControllerBase
     {
@@ -83,7 +83,7 @@ namespace BulkyBookWeb.Controllers.Api
     }
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/company")]
     [Authorize]
     public class CompanyApiController : ControllerBase
     {
@@ -160,7 +160,7 @@ namespace BulkyBookWeb.Controllers.Api
     }
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [Authorize]
     public class ProductApiController : ControllerBase
     {
@@ -237,7 +237,7 @@ namespace BulkyBookWeb.Controllers.Api
     }
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [Authorize]
     public class UserApiController : ControllerBase
     {
@@ -314,7 +314,7 @@ namespace BulkyBookWeb.Controllers.Api
     }
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/order")]
     [Authorize]
     public class OrderApiController : ControllerBase
     {
