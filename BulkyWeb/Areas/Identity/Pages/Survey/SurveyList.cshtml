@@ -1,0 +1,34 @@
+﻿@page
+@model BulkyBookWeb.Areas.Identity.Pages.Survey.SurveyListModel
+@{
+    ViewData["Title"] = "問卷調查結果";
+}
+<head>
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+<h2>問卷調查結果</h2>
+<table class="table table-bordered table-striped fw-bolder" style="width:100%;text-align:center">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>登入頁出現(秒)</th>
+            <th>使用(次)</th>
+            <th>遇到警告(次)</th>
+            <th>所在(洲)</th>
+            <th>填寫時間</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var r in Model.Responses)
+    {
+        <tr>
+                <td>@r.Id</td>
+                <td>@r.LoginTime</td>
+                <td>@r.UsageCount</td>
+                <td>@r.ErrorCount</td>
+                <td>@r.Continent</td>
+                <td>@r.SubmittedAt</td>
+        </tr>
+    }
+    </tbody>
+</table>

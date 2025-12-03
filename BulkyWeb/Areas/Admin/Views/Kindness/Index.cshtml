@@ -1,0 +1,580 @@
+﻿@using System.Text.Json
+@{
+
+    var builder = WebApplication.CreateBuilder();
+    ViewBag.PublishDate = builder.Configuration.GetValue<string>("PublishDate");
+    ViewData["Title"] = "財團法人台中市私立銀同碧湖陳氏社會福利基金會-祖先塔位暨牌位管理資訊系統（準預覽版本）";
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    // Auto logout settings
+    float? AUTO_LOGOUT_MINUTE = builder.Configuration.GetSection("Logout_Duration:AUTO_LOGOUT_MINUTE").Get<float>();
+    int? WARNING_BEFORE_LOGOUT_SECOND = builder.Configuration.GetSection("Logout_Duration:WARNING_BEFORE_LOGOUT_SECOND").Get<int>();
+
+    // If AUTO_LOGOUT_MINUTE or WARNING_BEFORE_LOGOUT_SECOND is not set, use default values
+    if (AUTO_LOGOUT_MINUTE == null || WARNING_BEFORE_LOGOUT_SECOND == null)
+    {
+        // Default values if not set in configuration
+        AUTO_LOGOUT_MINUTE = (float?)0.5; // 30 minutes
+        WARNING_BEFORE_LOGOUT_SECOND = 10; // 10 seconds
+    }
+    else
+        // Set ViewBag for use in the view
+        ViewBag.AUTO_LOGOUT_MINUTE = AUTO_LOGOUT_MINUTE;
+    ViewBag.WARNING_BEFORE_LOGOUT_SECOND = WARNING_BEFORE_LOGOUT_SECOND;
+
+    // Work_Duration is used for the duration of work in the system
+    float? Work_Duration = builder.Configuration.GetSection("Work_Duration").Get<float>();
+    int? WORK_WARNING_SECONDS = builder.Configuration.GetSection("WORK_WARNING_SECONDS").Get<int>();
+
+    // If Work_Duration is not set, use default value
+    if (Work_Duration == null)
+    {
+        // Default value if not set in configuration
+        Work_Duration = (float?)1.0; // 1 mins
+    }
+    ViewBag.Work_Duration = Work_Duration;
+    // Set ViewBag for WORK_WARNING_SECONDS for use in the view
+    if (WORK_WARNING_SECONDS == null)
+    {
+        // Default value if not set in configuration
+        WORK_WARNING_SECONDS = 60; // 60 seconds
+    }
+    ViewBag.WORK_WARNING_SECONDS = WORK_WARNING_SECONDS; // Default value will be null if not set
+}
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js" asp-append-version="true"></script>
+    @*   /////////提供-轉成EXCEL功能 2025 07 07 10:00/////////////// *@
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header>
+        <div id="txtblnk1" class="text-center fw-bolder blink">
+            <p id="work_duration_top" style="font-size:larger;color:green;font-weight:bolder" class="text-bg-info align-content-center fw-bolder">@TempData["Success"]</p>
+        </div>
+    </header>
+    @* 2025 08 25 15:51 operationStatus *@
+    <div id="operationStatus" class="alert alert-info fw-bolder text-center" style="display:none;"></div>
+
+    <div id="loadingSpinner" style="display:none; text-align:center;">
+        <div class="spinner"></div>
+        <div class="fw-bolder mt-2">處理中...</div>
+    </div>
+
+    <div id="loadingModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content-spinner">
+            <div class="spinner"></div>
+            <div class="fw-bolder mt-3" style="font-size:1.2rem;">處理中，請稍候...</div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 my-4 fw-bolder">
+        <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+            <div class="row fw-bolder">
+                <div class="col-12 text-center fw-bolder">
+                    <h2 class="text-white py-2 fw-bolder">懷恩塔-祖先塔位清單</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-6">
+                </div>
+                <div class="col-6 text-end">
+                    <a asp-controller="Kindness" asp-action="Upsert" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i>新增 懷恩塔-祖先塔位
+                    </a>
+                </div>
+            </div>
+
+            @*   /////////提供-下載EXCEL範本,供 匯入Excel 新增資料用 2025 07 07 14:00/////////////// *@
+            <button id="downloadTemplateBtn" class="btn btn-info mb-2" title="下載EXCEL範本,供 匯入Excel 新增資料用">下載範本</button>
+
+            <input type="file" id="importExcelInput" accept=".xlsx, .xls" style="display:none" />
+            <button id="importExcelBtn" class="btn btn-warning mb-2" title="1.事先準備好的新增Excel輸入,或 2.用先前備份資料[還原]">匯入 Excel(1.新增 2.還原資料)</button>
+            <div id="importErrors" style="color:red; margin-top:10px;"></div>
+
+            @*   /////////提供-下載EXCEL範本,供 匯入Excel 新增資料用 2025 07 07 14:00/////////////// *@
+
+            @*   /////////提供-轉成EXCEL功能 2025 07 07 10:00/////////////// *@
+            <button id="exportExcelBtn" class="btn btn-success mb-2" title="將[懷恩塔-塔位]匯出成 Excel 檔,以供保存,日後可以經由[匯入Excel]功能,還原[資料庫]">匯出 Excel(資料備份)</button>
+            @*   /////////提供-轉成EXCEL功能 2025 07 07 10:00/////////////// *@
+
+            <button id="deleteRangeBtn" class="btn btn-danger mb-2">刪除選取</button>
+            <button id="deleteAllBtn" class="btn btn-danger mb-2">全部刪除</button>
+
+            @* 2025 08 27 01:12 搜尋祖先姓名 *@
+            <div id="searchWarning" style="color:red; font-weight:bold; display:none;"></div>
+            <input type="text" id="searchBox" class="form-control blink-search" placeholder="搜尋祖先姓名..." style="width:200px; display:inline-block; margin-bottom:10px;" />
+            <button id="searchBtn" class="btn btn-primary mb-2" type="button">查詢</button>
+            <table id="tblData" class="table table-bordered table-striped fw-bolder" style="width:100%;text-align:center">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th></th>
+                        <th>祖先</th>
+                        <th>樓</th>
+                        <th>區</th>
+                        <th>層</th>
+                        <th>編號</th>
+                        <th>塔位</th>
+                        <th>申請人</th>
+                        <th>關係、進塔日期</th>
+                        <th>電話</th>
+                        <th>備註</th>
+                    </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
+    <div id="autoLogoutWarning">
+        <div class="modal-content">
+            <h4 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h4>
+            <p style="color:blue;font-size:larger;font-weight:bolder">您已經有一段時間沒有操作，將於 <span style="color:red;font-size:larger" id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後自動導到本會[問卷調查](K-Index)。</p>
+            <button onclick="stayLoggedIn()" class="btn btn-primary">[繼續使用]</button>
+        </div>
+    </div>
+    <button id="goTopBtn" class="btn btn-danger">回到頂部</button>
+    <div id="workDurationWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#fff; padding:2rem 2.5rem; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; max-width:90vw;">
+            <h2 style="color:lightpink">為資料安全,請於每次新增.修改.刪除資料後，請記得[務必]進行[備份資料]: 匯出EXCEL!! 以供保存!!</h2>
+            <p style="color:blue;font-size:x-large;font-weight:bolder">您已經有一段時間沒有操作,您的連線將於 <span style="color:red;font-size:larger" id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後結束，系統將導到[本會[問卷調查]](K-Index)。</p>
+        </div>
+    </div>
+  
+
+    <script type="text/javascript">
+        var dataTable;
+
+        // $(document).ready(function () {
+        //     loadDataTable();
+        // });
+       //  * 2025 08 27 01:12 搜尋祖先姓名
+       //  Trigger loadDataTable on search
+        // $('#searchBox').on('input', function () {
+        //     loadDataTable();
+        // //$('#tblData').DataTable().ajax.reload();
+        // });
+
+
+            $('#searchBtn').on('click', function () {
+            // var searchValue = $('#searchBox').val().trim();
+            // if (!searchValue) {
+            //     $('#searchWarning').text('請輸入祖先姓名(關鍵字)後再查詢！').show();
+            //     $('#searchBox').focus();
+            //     return;
+            // } else {
+            //     $('#searchWarning').hide();
+            // }
+            if ($.fn.dataTable.isDataTable('#tblData')) {
+                $('#tblData').DataTable().destroy();
+            }
+            loadDataTable();
+        });
+
+        function loadDataTable() {
+            dataTable = $('#tblData').DataTable({
+                ajax: {
+                      "url": "/admin/kindness/getall",
+                      "type": "GET",
+                       data: function (d) {     //* 2025 08 27 01:12 搜尋祖先姓名 
+                             d.search = $('#searchBox').val();
+                          }
+                      },
+                "columns": [
+                         {
+                        data: 'kindnessPositionId',
+                        "render": function (data) {
+                        return `<input type="checkbox" class="row-select" value="${data}">`;
+                        },
+                        "orderable": false,
+                        "width": "3%"
+                        },
+                        {
+                        data: 'kindnessPositionId',
+                        "render": function (data) {
+                            return `<div class="w-75 btn-group" role="group">
+                             <a href="/admin/kindness/upsert?KindnessPositionId=${data}" class="btn btn-primary mx-2"> <i class="bi bi-pencil-square"></i> Edit</a>
+                             <a onClick=Delete('/admin/kindness/delete/${data}') class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete</a>
+                             <a href="/admin/kindness/Application?KindnessPositionId=${data}" class="btn btn-primary mx-2"> <i class="bi bi-pencil-square"></i>設定塔位</a>
+                            </div>`
+                        },
+                        "width": "20%"
+                    },
+                    { "data": "name", "width": "7%" },
+                    { "data": "floor", "width": "5%" },
+                    { "data": "section", "width": "5%" },
+                    // {
+                    //      data: 'section',
+                    //             "render": function (data) {
+                    //              return `${data=='1' ? '甲區' : data=='2' ? '乙區' :  data=='3' ? '丙區' :  data=='4' ? '丁區' :  data=='5' ? '戍區' : '己區'}`;  }
+                    // , "width": "15%" },
+                    { "data": "level", "width": "5%" },
+                    { "data": "position", "width": "6%" },
+                    { "data": "positionId", "width": "12%" },
+                    { "data": "applicant", "width": "9%" },
+                    { "data": "relation", "width": "8%" },
+                    { "data": "mobile_Tel", "width": "8%" },
+                    { "data": "note", "width": "12%" }
+                 ]
+            });
+        }
+
+        function Delete(url) {
+            Swal.fire({
+                title: 'Are you sure? 確認刪除? </br>  一旦刪除後,無法回復! ',
+                text: "You won't be able to revert this! 一旦刪除後,無法回復!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        success: function (data) {
+                            dataTable.ajax.reload();
+                            toastr.success(data.message);
+                        }
+                    })
+                }
+            })
+                }
+
+
+        @*   /////////提供-[匯入EXCEL]功能 2025 07 07 14:35/////////////// *@        
+
+        $('#importExcelBtn').on('click', function () {
+            $('#importExcelInput').val('').click();
+        });
+
+        $('#importExcelInput').on('change', function (e) {
+            var file = e.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var sheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[sheetName];
+                var json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                var headers = json[0];
+                var rows = json.slice(1);
+
+                var errors = [];
+                var validRows = [];
+                var seen = new Set();
+
+                rows.forEach(function (row, idx) {
+                    var rowNum = idx + 2; // Excel row number (header is row 1)
+                    var name = row[0] ? row[0].toString().trim().replace(/ /g, "") : "";
+                    var floor = row[1] ? row[1].toString().trim().replace(/ /g, "") : "";
+                    var section = row[2] ? row[2].toString().trim().replace(/ /g, "") : "";
+                    var level = row[3] ? row[3].toString().trim().replace(/ /g, "") : "";
+                    
+                    //To left-pad the position field with zeros so its length is always 3,
+                    // you can use JavaScript’s padStart method when processing the value.
+                    //var position = row[4] ? row[4].toString().trim().replace(/ /g, "") : "";
+                    var position = row[4] ? row[4].toString().trim().replace(/ /g, "").padStart(3, "0") : "";
+
+                    // Join fields to create positionId
+                    // var positionId = row[5] ? row[5].toString().trim().replace(/ /g, "") : "";                  
+                    var positionId = `${floor}-${section}-${level}:${position}`;
+
+                    var applicant = row[6] ? row[6].toString().trim().replace(/ /g, "") : "";
+                    var relation = row[7] ? row[7].toString().trim().replace(/ /g, "") : "";
+                    var mobile_Tel = row[8] ? row[8].toString().trim().replace(/ /g, "") : "";
+                    // 2025 08 27 15:56 Added 備註: note
+                    var note = row[9] ? row[9].toString().trim().replace(/ /g, "") : "";
+
+                    // Required field checks
+                    if (!name) errors.push(`第${rowNum}行: 祖先姓名為必填`);
+                    if (!floor || (floor !== "1樓" && floor !== "2樓"  && floor !== "3樓")) errors.push(`第${rowNum}行: 樓必須為"1樓""或"2樓""或"3樓"`);
+                    if (!section) errors.push(`第${rowNum}行: 區為必填`);
+                    // alert('section:'+section);
+                    if (section !== "甲區" && section !== "乙區"  && section !== "丙區" && section !== "丁區" && section !== "戊區" && section !== "己區") errors.push(`第${rowNum}行: [區]必須為"甲區""或"乙區""或"丙區""或"丁區""或"戊區""或"己區"`);
+                    //if (!level || isNaN(level)) errors.push(`第${rowNum}行: 層必須為數字`);
+                    if (!level) errors.push(`第${rowNum}行: 層為必填`);
+                    // alert('floor:'+floor);
+                    // alert('level:'+level);
+                    let levelInt = parseInt(level.substr(0,level.indexOf("層")), 10);
+                    //alert('levelInt:'+levelInt);
+                    if (isNaN(levelInt)) {
+                       errors.push(`第${rowNum}行: 層必須為數字`);
+                      } else if ((floor === "1樓" || floor === "2樓") && (levelInt > @ViewBag.KindnessLevel_1f_2f || levelInt <= 0)) {
+                       errors.push(`第${rowNum}行: 1,2樓層數最多必須為${@ViewBag.KindnessLevel_1f_2f}`);
+                      }  else  if ((floor === "3樓") && (levelInt > @ViewBag.KindnessLevel_3f ||  levelInt <= 0 )) {
+                       errors.push(`第${rowNum}行: 3樓層數最多必須為${@ViewBag.KindnessLevel_3f}`);
+                      };
+
+                    if (!position) errors.push(`第${rowNum}行: 編號為必填`);
+                    if (!positionId) errors.push(`第${rowNum}行: 塔位為必填`);
+
+                    // Example: check for duplicate positionId in file
+                     // commented:2025 08 25
+                    // if (positionId && seen.has(positionId)) {
+                    //     errors.push(`第${rowNum}行: 塔位編號 [${positionId}] 重複`);
+                    // }
+                    // if (positionId) seen.add(positionId);
+                     // commented:2025 08 25
+
+                    // Only add if no errors for this row
+                    var rowHasError = errors.some(err => err.startsWith(`第${rowNum}行`));
+                    if (!rowHasError) {
+                        validRows.push({
+                            name, floor, section, level, position, positionId, applicant, relation, mobile_Tel,note
+                        });
+                    }
+                });
+
+                if (errors.length > 0) {
+                    $('#importErrors').html(errors.join('<br/>'));
+                    return;
+                } else {
+                    $('#importErrors').html('');
+                }
+
+                // If all rows are valid, send to server for saving
+                            $.ajax({
+                            url: '/admin/kindness/importexcel',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(validRows),
+                            beforeSend: function() {
+                                $('#operationStatus').hide();
+                                $('#loadingModal').show();
+                            },
+                            success: function (res) {
+                                $('#loadingModal').hide();
+                                if (res.success) {
+                                    $('#tblData').DataTable().ajax.reload();
+                                    $('#operationStatus').text('匯入完成').removeClass('alert-info alert-danger').addClass('alert-success').show();
+                                    setTimeout(function () { $('#operationStatus').fadeOut(); }, 2000);
+                                    alert('匯入成功');
+                                } else {
+                                    $('#operationStatus').text('匯入失敗').removeClass('alert-info').addClass('alert-danger').show();
+                                    setTimeout(function () { $('#operationStatus').fadeOut(); }, 2000);
+                                    $('#importErrors').html(res.errors.join('<br/>'));
+                                }
+                            },
+                            error: function () {
+                                $('#loadingModal').hide();
+                                $('#operationStatus').text('匯入失敗').removeClass('alert-info').addClass('alert-danger').show();
+                                setTimeout(function () { $('#operationStatus').fadeOut(); }, 2000);
+                                alert('匯入失敗，請檢查資料格式');
+                            }
+                        });
+                 // If all rows are valid, send to server for saving
+            };
+            reader.readAsArrayBuffer(file);
+        });
+         @*   /////////提供-[匯入EXCEL]功能 2025 07 07 14:35/////////////// *@        
+
+
+         @*   /////////提供-匯出 EXCEL功能 2025 07 07 10:00/////////////// *@
+             $('#exportExcelBtn').on('click', function () {
+            var data = $('#tblData').DataTable().rows({ search: 'applied' }).data().toArray();
+            var headers = ["祖先", "樓", "區", "層", "編號", "塔位", "申請人", "關係", "電話","備註"];
+            var exportData = [headers];
+            data.forEach(function(row) {
+                exportData.push([
+                    row.name,
+                    row.floor,
+                    row.section,
+                    row.level,
+                    row.position,
+                    row.positionId,
+                    row.applicant,
+                    row.relation,
+                    row.mobile_Tel,
+                    row.note
+                ]);
+            });
+            var ws = XLSX.utils.aoa_to_sheet(exportData);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "懷恩塔");
+
+                  // Add date-time to file name
+            var now = new Date();
+            var yyyy = now.getFullYear();
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            var dd = String(now.getDate()).padStart(2, '0');
+            var hh = String(now.getHours()).padStart(2, '0');
+            var min = String(now.getMinutes()).padStart(2, '0');
+            var ss = String(now.getSeconds()).padStart(2, '0');
+            var dateTimeStr = yyyy + mm + dd + '_' + hh + min + ss;
+
+            var fileName = "懷恩塔-塔位_匯出檔_" + dateTimeStr + ".xlsx";
+            XLSX.writeFile(wb, fileName);
+        });
+         @*   /////////提供-匯出EXCEL功能 2025 07 07 18:00/////////////// *@
+
+         @*   /////////提供-Add the Download Template Script 2025 07 07 14:32/////////////// *@
+              //懷恩塔-塔位,座落於一到三樓,每樓各有6區:
+              // 6角型排列,由左而右命名:1.甲區,2.乙區,3.丙區,4.丁區,5.戊區,6.己區
+         @*   /////////提供-Add the Download Template Script 2025 07 07 14:32/////////////// *@
+                 $('#downloadTemplateBtn').on('click', function () {
+            // Define headers (adjust order/names as needed)
+            var headers = [
+                "祖先", "樓", "區", "層", "編號", "塔位", "申請人", "關係", "電話","備註"
+            ];
+
+            // Optionally, add an example row
+            var exampleRow = [
+                "陳大明", "1樓", "甲區", "1層", "001", "1樓-甲區-1層:001", "王小明", "父子", "0912345678","懷恩塔-塔位,座落於一到三樓,每樓各有6區:6角型排列,由左而右命名:1.甲區,2.乙區,3.丙區,4.丁區,5.戊區,6.己區"
+            ];
+
+            // Create worksheet data: header + example row (or just [headers] for empty)
+            var ws_data = [headers, exampleRow];
+
+            // Create worksheet and workbook
+            var ws = XLSX.utils.aoa_to_sheet(ws_data);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "範本");
+
+            // Download the file
+            XLSX.writeFile(wb, "懷恩塔-塔位_匯入範本.xlsx");
+        });
+
+
+         //刪除全選
+         // Select/Deselect all checkboxes
+        $('#selectAll').on('change', function () {
+            $('.row-select').prop('checked', this.checked);
+        });
+
+        //刪除選取
+        // Delete selected (range)
+        $('#deleteRangeBtn').on('click', function () {
+            var ids = $('.row-select:checked').map(function () { return $(this).val(); }).get();
+            if (ids.length === 0) {
+                Swal.fire('請先選取要刪除的資料');
+                return;
+            }
+            Swal.fire({
+                title: '確定要刪除選取的資料嗎？',
+                text: '此動作無法復原！',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '確定刪除',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/admin/kindness/deleterange',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(ids),
+                        success: function (res) {
+                            $('#tblData').DataTable().ajax.reload();
+                            Swal.fire('刪除成功', '', 'success');
+                        },
+                        error: function () {
+                            Swal.fire('刪除失敗', '', 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // 刪除全部
+        // Delete all
+            $('#deleteAllBtn').on('click', function () {
+            // Get the number of rows in the DataTable
+            var rowCount = $('#tblData').DataTable().rows().count();
+            if (rowCount === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '無資料可刪除',
+                    text: '目前沒有任何資料可供刪除！'
+                });
+                return; // Stop further execution
+            }
+
+            $('#operationStatus').hide();
+            Swal.fire({
+                title: '確定要刪除所有資料嗎？',
+                text: '此動作無法復原！',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '確定全部刪除',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingModal').show(); // Show modal spinner
+                    $.ajax({
+                        url: '/admin/kindness/deleteall',
+                        type: 'POST',
+                        success: function (res) {
+                            $('#tblData').DataTable().ajax.reload();
+                            $('#loadingModal').hide(); // Hide modal spinner
+                            $('#operationStatus').text('全部刪除完成').removeClass('alert-info').addClass('alert-success').show();
+                            setTimeout(function () { $('#operationStatus').fadeOut(); }, 2000);
+                            Swal.fire('全部刪除成功', '', 'success');
+                        },
+                        error: function () {
+                            $('#loadingModal').hide();
+                            $('#operationStatus').text('全部刪除失敗').removeClass('alert-info').addClass('alert-danger').show();
+                            setTimeout(function () { $('#operationStatus').fadeOut(); }, 2000);
+                            Swal.fire('全部刪除失敗', '', 'error');
+                        }
+                    });
+                }
+            });
+        });
+         // Delete all
+
+                    // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'T' || e.key === 't') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            if (e.key === 'B' || e.key === 'b') {
+                e.preventDefault();
+                window.history.back();
+            }
+        });
+        // document.addEventListener('keydown', function (e) {
+        //     if (e.key === 'F1' || e.key === 'Q' || e.key === 'q') {
+        //         e.preventDefault();
+        //         openQueryModal();
+        //     }
+        // });
+        // document.addEventListener('keydown', function (e) {
+        //     if (e.key === 'S' || e.key === 's') {
+        //         e.preventDefault();
+        //         openYesNoModal();
+        //     }
+        // });
+
+        // Go to Top button logic
+        const goTopBtn = document.getElementById('goTopBtn');
+        window.addEventListener('scroll', function () {
+            goTopBtn.style.display = window.scrollY > 200 ? 'block' : 'block';
+        });
+        goTopBtn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+    </script>
+</body>
+</html>
+
+<script type="text/javascript">
+    window.AUTO_LOGOUT_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.AUTO_LOGOUT_MINUTE));
+    window.WARNING_BEFORE_LOGOUT_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WARNING_BEFORE_LOGOUT_SECOND));
+    window.WORK_DURATION_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.Work_Duration));
+    window.WORK_WARNING_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WORK_WARNING_SECONDS));
+</script>
+<script src="~/js/AutoLogout.js" asp-append-version="true"></script>

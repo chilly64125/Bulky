@@ -1,0 +1,70 @@
+GitHub Copilot
+
+深呼吸。這個錯誤表示 Vite 找不到 `frontend/src/App.vue`。請依序執行下列簡短檢查與修正步驟，通常能快速解決。
+
+快速檢查（Windows PowerShell）
+- 檢查檔案是否真的存在與已儲存：
+```powershell
+# 是否存在
+Test-Path .\frontend\src\App.vue
+
+# 顯示內容以確認已正確儲存
+Get-Content .\frontend\src\App.vue -Raw
+```
+
+- 列出資料夾以檢查大小寫與路徑：
+```powershell
+Get-ChildItem -Path .\frontend\src\ -Name
+```
+
+確保下列重點
+- 檔案名稱正確為 `App.vue`（不是 `app.vue` / `App.VUE` 等大小寫問題，雖然 Windows 通常不敏感，但 build 工具有時受 Node/插件影響）。
+- `App.vue` 已儲存（編輯器未儲存會造成 Vite 找不到）。
+- `frontend/src/main.ts` 以相對路徑匯入 `./App.vue`（你的檔案已正確）。
+
+安裝 / 重新安裝相依套件（若 plugin 缺失會造成解析失敗）
+```sh
+cd frontend
+# 移除舊依賴並重新安裝（視情況使用）
+rm -rf node_modules package-lock.json
+npm ci
+```
+
+重啟 Vite dev server（確保重新載入檔案系統）
+```sh
+# 停掉現有 dev server（Ctrl+C），再啟動
+npm run dev
+```
+
+若仍報錯，檢查 @vitejs/plugin-vue 是否存在
+```sh
+# 顯示安裝狀態
+npm ls @vitejs/plugin-vue
+```
+若沒有安裝：
+
+```sh
+npm install -D @vitejs/plugin-vue
+```
+
+排除其他可能原因
+- 如果你在 WSL/不同檔案系統或 symlink，請確認路徑一致。
+- 有時 Vite 的快取會亂：關閉 dev server、刪除 `node_modules/.vite`（或整個 node_modules）再重啟。
+- 若使用防毒或同步工具（OneDrive 等）會鎖檔或延遲儲存，請暫時排除。
+
+臨時 workaround（停用 overlay 以方便看終端錯誤）
+- 在 `frontend/vite.config.ts` 加入 `server.hmr.overlay: false`（你可臨時關閉以看完整終端錯誤），然後重啟 dev server。
+```typescript
+// 修改 server 設定
+server: {
+  port: 5173,
+  proxy: { /* ... */ },
+  hmr: { overlay: false }
+}
+```
+
+若需要，我可以：
+- 幫你直接把 `frontend/src/App.vue` 寫入 repo（回覆「請寫入 repo」），或
+- 幫你產生一步步的 debug 日誌指令（`npm run dev` 的完整終端輸出），你貼出來我來分析。
+
+請先執行最上面的 `Test-Path` / `Get-Content` 檢查，回報結果或貼上 `npm run dev` 的終端輸出一部分，我會針對具體錯誤給出修正。

@@ -1,0 +1,146 @@
+﻿@model ProductVM
+
+<div class="card shadow border-0 my-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+    <div class="row">
+        <div class="col-12 text-center">
+                <h5 class="text-white py-2"> @(Model.Product.Id!=0?"修改":"新增")活動</h5>
+        </div>
+    </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="Product.Id" hidden />
+           
+            <div class="row">
+                <div class="col-10">
+                    <div class="border p-3">
+                        @*<div asp-validation-summary="ModelOnly"></div>*@
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="Product.Title" class="form-control border-0 shadow text-bg-info fw-bolder" />
+                            <label asp-for="Product.Title" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Product.Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="Product.ISBN" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="Product.ISBN" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Product.ISBN" class="text-danger"></span>
+                        </div>
+                      
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.HDate" class="form-control border-0 shadow" />
+                            <label asp-for="Product.HDate" class="ms-2"></label>
+                            <span asp-validation-for="Product.HDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.ListPrice" class="form-control border-0 shadow" />
+                            <label asp-for="Product.ListPrice" class="ms-2"></label>
+                            <span asp-validation-for="Product.ListPrice" class="text-danger"></span>
+                        </div>             
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.CategoryId" asp-items="@Model.CategoryList" class="form-select border-0 shadow">
+                                <option disabled selected>--選活動類別--</option>
+                            </select>
+                            <label asp-for="Product.CategoryId" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.CompanyId" asp-items="@Model.CompanyList" class="form-select border-0 shadow text-bg-info fw-bolder">
+                                <option class="fw-bolder" disabled selected>--選主辧單位--</option>
+                            </select>
+                            <label asp-for="Product.CompanyId" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Product.CompanyId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Product.HeldYN" class="form-select border-0 text-bg-warning shadow ">
+                                <option  value="Y">是</option>
+                                <option  value="N">否</option>
+                            </select>
+                            <label asp-for="Product.HeldYN" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Product.HeldYN" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="py-2 col-12">
+                            <label asp-for="Product.Description" class="ms-2 fw-bolder"></label>
+                            <textarea asp-for="Product.Description" class="form-control border-0 shadow text-bg-info fw-bolder" rows="14" cols="150"></textarea>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input type="file" name="files" class="form-control border-0 shadow fw-bolder" multiple />
+                            <label asp-for="Product.ProductImages" class="ms-2 fw-bolder"></label>
+                        </div>
+                        <div class="row pt-2 fw-bolder">
+                            <div class="col-6 col-md-3">
+                                @if (Model.Product.Id != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">修改</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">新增</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    回清單
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-2">
+                    @if (Model.Product.ProductImages != null) {
+                        foreach(var image in Model.Product.ProductImages) {
+                            <div class="border p-1 m-2 text-center">
+                                <img src="@image.ImageUrl" width="100%"
+                                     style="border-radius:5px; border:1px solid #bbb9b9" />
+                                     <a asp-action="DeleteImage" class="btn btn-danger" asp-route-imageId="@image.Id">
+                                    <i class="bi bi-trash-fill"></i> 刪除
+                                     </a>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+           
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            width:950,
+            height:150,
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+    @{
+    <partial name="_ValidationScriptsPartial"/>          
+    }
+
+    <script type="text/javascript">
+      
+        // function changecolor(){
+        //     if ( $('#Product_HeldYN').val()=="是" )
+        //     $('#Product_HeldYN').removeClass("redColor").addClass("greenColor");
+        // else
+        //     $('#Product_HeldYN').removeClass("greenColor").addClass("redColor");
+        // };
+
+        // $('#Product_HeldYN').on('change', function() {
+        //   if ( $('#Product_HeldYN').val()=="是" )
+        //     $('#Product_HeldYN').removeClass("redColor").addClass("greenColor");
+        //   else
+        //     $('#Product_HeldYN').removeClass("greenColor").addClass("redColor");
+        // });
+
+         //changecolor();
+    </script>
+}

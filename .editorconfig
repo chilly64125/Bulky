@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# IDE0320: Make anonymous function static
+csharp_prefer_static_anonymous_function = true
+
+# IDE0320: Make anonymous function static
+dotnet_diagnostic.IDE0320.severity = suggestion
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = none

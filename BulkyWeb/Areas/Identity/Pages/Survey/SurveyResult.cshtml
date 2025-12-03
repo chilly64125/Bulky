@@ -1,0 +1,70 @@
+﻿@page
+@model BulkyBookWeb.Areas.Identity.Pages.Survey.SurveyResultModel
+@{
+    ViewData["Title"] = "問卷結果";
+}
+<head>
+   @*  <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" /> *@
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+    <style>
+        /* Make DataTables previous/next pagination buttons bigger */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+            font-size: 10rem; /* Make the arrow/text bigger */
+            padding: 5.5rem 6.5rem; /* Increase button size */
+            min-width: 48px; /* Ensure minimum width */
+        }
+    </style>
+</head>
+<div class="alert alert-success fw-bolder text-center" style="font-size:1.2rem;">
+    @Model.SuccessMessage
+</div>
+<div class=" alert alert-success fw-bolder text-center" style="font-size:1.2rem;">
+    <a class="blink_link_index1 nav-link fw-bolder" asp-area="Customer" asp-controller="Home" asp-action="Index1">繼續使用</a>
+</div>
+<div class=" alert alert-success fw-bolder text-center" style="font-size:1.2rem;">
+    <a href="https://www.facebook.com/groups/654519621275974" class=" btn btn-danger fw-bolder mx-2" style="font-size:large;font-weight:bolder">離開系統</a>
+</div>
+<h2>問卷調查結果</h2>
+<table id="tblSurvey" class="table table-bordered table-striped fw-bolder" style="font-size:large;font-weight:bolder;width:100%;text-align:center">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>登入頁出現(秒)</th>
+            <th>使用(次)</th>
+            <th>遇到警告(次)</th>
+            <th>所在(洲)</th>
+            <th>填寫時間(CST台灣時間)</th>
+        </tr>
+    </thead>
+</table>
+
+@section Scripts {
+<script>
+$(document).ready(function () {
+    $('#tblSurvey').DataTable({
+         "language": {
+                "paginate": {
+                    "previous": "&#8592;", // Unicode left arrow
+                    "next": "&#8594;"      // Unicode right arrow
+                }
+            },
+        "ajax": {
+            "url": "@Url.Page("./SurveyResult", "SurveyData")",
+            "type": "GET"
+        },
+        "columns": [
+            { "data": "id", "width": "5%" },
+            { "data": "loginTime", "width": "15%" },
+            { "data": "usageCount", "width": "15%" },
+            { "data": "errorCount", "width": "15%" },
+            { "data": "continent", "width": "15%" },
+            { "data": "submittedAt", "width": "20%" }
+        ]
+    });
+});
+</script>
+}

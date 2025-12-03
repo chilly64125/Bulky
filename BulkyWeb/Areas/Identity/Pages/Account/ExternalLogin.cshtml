@@ -1,0 +1,62 @@
+﻿@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "註冊";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
+<hr />
+
+<p id="external-login-description" class="text-info">
+    您已成功透過 <strong>@Model.ProviderDisplayName</strong> 進行身份驗證。
+    請在下面輸入此網站的電子郵件地址，然後按一下「註冊」按鈕以完成登入。
+</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="電子郵件地址" />
+                <label asp-for="Input.Email" class="form-label"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Name" class="form-control" autocomplete="email" placeholder="姓名" />
+                <label asp-for="Input.Name" class="form-label"></label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="email" placeholder="電話" />
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.StreetAddress" class="form-control" autocomplete="email" placeholder="地址" />
+                <label asp-for="Input.StreetAddress" class="form-label"></label>
+                <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.City" class="form-control" autocomplete="email" placeholder="城巿" />
+                <label asp-for="Input.City" class="form-label"></label>
+                <span asp-validation-for="Input.City" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.State" class="form-control" autocomplete="email" placeholder="國家" />
+                <label asp-for="Input.State" class="form-label"></label>
+                <span asp-validation-for="Input.State" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PostalCode" class="form-control" autocomplete="email" placeholder="郵遞區號" />
+                <label asp-for="Input.PostalCode" class="form-label"></label>
+                <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">註冊</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

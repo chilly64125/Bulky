@@ -1,0 +1,125 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Identity
+@using BulkyBook.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+
+    var builder = WebApplication.CreateBuilder();
+    ViewBag.PublishDate = builder.Configuration.GetValue<string>("PublishDate");
+    ViewData["Title"] = "財團法人台中市私立銀同碧湖陳氏社會福利基金會-祖先塔位暨牌位管理資訊系統（準預覽版本）";
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    // Auto logout settings
+    float? AUTO_LOGOUT_MINUTE = builder.Configuration.GetSection("Logout_Duration:AUTO_LOGOUT_MINUTE").Get<float>();
+    int? WARNING_BEFORE_LOGOUT_SECOND = builder.Configuration.GetSection("Logout_Duration:WARNING_BEFORE_LOGOUT_SECOND").Get<int>();
+
+    // If AUTO_LOGOUT_MINUTE or WARNING_BEFORE_LOGOUT_SECOND is not set, use default values
+    if (AUTO_LOGOUT_MINUTE == null || WARNING_BEFORE_LOGOUT_SECOND == null)
+    {
+        // Default values if not set in configuration
+        AUTO_LOGOUT_MINUTE = (float?)0.5; // 30 minutes
+        WARNING_BEFORE_LOGOUT_SECOND = 10; // 10 seconds
+    }
+    else
+        // Set ViewBag for use in the view
+        ViewBag.AUTO_LOGOUT_MINUTE = AUTO_LOGOUT_MINUTE;
+    ViewBag.WARNING_BEFORE_LOGOUT_SECOND = WARNING_BEFORE_LOGOUT_SECOND;
+
+    // Work_Duration is used for the duration of work in the system
+    float? Work_Duration = builder.Configuration.GetSection("Work_Duration").Get<float>();
+    int? WORK_WARNING_SECONDS = builder.Configuration.GetSection("WORK_WARNING_SECONDS").Get<int>();
+
+    // If Work_Duration is not set, use default value
+    if (Work_Duration == null)
+    {
+        // Default value if not set in configuration
+        Work_Duration = (float?)1.0; // 1 mins
+    }
+    ViewBag.Work_Duration = Work_Duration;
+    // Set ViewBag for WORK_WARNING_SECONDS for use in the view
+    if (WORK_WARNING_SECONDS == null)
+    {
+        // Default value if not set in configuration
+        WORK_WARNING_SECONDS = 60; // 60 seconds
+    }
+    ViewBag.WORK_WARNING_SECONDS = WORK_WARNING_SECONDS; // Default value will be null if not set
+}
+<head>
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+
+
+<div id="txtblnkindex1" class="text-center fw-bolder blink">
+    <p id="work_duration_top" style="font-size:larger;color:green;font-weight:bolder" class="text-bg-info align-content-center fw-bolder"></p>
+</div>
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item fw-bolder">
+            @if (User.IsInRole(SD.Role_Admin)) //管理員
+            {
+                <a id="manage" class="nav-link fw-bolder" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@UserManager.GetUserName(User)</a>
+                @* <a id="manage" class="nav-link fw-bolder" asp-area="" asp-controller="Home" asp-action="Index1" title="Home">@UserManager.GetUserName(User)</a> *@
+            }
+            else  //使用者
+            {
+                <label id="manage" class="nav-link fw-bolder">@UserManager.GetUserName(User)</label>
+            }
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline fw-bolder" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index1", "Home", new { area = "" })">
+                <button style="font-size:large" id="logout" type="submit" class="nav-link btn btn-link border-0 fw-bolder">登出</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        @*   <li class="nav-item">
+            <a class="nav-link fw-bolder" id="register" asp-area="Identity" asp-page="/Account/Register">註冊</a>
+    </li> *@
+        @*   <li class="nav-item">
+            <a style="font-size:large" class="nav-link fw-bolder" id="register" href="https://www.facebook.com/groups/654519621275974">本會[問卷調查]</a>
+    </li> *@
+        <li class="nav-item">
+            <a style="font-size:large" class="nav-link fw-bolder " id="login" asp-area="Identity" asp-page="/Account/Login">登入</a>
+        </li>
+    }
+</ul>
+
+<!--2025 06 22 19:57 To conserve server performance-->
+<div id="autoLogoutWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content">
+        <h2 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h2>
+        <p style="color:blue;font-size:large;font-weight:bolder">誠懇邀您進行[系統耐用性]調查,將於 <span style="color:red;font-size:larger"
+                                  id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後,自動導到[問卷調查]。
+        </p>
+       @*  <p style="color:blue;font-size:large;font-weight:bolder">
+            您已經有一段時間沒有操作,將於 <span style="color:red;font-size:larger"
+                                  id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後,自動導到[財團法人台中市私立銀同碧湖陳氏社會福利基金會臉書]。
+        </p> *@
+      @*   <button onclick="stayLoggedIn()" class="btn btn-primary">[暫時不用]</button> *@
+    </div>
+</div>
+<button id="goTopBtn" class="btn btn-danger">回到頂部</button>
+<div id="workDurationWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:#fff; padding:2rem 2.5rem; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; max-width:90vw;">
+        <h2 style="color:#c0392b;">即將自動導到本會臉書Facebook....</h2>
+        <p style="color:blue;font-size:large;font-weight:bolder">
+            本伺服器將進行[連線配額重啟],將於 <span style="color:red;font-size:larger"
+                                  id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後，暫時切換回[財團法人台中市私立銀同碧湖陳氏社會福利基金會臉書]。
+        </p>
+     @*    <p style="color:blue;font-size:large;font-weight:bolder">
+            您已經有一段時間沒有操作,將於 <span style="color:red;font-size:larger"
+                                  id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後，自動導到[財團法人台中市私立銀同碧湖陳氏社會福利基金會臉書]。
+        </p> *@
+    @*     <button onclick="stayLoggedIn()" class="btn btn-primary">[繼續使用]</button> *@
+    </div>
+</div>
+<script type="text/javascript">
+    window.AUTO_LOGOUT_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.AUTO_LOGOUT_MINUTE));
+    window.WARNING_BEFORE_LOGOUT_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WARNING_BEFORE_LOGOUT_SECOND));
+    window.WORK_DURATION_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.Work_Duration));
+    window.WORK_WARNING_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WORK_WARNING_SECONDS));
+</script>
+<script src="~/js/AutoLogout.js" asp-append-version="true"></script>

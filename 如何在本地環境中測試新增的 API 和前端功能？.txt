@@ -1,0 +1,99 @@
+如何在本地環境中測試新增的 API 和前端功能？
+
+GitHub Copilot
+
+深呼吸 — 下面給你一個簡潔、可複製的本機測試流程（後端 API + Vue 前端），包含必要檢查點與排錯命令。按順序執行即可。
+
+1) 確認後端支援 Controller 路由（如果尚未）
+- 打開 `Program.cs`，確保已註冊並映射 controllers（Razor Pages 專案常需同時支援 Razor 與 API controllers）。若沒有，加入下列片段並重建。
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// existing services...
+builder.Services.AddRazorPages();
+builder.Services.AddControllers(); // <- 必要：啟用 API controllers
+
+var app = builder.Build();
+
+// existing middleware...
+app.MapRazorPages();
+app.MapControllers(); // <- 必要：把 attribute routed controllers 映射出來
+
+app.Run();
+```
+
+2) 建置並啟動後端（兩種選擇）
+- Visual Studio：開專案後執行 __Build__ > __Rebuild Solution__，然後按 F5 或 __Debug > Start Debugging__。
+- 或用 CLI（在專案根目錄或包含 .csproj 的資料夾）：
+```
+dotnet build
+dotnet run --project BulkyWeb --urls "https://localhost:5001;http://localhost:5000"
+```
+- 驗證 API（未登入情況會回傳 Roles.IsGuest = true）：
+```
+curl -k https://localhost:5001/api/config
+```
+或在瀏覽器直接開：
+https://localhost:5001/api/config
+
+3) 若需要驗證「角色」屬性（需 cookie-based auth）
+- 在瀏覽器透過系統的登入頁面登入（例如 __/Identity/Account/Login__），登入成功後在同一瀏覽器分頁打開 `https://localhost:5001/api/config`，你會看到 Roles.IsAdmin / IsCustomer 的真偽。
+- 若要用 curl 模擬已登入請先從瀏覽器複製 Cookie header，然後：
+```
+curl -k -H "Cookie: .AspNetCore.Identity.Application=<your_cookie_value>" https://localhost:5001/api/config
+```
+（通常用 Postman 更方便處理 cookie / auth）
+
+4) 產生並信任本機 HTTPS 憑證（避免 Vite proxy HTTPS 問題）
+```
+dotnet dev-certs https --trust
+```
+（Windows 會跳出提示要求同意；macOS 也會提示）
+
+5) 啟動前端（Vite）
+- 進入 `frontend`，安裝依賴並啟動 dev server：
+```
+cd frontend
+npm ci
+npm run dev
+```
+- 開啟： http://localhost:5173/ （或命令輸出顯示的 Local URL）
+- 若 port 被占用，可改：
+```
+npm run dev -- --port 5174
+```
+
+6) 前後端整合測試（開發環境）
+- 在瀏覽器打開前端頁面（例如 `/ancestral`），前端 `getConfig()` 會呼叫 `/api/config`（Vite proxy 會轉到後端 https://localhost:5001）。
+- 若前端無法拿到資料，檢查：
+  - Vite terminal 是否顯示已連到 dev server（Compiled successfully）
+  - 瀏覽器 DevTools → Network，檢查 `/api/config` 請求與回應（有無 CORS、401、NET::ERR_CERT_AUTHORITY_INVALID 等錯誤）
+  - 若遇到自簽章錯誤，確認已執行 step 4 的 `dotnet dev-certs` 並信任
+
+7) 常見排錯快速清單
+- 404 /api/config → 確認 `app.MapControllers()` 已呼叫，且 `Controllers/ConfigController.cs` namespace 與專案包含在 csproj（重建）
+- Vite 顯示 import 錯誤（App.vue 找不到）→ 確認 `frontend/src/App.vue` 與 `frontend/index.html` 存在且內容正確
+- 前端請求被阻擋（CORS）→ 若非使用 Vite proxy，後端需設定 CORS；使用 proxy 可避免此問題
+- HTTPS 憑證錯誤 → 執行 `dotnet dev-certs https --trust`，或在 vite.config.ts proxy 設定中 `secure: false`（已設定）
+
+8) 執行分析腳本並產出 PDF（Step1）
+- 在專案根目錄：
+```
+pwsh .\tools\generate-analysis.ps1
+# 如系統有 pandoc，會自動輸出 analysis\analysis.pdf
+# 或手動轉換：
+pandoc .\analysis\analysis.md -o .\analysis\analysis.pdf
+```
+
+9) 進階：用 Postman / Playwright / Vitest 測試
+- Postman：測試 `https://localhost:5001/api/config`，可先登入頁取得 cookie 再呼叫 API。
+- E2E（Playwright）：用瀏覽器模擬登入流程並驗證前端畫面與 API 回應。
+- 單元測試（Vitest）：在 `frontend` 執行 `npm run test`（需新增測試檔）。
+
+需要我幫你做哪一件事：
+- A. 幫你在 `Program.cs` 寫入 MapControllers 的片段並產生 patch（回覆「產生 Program.cs patch」）  
+- B. 幫你產生 Postman collection 範本來測試 `/api/config`（回覆「產生 Postman」）  
+- C. 協助排錯你目前的錯誤輸出（貼上 `dotnet run` 與 `npm run dev` 的 terminal 輸出）  
+
+回覆選項或貼上錯誤日誌，我會一步步幫你完成。

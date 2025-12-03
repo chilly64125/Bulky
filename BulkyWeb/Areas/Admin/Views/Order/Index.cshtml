@@ -1,0 +1,83 @@
+﻿@{
+    var status = Context.Request.Query["status"];
+    var pending = "text-primary";
+    var inprocess = "text-primary";
+    var completed = "text-primary";
+    var approved = "text-primary";
+    var all = "text-primary";
+
+    switch (status) {
+        case "pending":
+            pending = "active text-white bg-primary";
+            break;
+        case "inprocess":
+            inprocess = "active text-white bg-primary";
+            break;
+        case "completed":
+            completed = "active text-white bg-primary";
+            break;
+        case "approved":
+            approved = "active text-white bg-primary";
+            break;
+        default:
+            all = "active text-white bg-primary";
+            break;
+
+    }
+
+}
+
+
+<div class="card shadow border-0 my-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">報名清單</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <div class="d-flex justify-content-between pb-5 pt-2">
+            <span></span>
+            <ul class="list-group list-group-horizontal-sm">
+                
+                <a  style="text-decoration:none;" asp-controller="Order" asp-action="Index1" asp-route-status="pending">
+                <li class="list-group-item @pending">尚未繳費 Payment Pending</li>
+                </a>
+
+                <a  style="text-decoration:none;" asp-controller="Order" asp-action="Index1" asp-route-status="inprocess">
+                <li class="list-group-item @inprocess">處理中 In Process</li>
+                </a>
+                      
+                <a  style="text-decoration:none;" asp-controller="Order" asp-action="Index1" asp-route-status="approved">
+                <li class="list-group-item @approved">已核准 Approved</li>
+                </a>
+
+                <a  style="text-decoration:none;" asp-controller="Order" asp-action="Index1" asp-route-status="completed">
+                <li class="list-group-item @completed">報名完成 Completed</li>
+                </a>
+                <a asp-label="全部查詢" style="text-decoration:none;" asp-controller="Order" asp-action="Index1" asp-route-status="all">
+                <li class="list-group-item @all">All</li>
+                </a>
+            </ul>
+        </div>
+        <table id="tblData" class="table table-bordered table-striped fw-bolder" style="width:100%">
+            <thead>
+                <tr>
+                    <th>編號</th>
+                    <th>姓名</th>
+                    <th>電話</th>
+                    <th>電子信箱</th>
+                    <th>報名進度</th>
+                    <th>金額</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/order.js"></script>
+}

@@ -1,0 +1,139 @@
+﻿@page
+@model BulkyBookWeb.Areas.Identity.Pages.Survey.SurveyModel
+@{
+    ViewData["Title"] = "系統[耐用性]使用問卷";
+}
+<head>
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+<h2>系統[耐用性]問卷</h2>
+<div class="alert alert-success fw-bolder text-center" style="font-size:1.2rem;">
+    <a class="nav-link fw-bolder" asp-area="Customer" asp-controller="Home" asp-action="Index1" style="font-size:larger;font-weight:bolder">略過問卷</a>
+</div>
+<div class="alert alert-success fw-bolder text-center" style="font-size:1.2rem;">
+    <a href="https://www.facebook.com/groups/654519621275974" class="btn btn-danger fw-bolder mx-2" style="font-size:larger;font-weight:bolder">離開系統</a>
+</div>
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <h2>
+            [耐用性]測試-問卷題目:<br />
+            [填寫說明]:<br />
+            1.預計8/23(六)~8/30(六)進行<br />
+            2.根據印象(大約回答)下面4題<br />
+            3.各有3個選項,請選最接近的<br />
+        </h2>
+        <h3>
+            題目1:登入頁(Login Form) 平均幾(秒)出現呢?(請大約回答)
+        </h3>
+        <select asp-for="Response.LoginTime" class="form-select" style="font-size:larger;font-weight:bolder">
+            <option value="">請選擇</option>
+            <option value="1~5秒">1~5秒</option>
+            <option value="6~10秒">6~10秒</option>
+            <option value="11秒以上">11秒以上</option>
+        </select>
+        <span asp-validation-for="Response.LoginTime" class="text-danger" style="font-size:larger;font-weight:bolder"></span>
+    </div>
+    <div class="mb-3">
+        <h3>
+            題目2:從最早開始,您總共使用系統多少(次)呢?(請大約回答)
+        </h3>
+        <select asp-for="Response.UsageCount" class="form-select" style="font-size:larger;font-weight:bolder">
+            <option value="">請選擇</option>
+            <option value="1~5次">1~5次</option>
+            <option value="6-10次">6~10次</option>
+            <option value="11次以上">11次以上</option>
+        </select>
+        <span asp-validation-for="Response.UsageCount" class="text-danger" style="font-size:larger;font-weight:bolder"></span>
+    </div>
+    <div class="mb-3">
+        <h3>
+            題目3:系統會出現[兩個無法使用]的訊息:
+            1."The service is unavailable." 或
+            2."The web app is stopped(藍底白字)"
+            從最早開始,您總共遇過幾次?(請大約回答)
+        </h3>
+        <select asp-for="Response.ErrorCount" class="form-select" style="font-size:larger;font-weight:bolder">
+            <option value="">請選擇</option>
+            <option value="1~5次">1~5次</option>
+            <option value="6~10次">6~10次</option>
+            <option value="11次以上">11次以上</option>
+        </select>
+        <span asp-validation-for="Response.ErrorCount" class="text-danger" style="font-size:larger;font-weight:bolder"></span>
+    </div>
+    <div class="mb-3">
+        <h3>4. 請選擇,您所居住的洲別(亞洲、歐洲、北美,中美,南美,非洲,澳洲)？</h3>
+        <select asp-for="Response.Continent" class="form-select" style="font-size:larger;font-weight:bolder">
+            <option value="">請選擇</option>
+            <option value="亞洲">亞洲</option>
+            <option value="歐洲">歐洲</option>
+            <option value="北美">北美</option>
+            <option value="中美">中美</option>
+            <option value="南美">南美</option>
+            <option value="非洲">非洲</option>
+            <option value="澳洲">澳洲</option>
+        </select>
+        <span asp-validation-for="Response.Continent" class="text-danger" style="font-size:larger;font-weight:bolder"></span>
+    </div>
+    <button type="submit" class="btn btn-primary" style="font-size:larger;font-weight:bolder">送出問卷</button>
+</form>
+@* 問卷結果 *@
+@* <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow border-0 rounded">
+            <div class="modal-header bg-primary text-white fw-bolder">
+                <h5 class="modal-title text-white" id="resultModalLabel">感謝您協助測試本系統...</h5>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center text-bg-info fw-bolder" style="font-size:1.2rem;">
+                <span id="resultMessage"></span>
+            </div>
+            <div class="modal-footer justify-content-center bg-light">         
+                <a class="nav-link fw-bolder" asp-area="Customer" asp-controller="Home" asp-action="Index1">繼續使用</a>
+                <a href="https://www.facebook.com/groups/654519621275974" class="btn btn-danger fw-bolder px-4">離開系統</a>
+            </div>
+        </div>
+    </div>
+</div>
+ *@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />  
+    @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    var result = '@TempData["Success"]';
+    if (result) {
+        document.getElementById('resultMessage').innerText = result;
+        var modalEl = document.getElementById('resultModal');
+        var modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.querySelector('.modal-content').classList.add('animated-in');
+        // Optionally remove the class after animation ends
+        setTimeout(function () {
+            modalEl.querySelector('.modal-content').classList.remove('animated-in');
+        }, 400);
+       }
+    else{
+            document.getElementById('resultMessage').innerText = "感謝您協助完成[系統耐用性]調查!!";
+        var modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        modal.show();
+    }
+    });
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var result = '@TempData["Success"]';
+        //     if (result) {
+        //         document.getElementById('resultMessage').innerText = result;
+        //         var modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        //         modal.show();
+        //     }
+        //     else{
+        //         document.getElementById('resultMessage').innerText = "網路未知原因斷訊,請重新進入系統...";
+        //         var modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        //         modal.show();
+        //     }
+        // });
+         *@
+    </script>
+}

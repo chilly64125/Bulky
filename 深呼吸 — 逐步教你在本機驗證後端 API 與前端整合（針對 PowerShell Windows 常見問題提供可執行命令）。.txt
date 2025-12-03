@@ -1,0 +1,72 @@
+GitHub Copilot
+
+深呼吸 — 逐步教你在本機驗證後端 API 與前端整合（針對 PowerShell/Windows 常見問題提供可執行命令）。
+
+重點問題：PowerShell 內建 `curl` 是 `Invoke-WebRequest`，參數不同。解法：用系統 `curl.exe` 或用 PowerShell 的 `Invoke-RestMethod/Invoke-WebRequest` 並正確傳 headers 或暫時忽略憑證檢查。
+
+1) 用系統 curl（最簡單，支援 `-k` 與 `-H`）
+```sh
+# 非驗證 (忽略 self-signed cert)
+curl.exe -k https://localhost:5064/api/config
+
+# 帶 cookie 的請求 (模擬已登入)
+curl.exe -k -H "Cookie: .AspNetCore.Identity.Application=YOUR_COOKIE_VALUE" https://localhost:5064/api/config
+```
+
+2) 用 PowerShell 原生命令（若用 PowerShell，要傳 Hashtable 給 -Headers）
+```powershell
+# 忽略 HTTPS 憑證 (暫時、測試用)
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+Invoke-RestMethod -Uri "https://localhost:5064/api/config"
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = $null
+
+# 使用 Headers 傳 Cookie（Headers 必須是 Hashtable）
+Invoke-RestMethod -Uri "https://localhost:5064/api/config" -Headers @{ Cookie = ".AspNetCore.Identity.Application=YOUR_COOKIE_VALUE" }
+```
+
+3) 如何取得 cookie 值（在瀏覽器）
+- 在瀏覽器登入後（/Identity/Account/Login），開 DevTools → Application / Storage → Cookies，複製 `.AspNetCore.Identity.Application` 的值，貼到上面命令中的 `YOUR_COOKIE_VALUE`。
+
+4) 若想用 Postman（推薦用於帶 cookie 的測試）
+- 開瀏覽器登入取得 cookie，或在 Postman 用表單登入（POST 到 /Identity/Account/Login），Postman 會儲存 cookie。
+- 呼叫 GET `https://localhost:5064/api/config`，檢查回傳 JSON。
+
+5) 驗證 API 是否可用（程式端檢查）
+- 確認 `Program.cs` 已包含：
+  - `builder.Services.AddControllers();` 或 `AddControllersWithViews()`（你已有）
+  - `app.MapControllers();`（你已有）
+- 若 404，先執行 `dotnet build` 並啟動後端，再重試。
+
+6) 前端（Vite）整合檢查
+- 若後端監聽在 5064，請確認 `frontend/vite.config.ts` 的 proxy target 指向 `https://localhost:5064`：
+```typescript
+// frontend/vite.config.ts (檢查或修改)
+proxy: {
+  "/api": {
+    target: "https://localhost:5064",
+    changeOrigin: true,
+    secure: false
+  }
+}
+```
+- 啟動前端：
+```sh
+cd frontend
+npm ci
+npm run dev
+```
+- 在瀏覽器開啟 `http://localhost:5173/`（或 Vite 顯示的 Local URL），在 DevTools → Network 檢查 `/api/config` 請求與 JSON 回應。若回傳 401/403 → 代表身份或授權問題；用瀏覽器登入後再重載頁面。
+
+7) 常見錯誤與解法
+- PowerShell `curl -k` 報錯：改用 `curl.exe` 或 `Invoke-RestMethod`（見上）。
+- Headers 參數錯誤（PowerShell）：必須用 Hashtable：`-Headers @{ Cookie = "..." }`。
+- self-signed cert error：執行 `dotnet dev-certs https --trust`（你已做過）。
+- 前端無法取 API：確認 Vite proxy 指向正確 port，或在後端啟用 CORS（若不使用 proxy）。
+- 若需要自動化測試 cookie 登入，建議用 Playwright 或 Selenium 模擬登入流程再呼叫 API。
+
+需要我幫你做哪一件：
+- A. 產生可直接執行的 PowerShell 測試腳本（含 cookie 讀取提示）  
+- B. 更新 `frontend/vite.config.ts` 的 proxy target 為 5064 並產生 patch（我可直接修改 repo）  
+- C. 示範 Postman 指令集 / Playwright 範例
+
+請回覆 A、B 或 C（或三者），我會產生對應檔案或指令。

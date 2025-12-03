@@ -1,0 +1,19 @@
+﻿@model int
+
+<div class="container row pt-4 fw-bolder">
+    <div class="col-12 text-center">
+        <h1 class="text-primary text-center">繳費成功! Payment Successful!</h1>
+        Order Number : @Model <br /><br />
+        <img src="~/images/lawn_leaf.jpg" width="65%" />
+    </div>
+    <div class="col-12 text-center" style="color:maroon">
+        <br />
+        繳費完成! Payment has been applied successfully! <br />
+        <a asp-area="Admin" 
+        asp-controller="Order" 
+        asp-action="Details"
+        asp-route-orderId="@Model" class="btn btn-primary">回費用明細 </a>
+
+    </div>
+
+</div> 

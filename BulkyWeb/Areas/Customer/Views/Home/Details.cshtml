@@ -1,0 +1,171 @@
+﻿@model ShoppingCart
+
+<form method="post">
+    <a asp-action="Index1" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-lg text-uppercase">
+        <label style="font-size:larger" text-dark-160>回首頁</label>
+    </a>
+    <input hidden asp-for="ProductId" />
+    <div class="card shadow border-0 mt-4 mb-4">
+        <div class="card-header bg-secondary bg-gradient text-light py-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h6 class="text-white fw-semibold text-uppercase">@Model.Product.Title</h6>          
+                </div>
+            </div>
+        </div>
+        <div class="card-body">                         
+              <div class="row">
+                    <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
+                        @if (Model.Product.ProductImages != null && Model.Product.ProductImages.Count > 0) {
+                            <div id="carouselExampleIndicators" class="carousel  slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+
+                                    @foreach(var imageWithIndex in 
+                                    Model.Product.ProductImages
+                                   .Select((image, index) => new { Image = image, Index = index })) {
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@imageWithIndex.Index" 
+                                        class="@(imageWithIndex.Index==0?"active":"")" aria-current="true" aria-label="Slide 1"></button>
+                                    }
+
+                                   
+                                </div>
+                                <div class="carousel-inner">
+                                    @foreach (var imageWithIndex in
+                                   Model.Product.ProductImages
+                                   .Select((image, index) => new { Image = image, Index = index })) {
+                                        <div class="@(imageWithIndex.Index==0?"carousel-item active":"carousel-item")">
+                                            <img src="@imageWithIndex.Image.ImageUrl" class="d-block w-100" alt="...">
+                                    </div>
+                                   }
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+
+                        }
+
+                    </div>
+                    <div class="col-12 col-lg-6 offset-lg-1">
+
+                        <div class="col-12 col-md-6 pb-4">
+                            <span style="font-size:larger" class="badge">@Model.Product.Category.Name</span>
+                        </div>
+                        <div class="row ">
+                            <h6 class="text-dark fw-bolder ">活動簡介 : @Model.Product.ISBN</h6>
+                        </div>
+                        <div class="row ">
+                            <h6 class="text-dark fw-bolder">
+                                費用: 依主辧單位公佈為主                     
+                              @*   <div class="p-1 col-3 col-lg-2 bg-white text-warning fw-bold">
+                                    <div>@Model.Product.ListPrice.ToString("c")</div>
+                                </div> *@
+                            </h6>
+                        </div>                 
+                        <div class="row pl-2 my-3">
+                            <p class="text-secondary lh-sm fw-bolder">主辦單位:@Html.Raw(Model.Product.Company.Name)</p>
+                        </div>
+@*                         <div class="row pl-2 my-3">
+                            <p class="text-secondary lh-sm fw-bolder">報名方式:</p>
+                        </div>
+                        <div class="row pl-2 my-3">
+                            <p class="text-secondary lh-sm fw-bolder">報名方式:</p>
+                        </div>
+                        <div class="row pl-2 mb-3">
+                            <div class="col-md-4">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                       (1)單人:
+                                    </span>
+                                    <input asp-for="Count" type="number" value="1" class="form-control text-center  w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        人
+                                    </span>   
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        (2)桌數:
+                                    </span>
+                                    <input asp-for="Table" type="number" value="0" class="form-control text-center  w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default-Table" />
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default-Table">
+                                        桌
+                                    </span>
+                                </div>
+                                <div class="input-group mb-3 ">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        (3).80歲:
+                                    </span>
+                                    <input asp-for="Senior80" type="number" value="0" class="form-control text-center w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default-Senior80" />
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default-Senior80">
+                                        人
+                                    </span>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        (4)素食:
+                                    </span>
+                                    <input asp-for="Vegetarian" type="number" value="0" class="form-control text-center  w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default-Vegetarian" />
+                                  
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default-Vegetarian">
+                                        人
+                                    </span>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        (5)志工:
+                                    </span>
+                                    <input asp-for="Volunteer" type="number" value="0" class="form-control text-center  w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default-Volunteer" />
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default-Volunteer">
+                                        人
+                                    </span>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default">
+                                        (6)成年禮:
+                                    </span>
+                                    <input asp-for="PreAdult" type="number" value="0" class="form-control text-center  w-60"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default-PreAdult" />
+                                    <span class="input-group-text bg-primary text-white border-0 fw-bolder"
+                                          id="inputGroup-sizing-default-PreAdult">
+                                        人
+                                    </span>
+                                </div>
+                                </div>                                                          
+                        </div>         *@        
+                      @*   <div class="row pl-2 mb-3">
+                            <div class="col-md-4">
+                                <div class="col-12 col-md-6 pb-1">
+                                    <button type="submit"
+                                            style="font-size:larger" class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-bolder text-bg-dark">
+                                        報名
+                                    </button>
+                                </div>                         
+                           </div>
+                       </div>   *@
+                    </div>
+                </div>
+        </div>
+    </div>
+</form>

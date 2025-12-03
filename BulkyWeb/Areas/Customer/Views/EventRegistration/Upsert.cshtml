@@ -1,0 +1,112 @@
+﻿@model EventRegistrationVM
+
+<div class="card shadow border-0 my-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+        <div class="row">
+            <div class="col-12 text-center fw-bolder">
+                <h5 class="text-white py-2 fw-bolder"> @(Model.EventRegistration.Id != 0 ? "修改" : "新增")活動報名基本檔</h5>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="EventRegistration.Id" hidden />
+
+            <div class="row fw-bolder">
+                <div class="col-10 fw-bolder">
+                    <div class="border p-3 fw-bolder">
+                        @*<div asp-validation-summary="ModelOnly"></div>*@
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <select asp-for="@Model.EventRegistration.ProductId" asp-items="@Model.ProductList" class="form-select border-0 shadow text-bg-info fw-bolder">
+                           @*      <option disabled selected>--選取活動--</option> *@
+                            </select>
+                            <label asp-for="EventRegistration.ProductId" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.ProductId" class="text-danger fw-bolder"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.UserId" class="form-control border-0 shadow fw-bolder" readonly="true" value="@TempData["UserName"].ToString()" />
+                            <label asp-for="EventRegistration.UserId" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.UserId" class="text-danger fw-bolder"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.RegistrationTime" class="form-control border-0 shadow fw-bolder" readonly="true" value="@DateTime.Now" />
+                            <label asp-for="EventRegistration.RegistrationTime" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.RegistrationTime" class="text-danger fw-bolder"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.Count" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.Count" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.Count" class="text-danger fw-bolder"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.Table" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.Table" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.Table" class="text-danger fw-bolder"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.Vegetarian" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.Vegetarian" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.Vegetarian" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.Senior80" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.Senior80" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.Senior80" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.Volunteer" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.Volunteer" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.Volunteer" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.PreAdult" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.PreAdult" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.PreAdult" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.TotalNumberJoined" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.TotalNumberJoined" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.TotalNumberJoined" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12 fw-bolder">
+                            <input asp-for="EventRegistration.PaymentAmount" class="form-control border-0 shadow fw-bolder" />
+                            <label asp-for="EventRegistration.PaymentAmount" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="EventRegistration.PaymentAmount" class="text-danger fw-bolder"></span>
+                        </div>
+
+                        <div class="row pt-2 fw-bolder">
+                            <div class="col-6 col-md-3 fw-bolder">
+                                @if (Model.EventRegistration.Id != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control fw-bolder">修改</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control fw-bolder">新增</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3 fw-bolder">
+                                <a asp-controller="EventRegistration" asp-action="Index" class="btn btn-outline-primary border  form-control fw-bolder">
+                                    回清單
+                                </a>
+                            </div>                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/EventRegistration.js"></script>
+@*     <script type="text/javascript">
+        $('select option:contains("冬至")').prop('selected',true);
+    </script> *@
+}
+                        

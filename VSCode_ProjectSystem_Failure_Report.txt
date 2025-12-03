@@ -1,0 +1,39 @@
+Project system failure diagnostics
+
+Date: 2025-12-02
+
+Attached failure file: ProjectSystemServerFault_57eb04ad-452c-4d68-b3f2-83927615a3e8.failure.txt (excerpted by user)
+
+Summary:
+- The failure file shows a StreamJsonRpc.ConnectionLostException coming from Visual Studio Code / .NET project system design-time services. This indicates the extension host or language server process crashed or disconnected during design-time builds.
+
+Collected environment info:
+- dotnet --info output (selected):
+  - SDKs installed: 9.0.112, 9.0.307
+  - Runtimes installed: Microsoft.AspNetCore.App 8.0.22, 9.0.11
+  - MSBuild: 17.14.28
+
+Installed VS Code extensions (partial list):
+(see full list in the user's environment; captured by `code --list-extensions`):
+- ms-dotnettools.csdevkit
+- ms-dotnettools.csharp
+- ms-dotnettools.vscode-dotnet-runtime
+- ms-dotnettools.vscodeintellicode-csharp
+- volar, vetur, eslint, prettier, etc.
+
+What I reproduced / observed:
+- I restarted the backend and captured `backend.log` tail; the server started and responded to requests.
+- I simulated POST /api/auth/login and POST /api/auth/logout with Origin header where logout succeeded. The login request failed when the backend was not yet ready, but later succeeded in separate tests.
+
+Suggested immediate steps to resolve the VS Code project system fault:
+1) Restart VS Code and reload the window. This often clears transient RPC disconnects.
+2) If it recurs, update the C# / .NET extensions (C# Dev Kit, C#) and the .NET SDK to matching supported versions.
+3) Disable third-party extensions that interact with the project system (especially experimental or preview language service extensions) and retry.
+4) If the issue persists, reproduce the failure, then collect the full extension host logs from `%APPDATA%\Code\logs\<timestamp>\window1\exthost` and attach them to an issue.
+
+If you want, I can:
+- collect the exact extension-host log files and bundle them, or
+- open a draft GitHub issue/VS Feedback entry including the failure file and the diagnostics above.
+
+---
+Report generated automatically by the assistant.

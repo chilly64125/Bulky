@@ -1,0 +1,293 @@
+﻿@using System.Text.Json
+@model IEnumerable<Product>
+@{
+
+    var builder = WebApplication.CreateBuilder();
+    ViewBag.PublishDate = builder.Configuration.GetValue<string>("PublishDate");
+    ViewData["Title"] = "財團法人台中市私立銀同碧湖陳氏社會福利基金會-祖先塔位暨牌位管理資訊系統（準預覽版本）";
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    // Auto logout settings
+    float? AUTO_LOGOUT_MINUTE = builder.Configuration.GetSection("Logout_Duration:AUTO_LOGOUT_MINUTE").Get<float>();
+    int? WARNING_BEFORE_LOGOUT_SECOND = builder.Configuration.GetSection("Logout_Duration:WARNING_BEFORE_LOGOUT_SECOND").Get<int>();
+
+    // If AUTO_LOGOUT_MINUTE or WARNING_BEFORE_LOGOUT_SECOND is not set, use default values
+    if (AUTO_LOGOUT_MINUTE == null || WARNING_BEFORE_LOGOUT_SECOND == null)
+    {
+        // Default values if not set in configuration
+        AUTO_LOGOUT_MINUTE = (float?)0.5; // 30 minutes
+        WARNING_BEFORE_LOGOUT_SECOND = 10; // 10 seconds
+    }
+    else
+        // Set ViewBag for use in the view
+        ViewBag.AUTO_LOGOUT_MINUTE = AUTO_LOGOUT_MINUTE;
+    ViewBag.WARNING_BEFORE_LOGOUT_SECOND = WARNING_BEFORE_LOGOUT_SECOND;
+
+    // Work_Duration is used for the duration of work in the system
+    float? Work_Duration = builder.Configuration.GetSection("Work_Duration").Get<float>();
+    int? WORK_WARNING_SECONDS = builder.Configuration.GetSection("WORK_WARNING_SECONDS").Get<int>();
+
+    // If Work_Duration is not set, use default value
+    if (Work_Duration == null)
+    {
+        // Default value if not set in configuration
+        Work_Duration = (float?)1.0; // 1 mins
+    }
+    ViewBag.Work_Duration = Work_Duration;
+    // Set ViewBag for WORK_WARNING_SECONDS for use in the view
+    if (WORK_WARNING_SECONDS == null)
+    {
+        // Default value if not set in configuration
+        WORK_WARNING_SECONDS = 60; // 60 seconds
+    }
+    ViewBag.WORK_WARNING_SECONDS = WORK_WARNING_SECONDS; // Default value will be null if not set
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 開頭設定CSS連結路徑 -->
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <div id="txtblnkindex1" class="text-center fw-bolder blink">
+            <p id="work_duration_top" style="font-size:larger;color:green;font-weight:bolder" class="text-bg-info align-content-center fw-bolder"></p>
+        </div>
+    </header>
+
+  @*   <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+        <div class="row fw-bolder">
+            <table>
+                <tr class="text-center">
+                    <td class="align-middle text-center">
+                        <div class="row fw-bolder ">
+                            <div class="col-12 py-2  text-center fw-bolder ">
+                                <a href="/Identity/Survey/Survey" class="blink_link_index1 dropdown-item fw-bolder" style="font-size:larger">
+                                    [耐用性]問卷調查
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="align-middle text-center">
+                        <div class="row fw-bolder ">
+                            <div class="col-12 py-2  text-center fw-bolder ">
+                                <a href="/Identity/Survey/SurveyResult" class="blink_link_index1 dropdown-item fw-bolder" style="font-size:larger">
+                                    [耐用性]調查結果
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div> *@
+
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+        <div class="row fw-bolder">
+            <table>
+                <tr class="text-center">
+                    <td class="align-middle text-center">
+                        <div class="row fw-bolder ">
+                            <div class="col-12 py-2  text-center fw-bolder ">
+                                <a class="blink_link_index1" id="gotoAncestral_index1" style="font-size:xx-large" asp-area="Admin" asp-controller="Ancestral" asp-action="PositionQuery">
+                                    陳氏宗祠-牌位查詢
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr class="text-center">
+                    <td class="align-middle text-center">
+                        <div class="row fw-bolder ">
+                            <div class="col-12 py-2  text-center fw-bolder ">
+                                <a class="blink_link_index1" id="gotoKindness_index1" style="font-size:xx-large" asp-area="Admin" asp-controller="Kindness" asp-action="PositionQuery">
+                                    懐恩塔-塔位查詢
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+               </tr>
+            </table>          
+        </div>
+    </div>
+
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+        <div class="row fw-bolder">
+            <div class="col-12 text-center fw-bolder">
+                <h1 class="text-white py-2 fw-bolder">歡迎來到台中巿銀同碧湖陳氏宗親會</h1>
+                <p class="text-white opacity-75 fw-bolder">我們致力於弘揚[穎川陳氏 祖訓]，奉行[先祖不怕艱苦、勤儉打拼的精神與美德]。</p>
+            </div>
+        </div>
+        <div style="display:block;" class="card-header bg-info bg-gradient ml-0 py-3 fw-bolder text-left">
+            <div class="row fw-bolder text-left">
+                <button id="openFilmBtn" style="font-size:x-large" class="text-white btn btn-info" title="點選畫面任何其他地方終止播放!"><i class="bi bi-camera-video-fill"></i>台中巿銀同碧湖陳氏宗親會-影片<i class="bi bi-camera-video-fill"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow border-0 my-4 fw-bolder">
+        <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+            <div class="row fw-bolder">
+                <div class="col-12 text-center fw-bolder">
+                    <h2 class="text-white py-2 fw-bolder">本會年度祭祖活動一覽表</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="openingFilmModal" class="video-modal">
+        <video title="點選畫面任何其他地方終止播放!" id="openingFilmVideo">
+            <source src="~/images/Films/ChenClanOpening.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="row pb-3 fw-bolder">
+        @foreach (var product in Model)
+        {
+            <div class="col-lg-3 col-sm-6 fw-bolder">
+                <div class="row p-2 fw-bolder">
+                    <div class="col-12 p-1 fw-bolder">
+                        <div class="card border-0 p-3 shadow  border-top border-5 rounded fw-bolder ">
+                            @if (product.ProductImages != null && product.ProductImages.Count() > 0)
+                            {
+                                <img src="@product.ProductImages.FirstOrDefault().ImageUrl" class="card-img-top rounded" />
+                            }
+                            else
+                            {
+                                <img src="https://placehold.co/500x600/png" class="card-img-top rounded" />
+                            }
+
+                            <div class="card-body pb-0 fw-bolder">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center fw-bolder">@product.Title</p>
+                                    <p class="card-title text-warning text-center fw-bolder">主辦單位: <b>@product.Company.Name</b></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center mb-0 fw-bolder">
+                                        報名費用: 依主辧單位公佈為主
+                                        @*   <span class="card-title h5 text-dark opacity-75 text-uppercase text-center fw-bolder">
+                                        @product.ListPrice.ToString("c")
+                                    </span> *@
+                                        @*    <span class="text-decoration-line-through">
+                                        @product.ListPrice.ToString("c")
+                                    </span> *@
+                                    </p>
+                                </div>
+                                @*   <div class="pl-1">
+                                <p class="text-dark text-opacity-75 text-center fw-bolder">
+                                    最低價格:
+                                    <span>
+                                        @product.Price100.ToString("c")
+                                    </span>
+                                </p>
+                            </div> *@
+                            </div>
+                            <div class="fw-bolder text-bg-dark ">
+                                <a class="blink_input" asp-action="Details"
+                                   asp-route-productId="@product.Id"
+                                   class="btn btn-primary bg-gradient border-0 form-control fw-bolder text-bg-dark ">
+                                    詳細內容
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div id="autoLogoutWarning">
+        <div class="modal-content">
+            <h4 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h4>
+            <p style="color:blue;font-size:xx-large;font-weight:bolder">您已經有一段時間沒有操作,將於 <span style="color:red;font-size:larger" id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後自動導到本會[問卷調查](Index1)。</p>
+            <button onclick="stayLoggedIn()" class="btn btn-primary">[繼續使用]</button>
+        </div>
+    </div>
+    <button id="goTopBtn" class="btn btn-danger">回到頂部</button>
+    <div id="workDurationWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#fff; padding:2rem 2.5rem; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; max-width:90vw;">
+            <p style="color:blue;font-size:xx-large;font-weight:bolder">您已經有一段時間沒有操作,您的連線將於 <span style="color:red;font-size:larger" id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後結束，系統將導到[本會[問卷調查]](Index1)。</p>
+        </div>
+    </div>
+    <footer class="text-center text-white bg-secondary bg-gradient py-3">
+        <div class="container">
+            <p class="mb-0">© 2025 財團法人台中市私立銀同碧湖陳氏社會福利基金會. All rights reserved.</p>
+            <p class="mb-0">資料及照片來源:財團法人台中市私立銀同碧湖陳氏社會福利基金會</p>
+            <p class="mb-0">Powered by ASP.NET Core MVC</p>
+        </div>
+    </footer>
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script>
+
+       /* Hide Video modal initially */
+         $(document).ready(function () {
+               document.getElementById('openingFilmModal').style.display = 'none';
+          });
+
+      // Clicking openFilmBtn to start the opening film
+      document.getElementById('openFilmBtn').onclick = function() {
+          document.getElementById('openingFilmModal').style.display = 'flex';
+          document.getElementById('openingFilmVideo').play();
+      };
+
+      // Clicking anywhere on the modal closes it and stops the video
+      document.getElementById('openingFilmModal').onclick = function(e) {
+          // Only close if clicking outside the video
+           if (e.target === this) {
+              this.style.display = 'none';
+           //   document.getElementById('openingFilmVideo').stop();
+              document.getElementById('openingFilmVideo').currentTime = 0;
+          }
+      };
+
+      // Close video Modal when it ends
+      document.getElementById('openingFilmVideo').onended = function() {
+          var modal = document.getElementById('openingFilmModal');
+          modal.style.display = 'none';
+          this.currentTime = 0;
+      };
+    // Clicking openFilmBtn to start the opening film
+
+           // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'T' || e.key === 't') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            if (e.key === 'B' || e.key === 'b') {
+                e.preventDefault();
+                window.history.back();
+            }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F1' || e.key === 'Q' || e.key === 'q') {
+                e.preventDefault();
+                openQueryModal();
+            }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'S' || e.key === 's') {
+                e.preventDefault();
+                openYesNoModal();
+            }
+        });
+
+           // Go to Top button logic
+        const goTopBtn = document.getElementById('goTopBtn');
+        window.addEventListener('scroll', function () {
+            goTopBtn.style.display = window.scrollY > 200 ? 'block' : 'block';
+        });
+        goTopBtn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+</script>
+
+<script type="text/javascript">
+    window.AUTO_LOGOUT_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.AUTO_LOGOUT_MINUTE));
+    window.WARNING_BEFORE_LOGOUT_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WARNING_BEFORE_LOGOUT_SECOND));
+    window.WORK_DURATION_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.Work_Duration));
+    window.WORK_WARNING_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WORK_WARNING_SECONDS));
+</script>
+<script src="~/js/AutoLogout.js" asp-append-version="true"></script>

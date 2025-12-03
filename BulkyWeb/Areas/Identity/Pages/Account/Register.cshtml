@@ -1,0 +1,144 @@
+﻿@page
+@model RegisterModel
+
+
+<div class="card shadow border-0 mt-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                @if (User.IsInRole(SD.Role_Admin)) {
+                    <h5 class="py-2 text-white fw-bolder">註冊 - 管理入口</h5>
+                }
+                else{
+                    <h5 class="py-2 text-white fw-bolder">註冊</h5>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <div class="row pt-3">
+            <div class="col-md-12">
+                <form id="registerForm" class="row" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <h3 class="border-bottom pb-3 mb-4 text-secondary text-center fw-bolder">建立新帳號.</h3>
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    <div class="form-floating mb-3 col-md-12">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email" class="ms-2 text-muted fw-bolder">電子信箱</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6">
+                        <input asp-for="Input.Name" class="form-control" placeholder="name@example.com" />
+                        <label asp-for="Input.Name" class="ms-2 text-muted fw-bolder">全名</label>
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6" style="display:none;">
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="name@example.com" value="電話1234" />
+                        <label asp-for="Input.PhoneNumber" class="ms-2 text-muted fw-bolder">電話</label>
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password"  />
+                        <label asp-for="Input.Password" class="fw-bolder" style="color:red;">密碼(至少6位;大、小寫字母1個;1個特殊符號(#,*),如:'123Aa#')</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password"  />
+                        <label asp-for="Input.ConfirmPassword" class="ms-2 text-muted fw-bolder">密碼確認</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                   
+                    <div class="form-floating mb-3 col-md-6" style="display:none;">
+                        <input asp-for="Input.StreetAddress" class="form-control" placeholder="name@example.com" value="地址*****" />
+                        <label asp-for="Input.StreetAddress" class="ms-2 text-muted fw-bolder">地址</label>
+                        <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6" style="display:none;">
+                        <input asp-for="Input.City" class="form-control" placeholder="name@example.com" value="城巿*****" />
+                        <label asp-for="Input.City" class="ms-2 text-muted fw-bolder">城巿</label>
+                        <span asp-validation-for="Input.City" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6" style="display:none;">
+                        <input asp-for="Input.State" class="form-control" placeholder="name@example.com" value="國家*****" />
+                        <label asp-for="Input.State" class="ms-2 text-muted fw-bolder">國家</label>
+                        <span asp-validation-for="Input.State" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6" style="display:none;">
+                        <input asp-for="Input.PostalCode" class="form-control" placeholder="name@example.com" value="郵遞區號*****" />
+                        <label asp-for="Input.PostalCode" class="ms-2 text-muted">郵遞區號</label>
+                        <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                    </div>
+                    @if (User.IsInRole(SD.Role_Admin))
+                    {
+                        <div class="form-floating mb-3 col-md-6 fw-bolder">
+                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                                <option disabled selected>-請選權限-</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3 col-md-6 fw-bolder">
+                            <select asp-for="Input.CompanyId" style="display:block;" asp-items="@Model.Input.CompanyList" class="form-select">
+                                <option disabled selected>-請選宗親會-</option>
+                            </select>
+                        </div>
+                    }
+                    <div class="col-12">
+                        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary fw-bolder">註冊</button>
+                    </div>
+                </form>
+            </div>
+            @if (!User.IsInRole(SD.Role_Admin))
+            {
+                <div class="col-md-12 p-3 text-center fw-bolder">
+                    <section>
+                        <p class="divider-text d-flex pt-3">or</p>
+
+                        @{
+                            if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                            {
+                                <div>
+                                    <p>
+                                        沒有外部認證系統設定.請參考文件<a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                            關於如何建置支援外部系統登入認證
+                                        </a>.
+                                    </p>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                    <div>
+                                        <p>
+                                            @foreach (var provider in Model.ExternalLogins!)
+                                            {
+                                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="用你 @provider.DisplayName 帳號登入">@provider.DisplayName</button>
+                                            }
+                                        </p>
+                                    </div>
+                                </form>
+                            }
+                        }
+                    </section>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#Input_Role').change(function(){
+                var selection = $('#Input_Role Option:Selected').text();
+                if(selection=='Company宗親會員'){
+                    $('#Input_CompanyId').show();
+                }
+                else{
+                    $('#Input_CompanyId').hide();
+                }
+            })
+        })
+    </script>
+}

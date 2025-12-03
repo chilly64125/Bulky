@@ -1,0 +1,71 @@
+﻿@page
+@using Microsoft.AspNetCore.Http.Features
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "雙重認證（2FA）";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3>@ViewData["Title"]</h3>
+@{
+    var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+    @if (consentFeature?.CanTrack ?? true)
+    {
+        @if (Model.Is2faEnabled)
+        {
+            if (Model.RecoveryCodesLeft == 0)
+            {
+                <div class="alert alert-danger">
+                    <strong>您沒有恢復碼。</strong>
+                    <p>您必須 <a asp-page="./GenerateRecoveryCodes">產生一組新的恢復碼</a> 然後才可以使用恢復碼登入。</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft == 1)
+            {
+                <div class="alert alert-danger">
+                    <strong>您有一組恢復碼。</strong>
+                    <p>您能 <a asp-page="./GenerateRecoveryCodes">產生一組新的恢復碼</a>.</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft <= 3)
+            {
+                <div class="alert alert-warning">
+                    <strong>您有 @Model.RecoveryCodesLeft 組恢復碼</strong>
+                    <p>您應 <a asp-page="./GenerateRecoveryCodes">產生一組新的恢復碼</a>.</p>
+                </div>
+            }
+
+            if (Model.IsMachineRemembered)
+            {
+                <form method="post" style="display: inline-block">
+                    <button type="submit" class="btn btn-primary">忘記此瀏覽器</button>
+                </form>
+            }
+            <a asp-page="./Disable2fa" class="btn btn-primary">Disable 2FA</a>
+            <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary">重置恢復碼</a>
+        }
+
+        <h4>Authenticator app</h4>
+        @if (!Model.HasAuthenticator)
+        {
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">新增身份驗證器應用程式</a>
+        }
+        else
+        {
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">設定身份驗證器應用程式</a>
+            <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-primary">重置身份驗證器應用程式</a>
+        }
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>未接受隱私權和 Cookie 政策 Privacy and cookie policy have not been accepted.</strong>
+            <p>您必須先接受政策，然後才能啟用雙重身分驗證 You must accept the policy before you can enable two factor authentication.</p>
+        </div>
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

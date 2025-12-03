@@ -1,0 +1,48 @@
+﻿@model List<EventRegistration>
+
+<div class="card shadow border-0 my-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">活動報名清單</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4  fw-bolder">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="EventRegistration" asp-action="Upsert" class="btn btn-primary fw-bolder">
+                    <i class="bi bi-plus-circle fw-bolder"></i>  新增報名資料
+                </a>
+            </div>
+        </div>
+
+        <table id="tblData" class="table table-bordered table-striped col-12 col-md-6 fw-bolder" style="width:100%">
+            <thead class="table table-bordered table-striped col-12 col-md-6 fw-bolder">
+                <tr class="table table-bordered table-striped col-12 col-md-6 fw-bolder">
+                    <th>名稱</th>
+                    <th>活動日</th>
+                    <th>報名日</th> 
+                @*  <th>個人</th>
+                    <th>桌數(10人)</th>
+                    <th>素食</th>
+                    <th>80歲</th>
+                    <th>志工</th>
+                    <th>成年禮</th>
+                    <th>總人數</th>
+                    <th>總費用</th> *@
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/EventRegistration.js"></script>
+    <script src="~/js/getUserName.js"></script>
+}
+

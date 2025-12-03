@@ -1,0 +1,294 @@
+﻿@using System.Text.Json
+@{
+
+    var builder = WebApplication.CreateBuilder();
+    ViewBag.PublishDate = builder.Configuration.GetValue<string>("PublishDate");
+    ViewData["Title"] = "財團法人台中市私立銀同碧湖陳氏社會福利基金會-祖先塔位暨牌位管理資訊系統（準預覽版本）";
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    // Auto logout settings
+    float? AUTO_LOGOUT_MINUTE = builder.Configuration.GetSection("Logout_Duration:AUTO_LOGOUT_MINUTE").Get<float>();
+    int? WARNING_BEFORE_LOGOUT_SECOND = builder.Configuration.GetSection("Logout_Duration:WARNING_BEFORE_LOGOUT_SECOND").Get<int>();
+
+    // If AUTO_LOGOUT_MINUTE or WARNING_BEFORE_LOGOUT_SECOND is not set, use default values
+    if (AUTO_LOGOUT_MINUTE == null || WARNING_BEFORE_LOGOUT_SECOND == null)
+    {
+        // Default values if not set in configuration
+        AUTO_LOGOUT_MINUTE = (float?)0.5; // 30 minutes
+        WARNING_BEFORE_LOGOUT_SECOND = 10; // 10 seconds
+    }
+    else
+        // Set ViewBag for use in the view
+        ViewBag.AUTO_LOGOUT_MINUTE = AUTO_LOGOUT_MINUTE;
+    ViewBag.WARNING_BEFORE_LOGOUT_SECOND = WARNING_BEFORE_LOGOUT_SECOND;
+
+    // Work_Duration is used for the duration of work in the system
+    float? Work_Duration = builder.Configuration.GetSection("Work_Duration").Get<float>();
+    int? WORK_WARNING_SECONDS = builder.Configuration.GetSection("WORK_WARNING_SECONDS").Get<int>();
+
+    // If Work_Duration is not set, use default value
+    if (Work_Duration == null)
+    {
+        // Default value if not set in configuration
+        Work_Duration = (float?)1.0; // 1 mins
+    }
+    ViewBag.Work_Duration = Work_Duration;
+    // Set ViewBag for WORK_WARNING_SECONDS for use in the view
+    if (WORK_WARNING_SECONDS == null)
+    {
+        // Default value if not set in configuration
+        WORK_WARNING_SECONDS = 60; // 60 seconds
+    }
+    ViewBag.WORK_WARNING_SECONDS = WORK_WARNING_SECONDS; // Default value will be null if not set
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <title>陳氏宗祠-牌位清單</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Optionally include Bootstrap CSS for better styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
+    @*   /////////提供-轉成EXCEL功能 2025 07 07 10:00/////////////// *@
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- 開頭設定CSS連結路徑 -->
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <div id="txtblnk1" class="text-center fw-bolder blink">
+            <p id="work_duration_top" style="font-size:larger;color:green;font-weight:bolder" class="text-bg-info align-content-center fw-bolder">@TempData["Success"]</p>
+        </div>
+    </header>
+    <div class="card shadow border-0 my-4 fw-bolder">
+        <table>
+            <tr class="text-left">
+                <td class="left-align text-left">
+                    <div class="row fw-bolder">
+                        <div class="col-12 py-2  text-left fw-bolder">
+                            <a class="blink_input" id="gotoKindness1" style="font-size:x-large" asp-area="Admin" asp-controller="Kindness" asp-action="PositionQuery">
+                                回[懷恩塔-祖先塔位]查詢
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    @*  <div style="display:none;" class="card-header bg-info bg-gradient ml-0 py-3 fw-bolder text-left">
+        <div class="row fw-bolder text-left">
+            <button id="openFilmBtn" style="font-size:x-large" class="text-white btn btn-info" title="點選畫面任何其他地方終止播放!">播放[牌位查詢]-教學影片</button>
+        </div>
+    </div> *@
+    <div class="card shadow border-0 my-4 fw-bolder" role="main">
+        <div class="card-header bg-secondary bg-gradient py-3 fw-bolder">
+            <div class="row fw-bolder">
+                <div class="col-12 text-center fw-bolder">
+                    <h1 class="text-white py-2 fw-bolder">陳氏宗祠-牌位清單</h1>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-6"></div>
+            </div>
+            @* 2025 08 27 01:12 搜尋祖先姓名 *@
+            <div id="searchWarning" style="color:red; font-weight:bold; display:none;"></div>
+            <input type="text" id="searchBox" class="form-control blink-search" placeholder="搜尋祖先姓名..." style="width:200px; display:inline-block; margin-bottom:10px;" />
+            <button id="searchBtn" class="btn btn-primary mb-2" type="button">查詢</button>
+            @*   /////////提供-轉成EXCEL功能 2025 08 27 10:11/////////////// *@
+            <button id="exportExcelBtn" class="btn btn-success mb-2" title="將[宗祠牌位]匯出成Excel保存">匯出Excel-保存</button>
+            @*   /////////提供-轉成EXCEL功能 2025 08 27 10:110/////////////// *@
+
+
+            <div class="table-responsive">
+                <table id="tblData" class="table table-bordered table-striped fw-bolder align-middle text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>牌位顯示</th>
+                            <th>祖先</th>
+                            @*     <th>牌位</th> *@
+                            <th>申請</th>
+                            @*        <th>關係</th>
+                            <th>電話</th>                       *@    
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="autoLogoutWarning">
+        <div class="modal-content">
+            <h4 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h4>
+            <p style="color:blue;font-size:larger;font-weight:bolder">您已經有一段時間沒有操作，將於 <span style="color:red;font-size:larger" id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後自動導到本會[問卷調查](A-PQ)。</p>
+            <button onclick="stayLoggedIn()" class="btn btn-primary">[繼續使用]</button>
+        </div>
+    </div>
+    <button id="goTopBtn" class="btn btn-danger">回到頂部</button>
+    <div id="workDurationWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#fff; padding:2rem 2.5rem; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; max-width:90vw;">
+            <h2 style="color:lightpink">為資料安全,請於每次新增.修改.刪除資料後，請記得[務必]進行[備份資料]: 匯出EXCEL!! 以供保存!!</h2>
+            <p style="color:blue;font-size:x-large;font-weight:bolder">您已經有一段時間沒有操作,您的連線將於 <span style="color:red;font-size:larger" id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後結束，系統將導到[本會[問卷調查]](A-PQ)。</p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+         var dataTable;
+         // $(document).ready(function () {
+         //     loadDataTable();
+         // });
+        //* 2025 08 27 01:12 搜尋祖先姓名
+        // Trigger loadDataTable on search
+        // $('#searchBox').on('input', function () {
+        //     loadDataTable();
+        // //$('#tblData').DataTable().ajax.reload();
+        // });
+
+            $('#searchBtn').on('click', function () {
+            var searchValue = $('#searchBox').val().trim();
+            if (!searchValue) {
+                $('#searchWarning').text('請輸入祖先姓名(關鍵字)後再查詢！').show();
+                $('#searchBox').focus();
+                return;
+            } else {
+                $('#searchWarning').hide();
+            }
+            if ($.fn.dataTable.isDataTable('#tblData')) {
+                $('#tblData').DataTable().destroy();
+            }
+            loadDataTable();
+        });
+
+         function loadDataTable() {
+             dataTable = $('#tblData').DataTable({
+                 ajax: {
+                     "url": "/admin/ancestral/getall",
+                     "type": "GET",
+                    data: function (d) {    //* 2025 08 27 01:12 搜尋祖先姓名
+                        d.search = $('#searchBox').val();
+                      }
+                         
+                 },
+                 "columns": [
+                         {
+                          data: 'ancestralPositionId',
+                          "render": function (data) {
+                              return `<div class="w-75 btn-group" role="group">
+                                  <a href="/admin/ancestral/DisplayPosition?AncestralPositionId=${data}" class="btn btn-primary mx-2" style="font-size:20px;width:30px;height:30px" aria-label="顯示牌位">
+                                      <i class="bi bi-search"></i> 牌位顯示
+                                  </a>
+                              </div>`;
+                          },
+                          "width": "30%"
+                      },
+                     { "data": "name", "width": "20%" },
+                     // { "data": "positionId", "width": "30%" },
+                     { "data": "applicant", "width": "20%" },
+                     // { "data": "relation", "width": "8%" },
+                     // { "data": "mobile_Tel", "width": "12%" }
+                 ]
+             });
+         }
+        $.fn.dataTable.ext.errMode = 'throw';
+      
+
+          //2025 08 06 23:33 Find the "label, span, button, th, td, p" with inner text "search:"
+          window.onload = function()
+          {
+              $("label, span, button, th, td, p").filter(function() {
+                  return $(this).text().trim().toLowerCase() === "search:";
+               }).addClass("blink_user_search");
+
+                //find the input field with type 'search' and make its border thicker and blink
+              var searchInput = document.getElementById('dt-search-0');
+              if (searchInput) {
+                  searchInput.classList.add('blink-search');
+              }
+          };
+
+
+                  // Keyboard shortcuts
+         document.addEventListener('keydown', function (e) {
+             if (e.key === 'T' || e.key === 't') {
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
+             }
+             if (e.key === 'B' || e.key === 'b') {
+                 e.preventDefault();
+                 window.history.back();
+             }
+         });
+         // document.addEventListener('keydown', function (e) {
+         //     if (e.key === 'F1' || e.key === 'Q' || e.key === 'q') {
+         //         e.preventDefault();
+         //         openQueryModal();
+         //     }
+         // });
+         // document.addEventListener('keydown', function (e) {
+         //     if (e.key === 'S' || e.key === 's') {
+         //         e.preventDefault();
+         //         openYesNoModal();
+         //     }
+         // });
+
+         // Go to Top button logic
+         const goTopBtn = document.getElementById('goTopBtn');
+         window.addEventListener('scroll', function () {
+             goTopBtn.style.display = window.scrollY > 200 ? 'block' : 'block';
+         });
+         goTopBtn.addEventListener('click', function () {
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+         });
+
+        @*   /////////提供-匯出 EXCEL功能 2025 07 07 10:00/////////////// *@
+                  $('#exportExcelBtn').on('click', function () {
+                 var data = $('#tblData').DataTable().rows({ search: 'applied' }).data().toArray();
+                 var headers = ["祖先", "側", "區", "層", "編號", "牌位", "申請人", "關係", "電話"];
+                 var exportData = [headers];
+                 data.forEach(function(row) {
+                     exportData.push([
+                         row.name,
+                         row.side,
+                         row.section,
+                         row.level,
+                         row.position,
+                         row.positionId,
+                         row.applicant,
+                         row.relation,
+                         row.mobile_Tel
+                     ]);
+                 });
+                 var ws = XLSX.utils.aoa_to_sheet(exportData);
+                 var wb = XLSX.utils.book_new();
+                 XLSX.utils.book_append_sheet(wb, ws, "宗祠");
+
+                      // Add date-time to file name
+                 var now = new Date();
+                 var yyyy = now.getFullYear();
+                 var mm = String(now.getMonth() + 1).padStart(2, '0');
+                 var dd = String(now.getDate()).padStart(2, '0');
+                 var hh = String(now.getHours()).padStart(2, '0');
+                 var min = String(now.getMinutes()).padStart(2, '0');
+                 var ss = String(now.getSeconds()).padStart(2, '0');
+                 var dateTimeStr = yyyy + mm + dd + '_' + hh + min + ss;
+
+                 var fileName = "陳氏宗祠-牌位_匯出檔_" + dateTimeStr + ".xlsx";
+                 XLSX.writeFile(wb, fileName);
+
+             });
+              @*   /////////提供-匯出EXCEL功能 2025 07 07 10:00/////////////// *@
+
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+    window.AUTO_LOGOUT_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.AUTO_LOGOUT_MINUTE));
+    window.WARNING_BEFORE_LOGOUT_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WARNING_BEFORE_LOGOUT_SECOND));
+    window.WORK_DURATION_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.Work_Duration));
+    window.WORK_WARNING_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WORK_WARNING_SECONDS));
+</script>
+<script src="~/js/AutoLogout.js" asp-append-version="true"></script>

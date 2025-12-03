@@ -1,0 +1,75 @@
+=====================
+12/2/2025 2:16:08 PM
+LimitedFunctionality
+System.AggregateException: Project system data flow 'ProjectBuildSubscriptionService' closed because of an exception.
+The JSON-RPC connection with the remote party was lost before the request could complete. (The JSON-RPC connection with the remote party was lost before the request could complete.)
+---> (Inner Exception #0) StreamJsonRpc.ConnectionLostException: The JSON-RPC connection with the remote party was lost before the request could complete.
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync(JsonRpcRequest request, Type expectedResultType, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync[TResult](RequestId id, String targetName, IReadOnlyList`1 arguments, IReadOnlyList`1 positionalArgumentDeclaredTypes, IReadOnlyDictionary`2 namedArgumentDeclaredTypes, CancellationToken cancellationToken, Boolean isParameterObject)
+   at Microsoft.VisualStudio.ProjectSystem.Server.BuildManagerServerAdapter.Microsoft.VisualStudio.ProjectServices.IBuildManager.BeginBuildAsync(BuildParameters buildParameters)
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuildScheduler.StartBuildAsync()
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuildScheduler.SubmitNextAsync()
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuilder.BuildAsync(IEnumerable`1 targets, IEnumerable`1 taskItemsToReturn, IEnumerable`1 propertiesToReturn, IEnumerable`1 hostObjects, IEnumerable`1 loggers, IBuildResultMetadataFilter filter, BuildPriority priority, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuilderLifetimeHelper.<>c__DisplayClass17_0.<<BuildAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuilderLifetimeHelper.BuildAsync(IEnumerable`1 targets, IEnumerable`1 hostObjects, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuildAsync(IEnumerable`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuildAsync(IEnumerable`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Build.DesignTimeBuildManagerService.BuildUsingDesignTimeBuildServiceAsync(IReadOnlyList`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Build.DesignTimeBuildManagerService.BuildAsync(IReadOnlyList`1 targets, IBuildResultMetadataFilter buildResultMetadataFilter, IEnumerable`1 loggers, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.RunDesignTimeBuildAsync(OrderedTargetsSet targets, IProjectSnapshotWithCapabilities projectSnapshot, IImmutableDictionary`2 buildProperties, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean isPartialBuild, Boolean allowToReadCache, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.<>c__DisplayClass96_1.<<UpdateSnapshotCoreAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.CommonProjectSystemTools.<>c__DisplayClass21_0`1.<<LoadedProjectWithCustomizedFactoryAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.UpdateSnapshotCoreAsync(IProjectVersionedValue`1 source, IImmutableSet`1 subscriptions, IProjectVersionedValue`1 previousResult, IProjectVersionedValue`1 previousSource, Boolean isUpdatingSubscription)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.CustomizableBlockSubscriberBase`3.UpdateSnapshotAsync(TSource source)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.CustomizableBlockSubscriberBase`3.<Initialize>b__28_0(TSource s)
+   at Microsoft.VisualStudio.ProjectSystem.TransformBlockSlim`2.TransformManyBlockSlimAsync.ProcessInputAsync(TInput input)
+   at Microsoft.VisualStudio.ProjectSystem.DataReceivingBlockSlim`1.ProcessInputQueueAsync(InputDataBuffer inputQueue)
+---> System.OperationCanceledException: The operation was canceled.
+   at System.Threading.CancellationToken.ThrowOperationCanceledException()
+   at System.Threading.CancellationToken.ThrowIfCancellationRequested()
+   at StreamJsonRpc.MessageHandlerBase.WriteAsync(JsonRpcMessage content, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.SendAsync(JsonRpcMessage message, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync(JsonRpcRequest request, Type expectedResultType, CancellationToken cancellationToken)
+--- End of inner exception stack trace ---
+<--- (Inner Exception #0) 
+===================
+12/2/2025 2:16:08 PM
+LimitedFunctionality
+System.AggregateException: Project system data flow 'ProjectBuildSnapshotService' closed because of an exception.
+The JSON-RPC connection with the remote party was lost before the request could complete. (The JSON-RPC connection with the remote party was lost before the request could complete.)
+---> (Inner Exception #0) StreamJsonRpc.ConnectionLostException: The JSON-RPC connection with the remote party was lost before the request could complete.
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync(JsonRpcRequest request, Type expectedResultType, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync[TResult](RequestId id, String targetName, IReadOnlyList`1 arguments, IReadOnlyList`1 positionalArgumentDeclaredTypes, IReadOnlyDictionary`2 namedArgumentDeclaredTypes, CancellationToken cancellationToken, Boolean isParameterObject)
+   at Microsoft.VisualStudio.ProjectSystem.Server.BuildManagerServerAdapter.Microsoft.VisualStudio.ProjectServices.IBuildManager.BeginBuildAsync(BuildParameters buildParameters)
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuildScheduler.StartBuildAsync()
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuildScheduler.SubmitNextAsync()
+   at Microsoft.VisualStudio.ProjectServices.DesignTimeBuilder.BuildAsync(IEnumerable`1 targets, IEnumerable`1 taskItemsToReturn, IEnumerable`1 propertiesToReturn, IEnumerable`1 hostObjects, IEnumerable`1 loggers, IBuildResultMetadataFilter filter, BuildPriority priority, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuilderLifetimeHelper.<>c__DisplayClass17_0.<<BuildAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuilderLifetimeHelper.BuildAsync(IEnumerable`1 targets, IEnumerable`1 hostObjects, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuildAsync(IEnumerable`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Server.DesignTimeBuilderService.BuildAsync(IEnumerable`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Build.DesignTimeBuildManagerService.BuildUsingDesignTimeBuildServiceAsync(IReadOnlyList`1 targets, IEnumerable`1 loggers, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Build.DesignTimeBuildManagerService.BuildAsync(IReadOnlyList`1 targets, IBuildResultMetadataFilter buildResultMetadataFilter, IEnumerable`1 loggers, Boolean useHostObjects, BuildOptions buildOptions, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.RunDesignTimeBuildAsync(OrderedTargetsSet targets, IProjectSnapshotWithCapabilities projectSnapshot, IImmutableDictionary`2 buildProperties, IBuildResultMetadataFilter buildResultMetadataFilter, Boolean isPartialBuild, Boolean allowToReadCache, CancellationToken cancellationToken)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.<>c__DisplayClass96_1.<<UpdateSnapshotCoreAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.CommonProjectSystemTools.<>c__DisplayClass21_0`1.<<LoadedProjectWithCustomizedFactoryAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.VisualStudio.ProjectSystem.Designers.ProjectBuildSnapshotService.UpdateSnapshotCoreAsync(IProjectVersionedValue`1 source, IImmutableSet`1 subscriptions, IProjectVersionedValue`1 previousResult, IProjectVersionedValue`1 previousSource, Boolean isUpdatingSubscription)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.CustomizableBlockSubscriberBase`3.UpdateSnapshotAsync(TSource source)
+   at Microsoft.VisualStudio.ProjectSystem.Designers.CustomizableBlockSubscriberBase`3.<Initialize>b__28_0(TSource s)
+   at Microsoft.VisualStudio.ProjectSystem.TransformBlockSlim`2.TransformManyBlockSlimAsync.ProcessInputAsync(TInput input)
+   at Microsoft.VisualStudio.ProjectSystem.DataReceivingBlockSlim`1.ProcessInputQueueAsync(InputDataBuffer inputQueue)
+---> System.OperationCanceledException: The operation was canceled.
+   at System.Threading.CancellationToken.ThrowOperationCanceledException()
+   at System.Threading.CancellationToken.ThrowIfCancellationRequested()
+   at StreamJsonRpc.MessageHandlerBase.WriteAsync(JsonRpcMessage content, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.SendAsync(JsonRpcMessage message, CancellationToken cancellationToken)
+   at StreamJsonRpc.JsonRpc.InvokeCoreAsync(JsonRpcRequest request, Type expectedResultType, CancellationToken cancellationToken)
+--- End of inner exception stack trace ---
+<--- (Inner Exception #0) 
+===================

@@ -1,0 +1,143 @@
+﻿@model KindnessPosition
+
+<div class="card shadow border-0 my-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3 fw-bolder">
+        <div class="row fw-bolder">
+            <div class="col-12 text-center fw-bolder">
+                <h2 class="text-white py-2"> @(Model.KindnessPositionId != 0 ? "修改" : "新增") 祖先塔位</h2>
+        </div>
+    </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="KindnessPositionId" hidden />
+            <div class="row fw-bolder">
+                <div class="col-12 fw-bolder">
+                    <div class="border p-3 fw-bolder">
+                        <!--*<div asp-validation-summary="ModelOnly"></div>*-->
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Name" class="form-control border-0 shadow" />
+                            <label asp-for="Name" class="ms-2"></label>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>  
+      @*                   <!--樓層 Floor-->
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Floor" class="form-select border-0 shadow ">
+                                <option value="1樓">1樓</option>
+                                <option value="2樓">2樓</option>
+                                <option value="3樓">3樓</option>
+                            </select>
+                            <label asp-for="Floor" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Floor" class="text-danger"></span>
+                        </div>
+                       <!--區 Section-->
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Section" class="form-select border-0 shadow ">
+                                <option value="左">左</option>                       
+                                <option value="中">中</option>             
+                                <option value="右">右</option>
+                            </select>
+                            <label asp-for="Section" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Section" class="text-danger"></span>
+                        </div>
+
+                        <!--層 Level-->
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Level" class="form-select border-0 shadow ">
+                                <option value="下1">下1</option>
+                                <option value="下2">下2</option>
+                                <option value="下3">下3</option>
+                                <option value="中4">中4</option>
+                                <option value="上5">上5</option>
+                                <option value="上6">上6</option>
+                                <option value="上7">上7</option>
+                            </select>
+                            <label asp-for="Level" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Level" class="text-danger"></span>
+                        </div>
+
+                                                <!--塔位 Position-->
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Position" class="form-select border-0 shadow ">
+                                <option value="左1">左1</option>
+                                <option value="左2">左2</option>
+                                <option value="左3">左3</option>
+                                <option value="中4">中4</option>
+                                <option value="右5">右5</option>
+                                <option value="右6">右6</option>
+                                <option value="右7">右7</option>
+                            </select>
+                            <label asp-for="Position" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Position" class="text-danger"></span>
+                        </div> 
+                *@
+                     
+                        @*申請人 Applicant *@
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Applicant" class="form-control border-0 shadow" />
+                            <label asp-for="Applicant" class="ms-2"></label>
+                            <span asp-validation-for="Applicant" class="text-danger"></span>
+                        </div>
+
+                        @*關係 Relation *@
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="Relation" class="form-select border-0 shadow ">
+                                <option value="父子">父子</option>
+                                <option value="父女">父女</option>
+                                <option value="母子">母子</option>
+                                <option value="母女">母女</option>
+                                <option value="夫妻">夫妻</option>
+                                <option value="兄弟">兄弟</option>
+                                <option value="姐妹">姐妹</option>
+                                <option value="兄妹">兄妹</option>
+                                <option value="姐弟">姐弟</option>
+                                <option value="叔姪">叔姪</option>
+                                <option value="朋友">朋友</option>
+                                <option value="其他">其他</option>
+                            </select>
+                            <label asp-for="Relation" class="ms-2 fw-bolder"></label>
+                            <span asp-validation-for="Relation" class="text-danger"></span>
+                        </div>
+                    
+                        @*手機/巿電 Mobile_Tel*@
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Mobile_Tel" class="form-control border-0 shadow" />
+                            <label asp-for="Mobile_Tel" class="ms-2"></label>
+                            <span asp-validation-for="Mobile_Tel" class="text-danger"></span>
+                        </div>                                               
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
+                                @if (Model.KindnessPositionId != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">修改</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">新增</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="Kindness" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    回清單
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>               
+            </div>           
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+    @{
+    <partial name="_ValidationScriptsPartial"/>
+    }
+}

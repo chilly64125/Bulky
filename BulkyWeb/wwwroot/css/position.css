@@ -1,0 +1,271 @@
+﻿/*邊框設定
+當我們使用元素樣式為 box-sizing: border-box;，這個元素的內距和邊框將不會增加元素本身的寬度。
+參考資料*/
+* {
+    box-sizing: border-box;
+}
+
+/*整體排列
+為了讓整體背景顏色、字體一致，排列置中，採用display: flex，讓物件於中央[橫向]集中*/
+
+body {
+    background-color: darkslategrey;
+    color:blue ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+/*    height: 200vh;*/
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    border-block:solid;
+}
+
+/*下拉式選單
+用margin的方式讓選單與上下各保持一點距離*/
+
+/* 電影選擇區 */
+.position-container {
+    margin: 20px 0;
+    /* 螢幕與座位區的整體配置 */
+    perspective: 100px;
+    margin-bottom: 20px;
+}
+
+
+    /* 電影選項欄位的美工 */
+    .position-container select {
+        background-color: lavender;
+        border: 2px;
+        border-radius: 5px;
+        font-size: 10px;
+        margin-left: 10px;
+        padding: 5px 5px 5px 5px;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+
+/*座位區設計
+主要掌握幾個關鍵點:
+
+先匡出一個區域來包含螢幕跟座位
+座位的美工與原角的修飾
+使用nth-of-type()、nth-last-of-type()來排列座位*/
+
+#RootDiv_Ancestral {
+    display: flex; /*横向整齊排列*/
+}
+
+#RootDiv_Kindness {
+    display: flex;
+    flex-direction: column; /*縱向整齊排列*/
+}
+
+.floor {
+    font-family: Arial; 
+    color:lawngreen;
+    border: solid blue 4px;
+    background-color: coral;
+    display: flex; /*横向整齊排列*/
+}
+
+.section {
+    font-family: Arial;
+    color:lawngreen;
+    border: solid blue 4px;
+    background-color: saddlebrown;
+    display: ta;
+}
+
+.level {
+    font-family: Arial;
+    color: darkgreen;
+    border: solid blue 4px;
+    background-color: lavender;
+    display: flex; /*横向整齊排列*/
+    align-content:center;
+}
+
+/* 座位的美工 */
+.position {
+    font-family: Arial;
+    color: white;
+    border: solid blue 3px;
+    background-color: green;
+    height: 130px;
+    width: 100px;
+    margin: 5px;
+    text-align: left;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.selected {
+        background-color: skyblue;
+    }
+
+.occupied {
+        color:white;
+        background-color: red;
+    }
+
+    /* 選取第n個元素 */
+    .position:nth-of-type(2) {
+        margin-right: 15px;
+    }
+    /* 選取最後數來第n個元素 */
+    .position:nth-last-of-type(2) {
+        margin-left: 16px;
+    }
+
+
+/* 圖例的美工 */
+.showcasePosition {
+    font-family: Arial;
+    border: solid blue 3px;
+    background-color: green;
+    height: 30px;
+    width: 30px;
+    margin: 5px;
+    text-align: left;
+  
+}
+
+    .showcaseSelected {
+        background-color: skyblue;
+    }
+
+    .showcaseOccupied {
+        background-color: red;
+    }
+
+/*座位區動畫
+使用hover功能，分別針對已經被占走和空缺的位子進行動畫設計*/
+
+    /* 使用hover的功能，讓游標指到可選取的座位時將會放大1.2倍 */
+.position-container .occupied:hover {
+    cursor: default;
+    transform: scale(2.0);
+}
+
+/* 讓showcase(範例)的圖示呈現靜止狀態 */
+.position-container .position:not(.occupied):hover {
+    cursor: pointer;
+    transform: scale(2.0);
+}
+
+
+/*座位狀態範例設計
+主要針對圖案與文字的排列是否整齊*/
+
+/* 範例區塊的文字與配置 */
+.showcase {
+    background: rgba(0,0,0,0.1);
+    padding: 5px 5px;
+    border-radius: 15px;
+    color: blueviolet;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+    /* 排列範例內的物件 */
+    /* 使用flex讓物件並排 */
+    .showcase li .floor .section{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+    }
+
+        /* 讓範例內的文字跟圖示有些區隔 */
+       .showcase li small {
+            margin-left: 2px;
+        }
+
+
+
+/* 使用flex讓每列座位横向整齊排列 */
+.row {
+    display: flex;  /*横向整齊排列*/
+}
+
+
+
+/*價格顯示文字*/
+
+p.text {
+    color: darkgreen;
+    font-size: 20px;
+    margin: 10px 0;
+    text-align: left;
+    border:solid;
+    border-block-color:darkgreen;
+}
+
+    p.text span {
+        font-size: 30px;
+        color: darkblue;
+        /*  border-color: aqua;*/
+        border-block-color: darkblue;
+    }
+.thlabel {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    color: darkgreen;
+    margin: 10px 0;
+    text-align: left;
+}
+
+
+button {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: darkslategrey;
+    height: 50px;
+    width:120px;
+    font-size: small;
+}
+
+
+table, tr, th, td {
+    background-color: paleturquoise;
+    border: solid;
+    color: darkslategrey;
+    background-color: lavender;
+    text-align: left;
+}
+
+#tblData {
+    border: solid;
+    color: darkslategrey;
+    text-align: left;
+    border: solid;
+    margin: 10px 0;
+    text-align: left;
+}
+body {
+    background-color: lavender;
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    padding: 10px;
+}
+
+h1,h5,h6 {
+    color: forestgreen;
+    line-height: 30px;
+    font-size: 30px;
+   /* letter-spacing: 20px;*/
+    text-align: center;
+ /*   text-decoration: underline;*/
+    padding:10px;
+    /* text-decoration:line-through */
+}
+
+p {
+    /*text-indent: 4em;*/
+    font-weight: 200;
+    font-size: 20px;
+    text-align: left;
+    /* font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif */
+}

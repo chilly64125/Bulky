@@ -1,0 +1,407 @@
+﻿*** Begin Patch
+*** Add File: Controllers/ConfigController.cs
++using System.Collections.Generic;
++using System.Linq;
++using Microsoft.AspNetCore.Mvc;
++using Microsoft.Extensions.Configuration;
++using BulkyBook.Utility;
++
++namespace BulkyBookWeb.Controllers
++{
++    [Route("api/[controller]")]
++    [ApiController]
++    public class ConfigController : ControllerBase
++    {
++        private readonly IConfiguration _configuration;
++
++        public ConfigController(IConfiguration configuration)
++        {
++            _configuration = configuration;
++        }
++
++        [HttpGet]
++        public IActionResult Get()
++        {
++            object ancestral = ConvertSection(_configuration.GetSection("Ancestral"));
++            object kindness = ConvertSection(_configuration.GetSection("Kindness"));
++            object logout = ConvertSection(_configuration.GetSection("Logout_Duration"));
++            var workDuration = _configuration["Work_Duration"];
++            var publishDate = _configuration["PublishDate"];
++
++            var roles = new
++            {
++                IsAdmin = User.IsInRole(SD.Role_Admin),
++                IsCustomer = User.IsInRole(SD.Role_Customer),
++                IsGuest = !User.Identity.IsAuthenticated
++            };
++
++            var menu = new[]
++            {
++                new { Title = "首頁", Url = Url.Action("Index1","Home","Customer"), Visible = true },
++                new {
++                    Title = "一.活動管理",
++                    Visible = roles.IsAdmin,
++                    Items = new[] {
++                        new { Title = "活動類別檔", Url = Url.Action("Index","Category","Admin") },
++                        new { Title = "宗親會基本檔", Url = Url.Action("Index","Company","Admin") },
++                        new { Title = "活動基本檔", Url = Url.Action("Index","Product","Admin") },
++                        new { Title = "活動報名", Url = Url.Action("Index","EventRegistration","Customer") },
++                        new { Title = "會員管理", Url = Url.Action("Index","User","Admin") }
++                    }
++                },
++                new {
++                    Title = "二.懷恩塔-祖先塔位管理",
++                    Visible = roles.IsAdmin,
++                    Items = new[] {
++                        new { Title = "懐恩塔-塔位-新增", Url = Url.Action("Index","Kindness","Admin") },
++                        new { Title = "懐恩塔-塔位-查詢", Url = Url.Action("PositionQuery","Kindness","Admin") },
++                        new { Title = "會員管理", Url = Url.Action("Index","User","Admin") }
++                    }
++                },
++                new {
++                    Title = "三.陳氏宗祠-祖先牌位管理",
++                    Visible = roles.IsAdmin,
++                    Items = new[] {
++                        new { Title = "陳氏宗祠-牌位-新增", Url = Url.Action("Index","Ancestral","Admin") },
++                        new { Title = "陳氏宗祠-牌位-查詢", Url = Url.Action("PositionQuery","Ancestral","Admin") },
++                        new { Title = "會員管理", Url = Url.Action("Index","User","Admin") }
++                    }
++                },
++                new {
++                    Title = "會員專區",
++                    Visible = roles.IsCustomer,
++                    Items = new[] {
++                        new { Title = "懐恩塔-塔位查詢", Url = Url.Action("PositionQuery","Kindness","Admin") },
++                        new { Title = "陳氏宗祠-牌位查詢", Url = Url.Action("PositionQuery","Ancestral","Admin") },
++                        new { Title = "問卷調查", Url = "/Identity/Survey/Survey" }
++                    }
++                }
++            };
++
++            var result = new
++            {
++                Ancestral = ancestral,
++                Kindness = kindness,
++                Logout_Duration = logout,
++                Work_Duration = workDuration,
++                PublishDate = publishDate,
++                Roles = roles,
++                Menu = menu
++            };
++
++            return Ok(result);
++        }
++
++        private static object ConvertSection(IConfigurationSection section)
++        {
++            var children = section.GetChildren().ToList();
++            if (!children.Any())
++            {
++                return section.Value;
++            }
++
++            var dict = new Dictionary<string, object?>();
++            foreach (var child in children)
++            {
++                dict[child.Key] = ConvertSection(child);
++            }
++
++            return dict;
++        }
++    }
++}
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/index.html
++<!doctype html>
++<html lang="zh-TW">
++  <head>
++    <meta charset="utf-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Bulky Frontend</title>
++  </head>
++  <body>
++    <div id="app"></div>
++    <script type="module" src="/src/main.ts"></script>
++  </body>
++</html>
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/package.json
++{
++  "name": "bulky-frontend",
++  "version": "0.1.0",
++  "private": true,
++  "scripts": {
++    "dev": "vite",
++    "build": "vite build",
++    "preview": "vite preview --port 5174",
++    "test": "vitest"
++  },
++  "dependencies": {
++    "axios": "^1.4.0",
++    "vue": "^3.3.4",
++    "vue-router": "^4.2.2"
++  },
++  "devDependencies": {
++    "@vitejs/plugin-vue": "^4.2.1",
++    "typescript": "^5.5.2",
++    "vite": "^5.2.2",
++    "vitest": "^1.4.2"
++  }
++}
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/vite.config.ts
++import { defineConfig } from "vite";
++import vue from "@vitejs/plugin-vue";
++
++export default defineConfig({
++  plugins: [vue()],
++  server: {
++    port: 5173,
++    proxy: {
++      "/api": {
++        target: "https://localhost:5064",
++        changeOrigin: true,
++        secure: false
++      }
++    },
++    hmr: {
++      overlay: true
++    }
++  }
++});
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/Dockerfile
++# build stage
++FROM node:20-alpine AS build
++WORKDIR /app
++COPY package*.json ./
++RUN npm ci --silent
++COPY . .
++RUN npm run build
++
++# production stage (nginx)
++FROM nginx:stable-alpine AS production
++COPY --from=build /app/dist /usr/share/nginx/html
++EXPOSE 80
++CMD ["nginx", "-g", "daemon off;"]
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/src/main.ts
++import { createApp } from "vue";
++import App from "./App.vue";
++import router from "./router";
++
++const app = createApp(App);
++app.use(router);
++app.mount("#app");
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/src/App.vue
++<template>
++    <router-view />
++</template>
++
++<script lang="ts">
++    import { defineComponent } from "vue";
++
++    export default defineComponent({
++        name: "App"
++    });
++</script>
++
++<style>
++    html, body, #app {
++        height: 100%;
++        margin: 0;
++    }
++</style>
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/src/router/index.ts
++import { createRouter, createWebHistory } from "vue-router";
++import Ancestral from "../views/Ancestral/Index.vue";
++import Kindness from "../views/Kindness/Index.vue";
++
++const routes = [
++  { path: "/", redirect: "/ancestral" },
++  { path: "/ancestral", component: Ancestral },
++  { path: "/kindness", component: Kindness }
++];
++
++const router = createRouter({
++  history: createWebHistory(),
++  routes
++});
++
++export default router;
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/src/services/api.ts
++import axios from "axios";
++
++const api = axios.create({
++  baseURL: "/api",
++  withCredentials: true
++});
++
++export async function getConfig() {
++  const r = await api.get("/config");
++  return r.data;
++}
++
++export default api;
++
+*** End Patch
+*** Begin Patch
+*** Add File: frontend/src/views/Ancestral/Index.vue
++<template>
++  <div class="container py-4">
++    <h2>陳氏宗祠 - 牌位 (範例)</h2>
++    <pre>{{ config }}</pre>
++  </div>
++</template>
++
++<script lang="ts">
++import { defineComponent, onMounted, ref } from "vue";
++import { getConfig } from "../../services/api";
++
++export default defineComponent({
++  name: "AncestralIndex",
++  setup() {
++    const config = ref<any>(null);
++    onMounted(async () => {
++      try {
++        config.value = await getConfig();
++      } catch (err) {
++        console.error(err);
++      }
++    });
++    return { config };
++  }
++});
++</script>
++
++<style scoped>
++pre {
++  background: #f8f9fa;
++  padding: 1rem;
++  border-radius: 6px;
++  overflow: auto;
++}
++</style>
++
+*** End Patch
+*** Begin Patch
+*** Add File: tools/generate-analysis.ps1
++Param(
++    [string]$Root = ".",
++    [string]$OutDir = ".\analysis"
++)
++
++if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
++
++$md = [System.Text.StringBuilder]::new()
++$md.AppendLine("# 專案前後端結構分析報告") | Out-Null
++$md.AppendLine("") | Out-Null
++$md.AppendLine("生成時間: $(Get-Date -Format 'yyyy/MM/dd HH:mm:ss')") | Out-Null
++$md.AppendLine("") | Out-Null
++
++$md.AppendLine("## Views (Razor) 概覽") | Out-Null
++$views = Get-ChildItem -Path $Root -Recurse -Include *.cshtml -ErrorAction SilentlyContinue
++$grouped = $views | Group-Object DirectoryName
++foreach ($g in $grouped) {
++    $dir = $g.Name.Replace((Resolve-Path -Path $Root).ProviderPath, "").TrimStart("\")
++    $md.AppendLine("### " + $dir) | Out-Null
++    foreach ($f in $g.Group) { $md.AppendLine("- " + ($f.Name)) | Out-Null }
++    $md.AppendLine("") | Out-Null
++}
++
++$md.AppendLine("## Controllers 檢視") | Out-Null
++$controllers = Get-ChildItem -Path $Root -Recurse -Include *Controller.cs -ErrorAction SilentlyContinue
++foreach ($c in $controllers) {
++    $md.AppendLine("### " + ($c.FullName.Replace((Resolve-Path -Path $Root).ProviderPath, "").TrimStart("\"))) | Out-Null
++    $content = Get-Content $c.FullName -Raw
++    $actions = [regex]::Matches($content, "public\s+(?:async\s+)?(?:IActionResult|ActionResult<\w+>|Task<\w+>|Task<IActionResult>)\s+([A-Za-z0-9_]+)\s*\(")
++    foreach ($a in $actions) { $md.AppendLine("- Action: " + $a.Groups[1].Value) | Out-Null }
++}
++
++$outMd = Join-Path $OutDir "analysis.md"
++$md.ToString() | Out-File -Encoding UTF8 $outMd
++
++Write-Host "分析檔已輸出: $outMd"
++
++if (Get-Command pandoc -ErrorAction SilentlyContinue) {
++    $outPdf = Join-Path $OutDir "analysis.pdf"
++    pandoc $outMd -o $outPdf
++    Write-Host "已轉為 PDF: $outPdf"
++} else {
++    Write-Host "若需 PDF，請安裝 pandoc 並重試，或手動用 Markdown -> PDF 轉換器。"
++}
++
+*** End Patch
+*** Begin Patch
+*** Add File: .github/workflows/frontend-deploy.yml
++name: Frontend CI/CD
++
++on:
++  push:
++    branches:
++      - main
++      - 'feature/*'
++
++jobs:
++  build-and-push:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Checkout
++        uses: actions/checkout@v4
++
++      - name: Setup Node
++        uses: actions/setup-node@v4
++        with:
++          node-version: "20"
++
++      - name: Install dependencies
++        working-directory: frontend
++        run: npm ci
++
++      - name: Build frontend
++        working-directory: frontend
++        run: npm run build
++
++      - name: Login to Azure CLI
++        uses: azure/login@v1
++        with:
++          creds: ${{ secrets.AZURE_CREDENTIALS }}
++
++      - name: Build and push image to ACR
++        run: |
++          ACR_NAME=${{ secrets.ACR_NAME }}
++          IMAGE_NAME=bulky-frontend
++          TAG=${{ github.sha }}
++          az acr build --registry $ACR_NAME --image ${IMAGE_NAME}:${TAG} frontend
++
++      - name: Deploy to WebApp (set container)
++        run: |
++          RESOURCE_GROUP=${{ secrets.AZURE_RESOURCE_GROUP }}
++          APP_NAME=${{ secrets.AZURE_WEBAPP_NAME }}
++          ACR_NAME=${{ secrets.ACR_NAME }}
++          IMAGE_NAME=bulky-frontend
++          TAG=${{ github.sha }}
++          REGISTRY=$(az acr show -n $ACR_NAME -g $RESOURCE_GROUP --query loginServer -o tsv)
++          FULL_IMAGE=${REGISTRY}/${IMAGE_NAME}:${TAG}
++          az webapp config container set --name $APP_NAME -g $RESOURCE_GROUP --docker-custom-image-name $FULL_IMAGE --docker-registry-server-url https://${REGISTRY}
++
+*** End Patch

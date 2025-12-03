@@ -1,0 +1,80 @@
+I'll add a short todo list for the PAT login steps, then show safe PowerShell commands and verification steps.
+
+Starting: *Login `gh` with PAT (PowerShell)* (2/4)
+
+Progress update: I added a 4-step todo list and started the "Login `gh` with PAT" step. Next I'll show the recommended login commands, verification, and clean-up.
+
+How to log the GitHub CLI (`gh`) in using a Personal Access Token (PowerShell)
+
+- Recommended (simpler & safer): use the web flow
+  - Command:
+    - `gh auth login --web`
+  - What it does: opens your browser to authenticate and grants `gh` access without exposing the token in shell history.
+  - Use when: you can open a browser and want the safest option.
+
+- Direct PAT method (stdin) — PowerShell safe patterns
+  - Option A — temporary file (recommended if you must avoid token appearing in history):
+    ```powershell
+    # Create a temporary file containing the token
+    $tmp = New-TemporaryFile
+    Set-Content -Path $tmp -Value 'github_pat_XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    # Use the token to login (reads from the file)
+    gh auth login --with-token < $tmp
+    # Remove the temporary file immediately
+    Remove-Item $tmp
+    ```
+  - Option B — environment variable piped to gh (token stays in memory but not written to disk; still may show in process list on some systems):
+    ```powershell
+    $env:GITHUB_PAT = 'github_pat_XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    echo $env:GITHUB_PAT | gh auth login --with-token
+    Remove-Item Env:\GITHUB_PAT
+    ```
+  - Option C — direct pipe (quick, but the token appears in command history):
+    ```powershell
+    echo 'github_pat_XXXXXXXXXXXXXXXXXXXXXXXXXXXX' | gh auth login --with-token
+    ```
+  - Notes:
+    - Replace `'github_pat_XXXXXXXXXXXXXXXXXXXXXXXXXXXX'` with your actual PAT (starts with `github_pat_` for fine‑grained tokens).
+    - Prefer Option A or the `--web` flow to avoid leaving secrets in history or logs.
+
+Verify the login and configured accounts
+- Check auth status:
+  ```powershell
+  gh auth status
+  ```
+- Show the authenticated user:
+  ```powershell
+  gh api user --jq '.login'
+  ```
+- Optional: configure Git to use `gh` credential helper (so `git push` uses the same auth):
+  ```powershell
+  gh auth setup-git
+  ```
+
+Common errors & troubleshooting
+- "Invalid token" or exit code 1:
+  - Confirm the token is correct and not expired.
+  - Ensure you copied the full token (no surrounding quotes unless used intentionally).
+  - Make sure the token has the necessary scopes (for CLI operations, `repo` / appropriate repo scopes or fine‑grained repo access).
+- "Permission denied" when pushing:
+  - Check `gh auth status` and `git remote -v`.
+  - If Git uses Windows Credential Manager with an old credential, run:
+    ```powershell
+    gh auth logout
+    gh auth login --web
+    ```
+  - Or remove stored GitHub credentials in Windows Credential Manager.
+
+How to rotate (replace) and revoke the old PAT safely
+1. Create a new token (short expiry, minimal scopes).
+2. Update local `gh` using steps above (login with the new token).
+3. Update CI secrets and services to use the new token.
+4. Test everything.
+5. Revoke the old token in GitHub UI: `Settings` → `Developer settings` → `Personal access tokens` → select token → `Revoke`.
+
+If you want, I can:
+- Run the `gh auth login --web` command here (it will open your browser).
+- Run the temporary-file login flow for you if you paste the token (I’ll use the safe temp-file method and delete the temp file). Note: pasting tokens into chat is sensitive — only do this if you’re comfortable.
+- Verify the login with `gh auth status` and `gh api user --jq '.login'`.
+
+Which do you prefer: `--web` (recommended) or the PAT stdin method now?

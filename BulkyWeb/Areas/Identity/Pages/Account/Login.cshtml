@@ -1,0 +1,165 @@
+﻿@page
+@model LoginModel
+@using System.Text.Json
+@{
+    var builder = WebApplication.CreateBuilder();
+    ViewBag.PublishDate = builder.Configuration.GetValue<string>("PublishDate");
+    ViewData["Title"] = "財團法人台中市私立銀同碧湖陳氏社會福利基金會-祖先塔位暨牌位管理資訊系統（準預覽版本）";
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    // Auto logout settings
+    float? AUTO_LOGOUT_MINUTE = builder.Configuration.GetSection("Logout_Duration:AUTO_LOGOUT_MINUTE").Get<float>();
+    int? WARNING_BEFORE_LOGOUT_SECOND = builder.Configuration.GetSection("Logout_Duration:WARNING_BEFORE_LOGOUT_SECOND").Get<int>();
+
+    // If AUTO_LOGOUT_MINUTE or WARNING_BEFORE_LOGOUT_SECOND is not set, use default values
+    if (AUTO_LOGOUT_MINUTE == null || WARNING_BEFORE_LOGOUT_SECOND == null)
+    {
+        // Default values if not set in configuration
+        AUTO_LOGOUT_MINUTE = (float?)0.5; // 30 minutes
+        WARNING_BEFORE_LOGOUT_SECOND = 10; // 10 seconds
+    }
+    else
+        // Set ViewBag for use in the view
+        ViewBag.AUTO_LOGOUT_MINUTE = AUTO_LOGOUT_MINUTE;
+    ViewBag.WARNING_BEFORE_LOGOUT_SECOND = WARNING_BEFORE_LOGOUT_SECOND;
+
+    // Work_Duration is used for the duration of work in the system
+    float? Work_Duration = builder.Configuration.GetSection("Work_Duration").Get<float>();
+    int? WORK_WARNING_SECONDS = builder.Configuration.GetSection("WORK_WARNING_SECONDS").Get<int>();
+
+    // If Work_Duration is not set, use default value
+    if (Work_Duration == null)
+    {
+        // Default value if not set in configuration
+        Work_Duration = (float?)1.0; // 1 mins
+    }
+    ViewBag.Work_Duration = Work_Duration;
+    // Set ViewBag for WORK_WARNING_SECONDS for use in the view
+    if (WORK_WARNING_SECONDS == null)
+    {
+        // Default value if not set in configuration
+        WORK_WARNING_SECONDS = 60; // 60 seconds
+    }
+    ViewBag.WORK_WARNING_SECONDS = WORK_WARNING_SECONDS; // Default value will be null if not set
+}
+<head>
+    <link rel="stylesheet" href="~/css/position_Display.css" asp-append-version="true" />
+</head>
+<div id="txtblnkindex1" class="text-center fw-bolder blink">
+    <p id="work_duration_top" style="font-size:larger;color:green;font-weight:bolder" class="text-bg-info align-content-center fw-bolder"></p>
+</div>
+<div class="card shadow border-0 mt-4 fw-bolder">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                @*   <h3 class="py-2 text-white fw-bolder">登入</h3> *@
+                <h4 class="border-bottom pb-3 mb-4 text-white text-center blink_user_login">
+                    1.輸入[電子郵件]、[密碼]  2.按下[登入]
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4 fw-bolder">
+        <div class="row">
+            <div class="col-md-12">
+                <section>
+                    <form id="account" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" style="font-size:large" class="form-control " autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                            <label asp-for="Input.Email" style="font-size:large" class="form-label fw-bolder  blink_user_login ">電子郵件</label>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" style="font-size:large" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" id="passwordInput" />
+                            <label asp-for="Input.Password" style="font-size:large" class="form-label fw-bolder blink_user_login">密碼</label>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <input type="checkbox" id="showPasswordCheckbox" />
+                            <label for="showPasswordCheckbox" style="font-size:large;">顯示密碼</label>
+                        </div>
+                        <div class="checkbox mb-3">
+                            <label asp-for="Input.RememberMe" class="form-label">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                            </label>
+                        </div>
+                        <div class="blink_user_login">
+                            <button id="login-submit" type="submit" style="font-size:xx-large" class="w-100 btn btn-lg btn-primary fw-bolder">登入</button>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2">
+                            @*    <p>
+                                <a id="forgot-password" asp-page="./ForgotPassword">忘記密碼?</a>
+                            </p> *@
+                            @*    <p>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">註冊</a>
+                            </p> *@
+                            @*   <p>
+                                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">電子信箱確認</a>
+                            </p> *@
+                        </div>
+                    </form>
+                </section>
+            </div>
+            @*  <div class="col-md-12 p-3 text-center">
+                <section>
+                    <p class="divider-text d-flex pt-3">or</p>
+
+                    @{
+                        if ((Model.ExternalLogins?.Count ?? 0) == 0) {
+                            <div>
+                                <p>
+                                    沒有外部認證系統設定.請參考文件<a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                    關於如何建置支援外部系統登入認證 </a>.
+                                </p>
+                            </div>
+                        }
+                        else {
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                <div>
+                                    <p>
+                                        @foreach (var provider in Model.ExternalLogins!) {
+                                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                        }
+                                    </p>
+                                </div>
+                            </form>
+                        }
+                    }
+                </section>
+            </div> *@
+        </div>
+    </div>
+</div>
+
+<div id="autoLogoutWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content">
+        <h4 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h4>
+        <p style="color:blue;font-size:xx-large;font-weight:bolder">您已經有一段時間沒有操作,將於 <span style="color:red;font-size:larger" id="logoutCountdown">@ViewBag.WARNING_BEFORE_LOGOUT_SECOND</span> 秒後,自動導到[財團法人台中市私立銀同碧湖陳氏社會福利基金會臉書](_LoginPartial)。</p>
+        <button onclick="stayLoggedIn()" class="btn btn-primary">[繼續使用]</button>
+    </div>
+</div>
+<button id="goTopBtn" class="btn btn-danger">回到頂部</button>
+<div id="workDurationWarning" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:#fff; padding:2rem 2.5rem; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; max-width:90vw;">
+        <h4 style="color:#c0392b;">即將自動導到本會[問卷調查]....</h4>
+        <p style="color:blue;font-size:xx-large;font-weight:bolder">您已經有一段時間沒有操作,將於 <span style="color:red;font-size:larger" id="workLogoutCountdown">@ViewBag.WORK_WARNING_SECONDS</span> 秒後，自動導到[財團法人台中市私立銀同碧湖陳氏社會福利基金會臉書](_LoginPartial)。</p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script type="text/javascript">
+    window.AUTO_LOGOUT_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.AUTO_LOGOUT_MINUTE));
+    window.WARNING_BEFORE_LOGOUT_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WARNING_BEFORE_LOGOUT_SECOND));
+    window.WORK_DURATION_MINUTES = @Html.Raw(JsonSerializer.Serialize(ViewBag.Work_Duration));
+    window.WORK_WARNING_SECONDS = @Html.Raw(JsonSerializer.Serialize(ViewBag.WORK_WARNING_SECONDS));
+    //2025 08 09 12:35 Add JavaScript to Toggle Password Visibility
+    document.getElementById('showPasswordCheckbox').addEventListener('change', function() {
+        var pwdInput = document.getElementById('passwordInput');
+        pwdInput.type = this.checked ? 'text' : 'password';
+    });
+</script>
+<script src="~/js/AutoLogout.js" asp-append-version="true"></script>

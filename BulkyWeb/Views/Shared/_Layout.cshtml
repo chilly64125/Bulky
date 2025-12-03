@@ -1,0 +1,203 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/BulkyBookWeb.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
+    <style>
+        #goTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: none;
+        }
+        #autoLogoutWarning {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.3);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #autoLogoutWarning .modal-content {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            text-align: center;
+            max-width: 90vw;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3 fw-bolder text-bg-white">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index1">
+                    <img src="/images/ChenClan0.jpg" style="width:30px" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link fw-bolder" asp-area="Customer" asp-controller="Home" asp-action="Index1">首頁</a>
+                        </li>                        
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle fw-bolder" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    一.活動管理
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Category" asp-action="Index">活動類別檔</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder " asp-area="Admin" asp-controller="Company" asp-action="Index">宗親會基本檔</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Product" asp-action="Index">活動基本檔</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Customer" asp-controller="EventRegistration" asp-action="Index">活動報名</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider fw-bolder"></li>
+                                    @*     <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Identity" asp-page="/Account/Register">建立會員</a>
+                                    </li> *@
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="User" asp-action="Index">會員管理</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a style="font-size:larger" class="nav-link dropdown-toggle fw-bolder" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    二.懷恩塔-祖先塔位管理
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a style="font-size:larger" class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Kindness" asp-action="Index">懐恩塔-塔位-新增</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a style="font-size:larger" class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Kindness" asp-action="PositionQuery">懐恩塔-塔位-查詢</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider fw-bolder"></li>
+                                    @*     <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Identity" asp-page="/Account/Register">建立會員</a>
+                                    </li> *@
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="User" asp-action="Index">會員管理</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a style="font-size:larger" class="nav-link dropdown-toggle fw-bolder" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    三.陳氏宗祠-祖先牌位管理
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a style="font-size:larger" class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Ancestral" asp-action="Index">陳氏宗祠-牌位-新增</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a style="font-size:larger" class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="Ancestral" asp-action="PositionQuery">陳氏宗祠-牌位-查詢</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider fw-bolder"></li>
+                                    @*   <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Identity" asp-page="/Account/Register">建立會員</a>
+                                    </li> *@
+                                    <li class="nav-item">
+                                        <a class="dropdown-item fw-bolder" asp-area="Admin" asp-controller="User" asp-action="Index">會員管理</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.Role_Customer))
+                        {
+                            <li class="nav-item">
+                                <a style="font-size:larger" class="nav-link fw-bolder" asp-area="Admin" asp-controller="Kindness" asp-action="PositionQuery">
+                                    懐恩塔-塔位查詢
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a style="font-size:larger" class="nav-link fw-bolder" asp-area="Admin" asp-controller="Ancestral" asp-action="PositionQuery">
+                                    陳氏宗祠-牌位查詢
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a style="font-size:larger" class="nav-link dropdown-toggle fw-bolder" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    問卷調查
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a href="/Identity/Survey/Survey" class="dropdown-item fw-bolder" style="font-size:larger">
+                                            [耐用性]問卷調查
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/Identity/Survey/SurveyResult" class="dropdown-item fw-bolder" style="font-size:larger">
+                                            [耐用性]調查結果
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <partial name="_Notification" />
+            @RenderBody()
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js" asp-append-version="true"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/63te5wrn5rma6a45a9b06tfy7w5zow2mu2opdbesg3lwqzy2/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+@* 附件(1)-[耐用性]測試-問卷題目
+題目1:登入頁(Login Form) 平均幾(秒)出現呢?(請大約回答)
+     [選項]: (1) 1~5(秒) (2) 6~10(秒) (3) 10(秒) 以上
+
+題目2:總共使用系統多少(次)呢?(請大約回答)
+     [選項]: (1) 1~10(次) (2) 11~20(次) (3) 20(次) 以上
+
+題目3:系統會出現兩個無法使用的訊息:
+      1."The service is unavailable." 或
+      2."The web app is stopped(藍底白字)"
+      您總共遇過幾次?(請大約回答)
+    [選項]: (1) 1~10(次) (2) 11~20(次) (3) 20(次) 以上 *@

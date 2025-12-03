@@ -1,0 +1,1208 @@
+﻿/*邊框設定
+當我們使用元素樣式為 box-sizing: border-box;，這個元素的內距和邊框將不會增加元素本身的寬度。
+參考資料*/
+* {
+    box-sizing: border-box;
+}
+
+/*整體排列
+為了讓整體背景顏色、字體一致，排列置中，採用display: flex，讓物件於中央[橫向]集中*/
+
+body {
+    background-color: darkslategrey;
+    color: blue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /*    height: 200vh;*/
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    border-block: solid;
+    text-align: center;
+}
+
+/*下拉式選單
+用margin的方式讓選單與上下各保持一點距離*/
+
+/* 電影選擇區 */
+.position-container {
+    margin: 20px 0;
+    /* 螢幕與座位區的整體配置 */
+    perspective: 100px;
+    margin-bottom: 20px;
+}
+
+
+    /* 電影選項欄位的美工 */
+    .position-container select {
+        background-color: lavender;
+        border: 2px;
+        border-radius: 5px;
+        font-size: 10px;
+        margin-left: 10px;
+        padding: 5px 5px 5px 5px;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+.option-container {
+    margin: 20px 0;
+    /* 螢幕與座位區的整體配置 */
+    perspective: 100px;
+    margin-bottom: 20px;
+}
+/*座位區設計
+主要掌握幾個關鍵點:
+
+先匡出一個區域來包含螢幕跟座位
+座位的美工與原角的修飾
+使用nth-of-type()、nth-last-of-type()來排列座位*/
+/*#RootDiv_Ancestral {
+    display: flex;*/ /*横向整齊排列*/
+/*}*/
+
+
+#RootDiv_Ancestral_right {
+    display: column; /*flex 横向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+#RootDiv_Ancestral_right_layout {
+    display: column; /*flex 横向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+#RootDiv_Ancestral_left {
+    display: column; /*flex 横向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+#RootDiv_Ancestral_left_layout {
+    display: column; /*flex 横向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+
+#RootDiv_Kindness {
+    display: column; /*flex 橫向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+#RootDiv_Kindness_Layout {
+    display: flex; /*flex 橫向整齊排列*/ /*column 縱向整齊排列*/
+    text-align: center;
+}
+
+
+.floor {
+    font-family: Arial;
+    color: lawngreen;
+    border: solid blue 4px;
+    background-color: coral;
+    display: flex; /*横向整齊排列*/
+}
+
+.section {
+    font-family: Arial;
+    color: lawngreen;
+    border: solid blue 4px;
+    background-color: saddlebrown;
+    display: ta;
+}
+
+.level {
+    font-family: Arial;
+    color: black;
+    border: solid blue 4px;
+    background-color: orange;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+}
+
+/* 懷恩塔-樓層的美工 */
+.level3f {
+    font-family: Arial;
+    font-size: x-large;
+    color: blue;
+    border: solid blue 4px;
+    background-color: burlywood;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+}
+
+.level2f {
+    font-family: Arial;
+    font-size: x-large;
+    color: blue;
+    border: solid blue 4px;
+    background-color: burlywood;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+}
+
+.level1f {
+    font-family: Arial;
+    font-size: x-large;
+    color: blue;
+    border: solid blue 4px;
+    background-color: burlywood;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+    text-align: center;
+}
+/* 懷恩塔-樓層的美工 */
+
+/* 宗祠-側身美工*/
+.levelleft {
+    font-family: Arial;
+    font-size: x-large;
+    color: blue;
+    border: solid blue 4px;
+    background-color: lightgoldenrodyellow;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+    text-align: center;
+}
+
+.levelright {
+    font-family: Arial;
+    font-size: x-large;
+    color: wheat;
+    border: solid blue 4px;
+    background-color: cadetblue;
+    /*display: flex; /*横向整齊排列*/
+    align-content: center;
+    text-align: center;
+}
+/* 宗祠側身美工*/
+
+/*懷恩塔-塔位空位*/
+.position {
+    font-family: Arial;
+    color: white;
+    border: solid orange 5px;
+    background-color: green;
+    height: 100px;
+    width: 105px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-content: center;
+}
+
+/*宗祠-牌位空位*/
+.positionAncestral {
+    font-weight: bold;
+    font-family: Arial;
+    color: white;
+    border: solid orange 5px;
+    background-color: green;
+    height: 100px;
+    width: 105px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-content: center;
+    display: flex; /*横向整齊排列*/
+}
+
+/*宗祠-區名*/
+.sectionAncestral {
+    font-weight: bold;
+    font-family: Arial;
+    font-size: 20px;
+    color: blue;
+    border: solid orange 5px;
+    background-color: lavender;
+    height: 120px;
+    width: 60px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-content: center;
+    display: flex; /*横向整齊排列*/
+}
+
+/*目前查詢*/
+.Ancestralsectioncurrent {
+    font-weight: bold;
+    height: 120px;
+    width: 60px;
+    color: black;
+    background-color: red;
+}
+
+
+
+
+/*門窗位置*/
+
+.position_window_door {
+    font-family: Arial;
+    color: black;
+    border: solid blue 3px;
+    background-color: lightgray;
+    height: 70px;
+    width: 105px;
+    margin: 5px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-content: center;
+}
+
+/*新選取*/
+.selected {
+    background-color: skyblue;
+}
+
+/*已使用*/
+.occupied {
+    color: white;
+    background-color: gray;
+}
+
+/*目前查詢*/
+.current {
+    font-weight: bold;
+    height: 100px;
+    width: 105px;
+    color: black;
+    background-color: cyan;
+}
+
+
+/*目前查詢*/
+/*懐恩塔位-區名*/
+.sectionKindness {
+    font-weight: bold;
+    font-family: Arial;
+    font-size: 20px;
+    color: blue;
+    border: solid orange 5px;
+    background-color: lavender;
+    height: 40px;
+    width: 120px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-content: center;
+    display: flex; /*横向整齊排列*/
+}
+
+.Kindnesssectioncurrent {
+    font-weight: bold;
+    height: 40px;
+    width: 120px;
+    color: black;
+    background-color: red;
+}
+
+
+
+
+
+/* 選取第n個元素 */
+/*.position:nth-of-type(2) {
+    margin-right: 15px;
+}*/
+/* 選取最後數來第n個元素 */
+/*.position:nth-last-of-type(2) {
+    margin-left: 16px;
+}*/
+
+/* 圖例的美工 */
+.showcasePosition {
+    font-family: Arial;
+    border: solid blue 3px;
+    background-color: green;
+    height: 30px;
+    width: 30px;
+    margin: 5px;
+    text-align: center;
+}
+
+.showcaseSelected {
+    background-color: skyblue;
+}
+
+.showcaseOccupied {
+    background-color: gray;
+}
+
+.showcaseCurrent {
+    background-color: red;
+}
+
+/*門窗位置*/
+.showcaseWindow_door {
+    background-color: darkorange;
+}
+
+
+/*座位區動畫
+使用hover功能，分別針對已經被占走和空缺的位子進行動畫設計*/
+
+/* 使用hover的功能，讓游標指到可選取的座位時將會放大1.5倍 */
+.position-container .occupied:hover {
+    cursor: default;
+    transform: scale(1.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Ancestral-left .occupied:hover {
+    cursor: default;
+    transform: scale(1.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Ancestral-right .occupied:hover {
+    cursor: default;
+    transform: scale(1.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Ancestral-layout .occupied:hover {
+    cursor: default;
+    transform: scale(1.5);
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* 讓showcase(範例)的圖示呈現靜止狀態 */
+.position-container .position:not(.occupied):hover {
+    cursor: default;
+    /*  background-color: lightgreen;*/
+    /* color: black;*/
+    transform: scale(1.2);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 讓showcase(範例)的圖示呈現靜止狀態 */
+.position-container-Ancestral-left .positionAncestral:not(.occupied):hover {
+    cursor: default;
+    /*  background-color: lightgreen;*/
+    /*color: black;*/
+    transform: scale(1.2);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Ancestral-right .positionAncestral:not(.occupied):hover {
+    cursor: default;
+    /*  background-color: lightgreen;*/
+    /* color: black;*/
+    transform: scale(1.2);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Ancestral-layout .sectionAncestral:not(.occupied):hover {
+    cursor: default;
+    /*  background-color: lightgreen;*/
+    /* color: black;*/
+    transform: scale(1.2);
+    justify-content: center;
+    align-items: center;
+}
+
+.position-container-Kindness-layout .sectionKindness:not(.occupied):hover {
+    cursor: default;
+    /*  background-color: lightgreen;*/
+    /* color: black;*/
+    transform: scale(1.2);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 使用hover的功能，讓游標指到樓層倍 */
+.level1f:hover {
+    cursor: default;
+    /*  width:60%;*/
+    /*    transform: scale(1.3);*/
+    background-color: coral;
+}
+
+.levelleft:hover {
+    cursor: default;
+    /*  width:60%;*/
+    /*    transform: scale(1.3);*/
+    background-color: coral;
+}
+
+.level2f:hover {
+    cursor: default;
+    /* width: 60%;*/
+    /*  transform: scale(1.3);*/
+    background-color: chocolate;
+}
+
+
+.levelright:hover {
+    cursor: default;
+    /* width: 60%;*/
+    /*  transform: scale(1.3);*/
+    background-color: chocolate;
+}
+
+
+.level3f:hover {
+    cursor: default;
+    /*  width: 60%;*/
+    /*transform: scale(1.3);*/
+    background-color: blanchedalmond;
+}
+/* 使用hover的功能，讓游標指到樓層倍 */
+
+
+
+/*座位狀態範例設計
+主要針對圖案與文字的排列是否整齊*/
+/* 範例區塊的文字與配置 */
+.showcase {
+    background: rgba(0,0,0,0.1);
+    padding: 5px 5px;
+    border-radius: 15px;
+    color: blueviolet;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+    /* 排列範例內的物件 */
+    /* 使用flex讓物件並排 */
+    .showcase li .floor .section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+    }
+
+    /* 讓範例內的文字跟圖示有些區隔 */
+    .showcase li small {
+        margin-left: 2px;
+    }
+
+/* 使用flex讓每列座位横向整齊排列 */
+.row {
+    display: flex; /*横向整齊排列*/
+}
+
+
+
+/*價格顯示文字*/
+
+p.text {
+    font-weight: bold;
+    font-family: 'Bookman Old Style';
+    color: darkblue;
+    font-size: 20px;
+    margin: 10px 0;
+    text-align: center;
+    border: solid;
+    border-block-color: darkgreen;
+}
+
+span.text {
+    font-weight: bold;
+    font-family: 'Bookman Old Style';
+    font-size: 40px;
+    color: darkblue;
+    /*  border-color: aqua;*/
+    border-block-color: darkblue;
+}
+
+.thlabel {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    color: darkgreen;
+    margin: 10px 0;
+    text-align: left;
+}
+
+
+button {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: darkslategrey;
+    height: 50px;
+    width: 120px;
+    font-size: small;
+}
+
+
+table, tr, th, td {
+    background-color: paleturquoise;
+    border: solid;
+    color: darkslategrey;
+    background-color: lavender;
+    text-align: center;
+}
+
+#tblData {
+    border: solid;
+    color: darkslategrey;
+    text-align: left;
+    border: solid;
+    margin: 10px 0;
+    text-align: center;
+}
+
+body {
+    background-color: lavender;
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    padding: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: blue;
+    line-height: 30px;
+    /*font-size: 30px;*/
+    /* letter-spacing: 20px;*/
+    text-align: center;
+    /*   text-decoration: underline;*/
+    padding: 10px;
+    /* text-decoration:line-through */
+}
+
+p {
+    /*text-indent: 4em;*/
+    font-weight: 200;
+    font-size: 18px;
+    text-align: center;
+    /* font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif */
+}
+
+/*
+    floating querying modal 
+*/
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 300px;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+
+/*
+    floating yesno-moda modal 
+*/
+/* Modal Box */
+.yesno-modal {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 2.5rem 2rem 2rem 2rem;
+    min-width: 320px;
+    max-width: 40vw;
+    text-align: center;
+    position: relative;
+    animation: modalFadeIn 0.2s;
+}
+
+@keyframes modalFadeIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Title */
+.yesno-title {
+    font-size: 2rem;
+    color: red;
+    font-weight: bolder;
+    margin-bottom: 1rem;
+}
+
+/* Message */
+.yesno-message {
+    font-size: 2rem;
+    color: red;
+    font-weight: bolder;
+    margin-bottom: 2rem;
+}
+
+/* Actions */
+.yesno-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* Buttons */
+.yesno-btn {
+    min-width: 80px;
+    font-size: 2rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+    .yesno-btn.btn-success {
+        background: #27ae60;
+        color: #fff;
+    }
+
+        .yesno-btn.btn-success:hover {
+            background: #219150;
+        }
+
+    .yesno-btn.btn-danger {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+        .yesno-btn.btn-danger:hover {
+            background: #c0392b;
+        }
+
+
+.displaylabel {
+    background-color: sandybrown;
+    font-size: 50px;
+}
+
+/*
+    You already have the correct code for smooth scrolling in your button click handler:
+*/
+.go-top-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    display: none;
+    background: linear-gradient(135deg, #007bff 60%, #00c6ff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    outline: none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    font-size: 1.5rem;
+}
+
+    .go-top-btn:hover, .go-top-btn:focus {
+        background: linear-gradient(135deg, #0056b3 60%, #00aaff 100%);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+        transform: translateY(-4px) scale(1.08);
+    }
+
+.left-align {
+    font-size: 20px;
+    text-align: left;
+    color: white
+}
+
+.intro_color {
+    font-size: 20px;
+    color: blue
+}
+
+
+/* 2025 07 11 18:46 display result on a modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(1,1,1,0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay_kindness {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    right: 0%;
+    bottom: 0%;
+    background: rgba(1,1,1,0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: lightgoldenrodyellow;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 300px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bolder;
+    font-size: 30px;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 4rem;
+    cursor: pointer;
+    color: red
+}
+
+/*2025 07 18 11:25 Make 一郎公神位 Higher than others*/
+.position-ancestor-layout {
+    height: 120px; /* Make it taller than others */
+    line-height: 35px; /* Vertically center the text */
+    font-size: 1.6em; /* Optional: make text larger */
+    background: orange; /* Optional: highlight */
+    border: solid orange 5px;
+}
+
+#goTopBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    display: none;
+}
+
+#autoLogoutWarning1 {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+    #autoLogoutWarning1 .modal-content {
+        background: #fff;
+        padding: 2rem 2.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        text-align: center;
+        max-width: 90vw;
+    }
+
+
+/*2025 08 07 
+Here’s how you can update your modal and video for responsive design: 
+     <source src="~/images/Films/ChenClanOpening.mp4" type="video/mp4" />
+     in index1.html
+*/
+
+.video-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 2vw;
+}
+
+    .video-modal video {
+        max-width: 90vw;
+        max-height: 80vh;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        background: #000;
+    }
+
+/* Optional: For very small screens */
+@media (max-width: 600px) {
+    .video-modal video {
+        max-width: 98vw;
+        max-height: 50vh;
+    }
+}
+
+
+/*Survey*/
+/* BulkyWeb\wwwroot\css\Position_Display.css */
+/*.modal-content {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.modal-header {
+    border-bottom: 2px solid #007bff;
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+}
+
+.btn {
+    font-size: 1.1rem;
+}
+
+@keyframes modalScaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content.animated-in {
+    animation: modalScaleIn 0.4s cubic-bezier(.4,0,.2,1);
+}*/
+
+
+/* 2025 08 25 16:23 
+    BulkyWeb/wwwroot/css/position_Display.css */
+/*.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}*/
+
+.spinner {
+    box-shadow: 0 0 16px #007bff44;
+    border: 8px solid #e0e0e0;
+    border-top: 8px solid #007bff; /* Bootstrap primary blue */
+    border-right: 8px solid #28a745; /* Bootstrap success green */
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.35);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content-spinner {
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    text-align: center;
+    min-width: 220px;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #2c3e50; /* theme color */
+    border-right: 8px solid #18bc9c; /* accent */
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* 閃爍 2025 07 30 23:42 / position.classList.add('blink'); */
+
+.blink {
+    animation: blink 3s linear 0s 12; /* step-start -> linear ,infinite -> Blinks 20 times */
+}
+
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+        background-color: red;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        background-color: cyan;
+        color: blue;
+        transform: scale(1.1); /* Grows 50% larger */
+    }
+
+    100% {
+        opacity: 1;
+        background-color: cyan;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+.blink_name {
+    animation: blink_name 3s linear 0s 12; /* step-start -> linear ,infinite -> Blinks 20 times */
+}
+
+
+@keyframes blink_name {
+    0% {
+        opacity: 1;
+        background-color: lightcoral;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        background-color: red;
+        color: blue;
+        transform: scale(1.05); /* Grows 50% larger */
+    }
+
+    100% {
+        opacity: 1;
+        background-color: lightcoral;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+
+
+.blink_firstMan {
+    animation: blink_firstMan 4s linear 0s 6; /* step-start -> linear, infinite -> Blinks 12 times */
+}
+
+@keyframes blink_firstMan {
+    0% {
+        opacity: 1;
+        background-color: lightsalmon;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        background-color: red;
+        color: blue;
+        transform: scale(1.1); /* Grows 5% larger */
+    }
+
+    100% {
+        opacity: 1;
+        background-color: lightsalmon;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+
+
+.blink_input {
+    animation: blink_input 6s linear 0s infinite;
+}
+
+@keyframes blink_input {
+    0% {
+        opacity: 1;
+        background: white;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        background: white;
+        transform: scale(1.05); /* Grows 5% larger */
+    }
+
+    100% {
+        opacity: 1;
+        background: white;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+.blink_user_login {
+    animation: blink_user_login 2s linear 0s 3;
+}
+
+@keyframes blink_user_login {
+    0% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(1.05); /* Grows 5% larger */
+    }
+
+    100% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+
+.blink_user_search {
+    animation: blink_user_search 2s linear 0s infinite;
+}
+
+@keyframes blink_user_search {
+    0% {
+        opacity: 1;
+        color: red;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        color: blue;
+        transform: scale(1.2); /* Grows 0% larger */
+    }
+
+    100% {
+        opacity: 1;
+        color: red;
+        transform: scale(1);
+    }
+}
+
+
+.blink_link_index1 {
+    animation: blink_link_index1 5s linear 0s infinite;
+}
+
+@keyframes blink_link_index1 {
+    0% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        color: blue;
+        transform: scale(1); /* Grows 0% larger */
+    }
+
+    100% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+
+@keyframes blink-search {
+    0% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        color: blue;
+        transform: scale(1); /* Grows 0% larger */
+    }
+
+    100% {
+        opacity: 1;
+        color: blue;
+        transform: scale(1);
+    }
+}
+
+.blink-search {
+    animation: blink-search 2s linear 0s infinite;
+    border: 4px solid orange !important; /* Thicker, red border for visibility */
+    box-shadow: 0 0 8px 2px orange;
+}
+
