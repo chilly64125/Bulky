@@ -5,7 +5,7 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">類別名稱</label>
-        <input v-model="values.name" type="text" class="form-control" :class="{'is-invalid': errors.name}" />
+        <input v-model="values.name" type="text" class="form-control" :class="{ 'is-invalid': errors.name }" />
         <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
       </div>
 

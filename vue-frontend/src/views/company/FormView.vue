@@ -5,12 +5,7 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">名稱</label>
-        <input
-          v-model="values.name"
-          type="text"
-          class="form-control"
-          :class="{ 'is-invalid': errors.name }"
-        />
+        <input v-model="values.name" type="text" class="form-control" :class="{ 'is-invalid': errors.name }" />
         <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
       </div>
 
@@ -31,13 +26,8 @@
 
       <div class="mb-3">
         <label class="form-label">電郵</label>
-        <input
-          v-model="values.email"
-          type="email"
-          autocomplete="email"
-          class="form-control"
-          :class="{ 'is-invalid': errors.email }"
-        />
+        <input v-model="values.email" type="email" autocomplete="email" class="form-control"
+          :class="{ 'is-invalid': errors.email }" />
         <div v-if="errors.email" class="invalid-feedback">
           {{ errors.email }}
         </div>
@@ -47,10 +37,7 @@
 
       <div class="d-flex gap-2">
         <button class="btn btn-primary" :disabled="loading">
-          <span
-            v-if="loading"
-            class="spinner-border spinner-border-sm me-2"
-          ></span>
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
           {{ isEdit ? "更新" : "新增" }}
         </button>
         <router-link to="/app/company" class="btn btn-secondary">返回</router-link>

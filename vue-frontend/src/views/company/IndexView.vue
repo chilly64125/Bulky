@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>宗親會基本檔</h2>
       <router-link to="/app/company/add" class="btn btn-primary">新增宗親會</router-link>
     </div>

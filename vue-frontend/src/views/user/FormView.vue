@@ -5,14 +5,8 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">用戶名</label>
-        <input
-          v-model="values.username"
-          type="text"
-          autocomplete="username"
-          class="form-control"
-          :class="{ 'is-invalid': errors.username }"
-          :disabled="isEdit"
-        />
+        <input v-model="values.username" type="text" autocomplete="username" class="form-control"
+          :class="{ 'is-invalid': errors.username }" :disabled="isEdit" />
         <div v-if="errors.username" class="invalid-feedback">
           {{ errors.username }}
         </div>
@@ -20,13 +14,8 @@
 
       <div class="mb-3">
         <label class="form-label">電郵</label>
-        <input
-          v-model="values.email"
-          type="email"
-          autocomplete="email"
-          class="form-control"
-          :class="{ 'is-invalid': errors.email }"
-        />
+        <input v-model="values.email" type="email" autocomplete="email" class="form-control"
+          :class="{ 'is-invalid': errors.email }" />
         <div v-if="errors.email" class="invalid-feedback">
           {{ errors.email }}
         </div>
@@ -45,23 +34,11 @@
       <div class="mb-3">
         <label class="form-label">角色</label>
         <div class="form-check">
-          <input
-            v-model="values.roles"
-            type="checkbox"
-            value="Admin"
-            class="form-check-input"
-            id="adminRole"
-          />
+          <input v-model="values.roles" type="checkbox" value="Admin" class="form-check-input" id="adminRole" />
           <label class="form-check-label" for="adminRole">Admin</label>
         </div>
         <div class="form-check">
-          <input
-            v-model="values.roles"
-            type="checkbox"
-            value="Customer"
-            class="form-check-input"
-            id="customerRole"
-          />
+          <input v-model="values.roles" type="checkbox" value="Customer" class="form-check-input" id="customerRole" />
           <label class="form-check-label" for="customerRole">Customer</label>
         </div>
       </div>
@@ -70,10 +47,7 @@
 
       <div class="d-flex gap-2">
         <button class="btn btn-primary" :disabled="loading">
-          <span
-            v-if="loading"
-            class="spinner-border spinner-border-sm me-2"
-          ></span>
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
           {{ isEdit ? "更新" : "新增" }}
         </button>
         <router-link to="/app/user" class="btn btn-secondary">返回</router-link>

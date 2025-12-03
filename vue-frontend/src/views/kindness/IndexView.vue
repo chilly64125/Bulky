@@ -24,13 +24,8 @@
       </div>
 
       <div class="grid-container">
-        <div
-          v-for="pos in positions"
-          :key="pos.kindnessPositionId"
-          class="grid-cell"
-          :class="{ occupied: pos.occupantName }"
-          @click="selectPosition(pos)"
-        >
+        <div v-for="pos in positions" :key="pos.kindnessPositionId" class="grid-cell"
+          :class="{ occupied: pos.occupantName }" @click="selectPosition(pos)">
           <div class="cell-content">
             <small>{{ pos.floor }}F-{{ pos.row }}-{{ pos.column }}</small>
             <div v-if="pos.occupantName" class="occupant">{{ pos.occupantName }}</div>
@@ -48,7 +43,8 @@
           <p><strong>欄:</strong> {{ selectedPos.column }}</p>
           <p><strong>佔用者:</strong> {{ selectedPos.occupantName || '未佔用' }}</p>
           <div class="btn-group">
-            <router-link :to="`/kindness/edit/${selectedPos.kindnessPositionId}`" class="btn btn-warning btn-sm">編輯</router-link>
+            <router-link :to="`/kindness/edit/${selectedPos.kindnessPositionId}`"
+              class="btn btn-warning btn-sm">編輯</router-link>
             <button class="btn btn-danger btn-sm" @click="deletePosition">刪除</button>
           </div>
         </div>

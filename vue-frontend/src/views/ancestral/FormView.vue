@@ -5,7 +5,7 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">區域</label>
-        <select v-model="values.section" class="form-control" :class="{'is-invalid': errors.section}">
+        <select v-model="values.section" class="form-control" :class="{ 'is-invalid': errors.section }">
           <option value="">選擇區域</option>
           <option v-for="s in sections" :key="s" :value="s">{{ s }}</option>
         </select>
@@ -14,13 +14,14 @@
 
       <div class="mb-3">
         <label class="form-label">層級</label>
-        <input v-model.number="values.level" type="number" class="form-control" :class="{'is-invalid': errors.level}" />
+        <input v-model.number="values.level" type="number" class="form-control" :class="{ 'is-invalid': errors.level }" />
         <div v-if="errors.level" class="invalid-feedback">{{ errors.level }}</div>
       </div>
 
       <div class="mb-3">
         <label class="form-label">位置</label>
-        <input v-model.number="values.position" type="number" class="form-control" :class="{'is-invalid': errors.position}" />
+        <input v-model.number="values.position" type="number" class="form-control"
+          :class="{ 'is-invalid': errors.position }" />
         <div v-if="errors.position" class="invalid-feedback">{{ errors.position }}</div>
       </div>
 

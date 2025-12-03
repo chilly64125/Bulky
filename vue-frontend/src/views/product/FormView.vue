@@ -5,7 +5,7 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">標題</label>
-        <input v-model="values.title" type="text" class="form-control" :class="{'is-invalid': errors.title}" />
+        <input v-model="values.title" type="text" class="form-control" :class="{ 'is-invalid': errors.title }" />
         <div v-if="errors.title" class="invalid-feedback">{{ errors.title }}</div>
       </div>
 
@@ -16,13 +16,15 @@
 
       <div class="mb-3">
         <label class="form-label">類別ID</label>
-        <input v-model.number="values.categoryId" type="number" class="form-control" :class="{'is-invalid': errors.categoryId}" />
+        <input v-model.number="values.categoryId" type="number" class="form-control"
+          :class="{ 'is-invalid': errors.categoryId }" />
         <div v-if="errors.categoryId" class="invalid-feedback">{{ errors.categoryId }}</div>
       </div>
 
       <div class="mb-3">
         <label class="form-label">價格</label>
-        <input v-model.number="values.price" type="number" step="0.01" class="form-control" :class="{'is-invalid': errors.price}" />
+        <input v-model.number="values.price" type="number" step="0.01" class="form-control"
+          :class="{ 'is-invalid': errors.price }" />
         <div v-if="errors.price" class="invalid-feedback">{{ errors.price }}</div>
       </div>
 

@@ -16,13 +16,8 @@
       </div>
 
       <div class="grid-container">
-        <div
-          v-for="pos in positions"
-          :key="pos.ancestralPositionId"
-          class="grid-cell"
-          :class="{ occupied: pos.occupantName }"
-          @click="selectPosition(pos)"
-        >
+        <div v-for="pos in positions" :key="pos.ancestralPositionId" class="grid-cell"
+          :class="{ occupied: pos.occupantName }" @click="selectPosition(pos)">
           <div class="cell-content">
             <small>{{ pos.section }}-{{ pos.level }}-{{ pos.position }}</small>
             <div v-if="pos.occupantName" class="occupant">{{ pos.occupantName }}</div>
@@ -40,7 +35,8 @@
           <p><strong>佔用者:</strong> {{ selectedPos.occupantName || '未佔用' }}</p>
           <p><strong>電話:</strong> {{ selectedPos.phone || '-' }}</p>
           <div class="btn-group">
-            <router-link :to="`/ancestral/edit/${selectedPos.ancestralPositionId}`" class="btn btn-warning btn-sm">編輯</router-link>
+            <router-link :to="`/ancestral/edit/${selectedPos.ancestralPositionId}`"
+              class="btn btn-warning btn-sm">編輯</router-link>
             <button class="btn btn-danger btn-sm" @click="deletePosition">刪除</button>
           </div>
         </div>

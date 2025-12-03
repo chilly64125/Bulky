@@ -5,7 +5,7 @@
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label class="form-label">樓層</label>
-        <select v-model.number="values.floor" class="form-control" :class="{'is-invalid': errors.floor}">
+        <select v-model.number="values.floor" class="form-control" :class="{ 'is-invalid': errors.floor }">
           <option value="">選擇樓層</option>
           <option v-for="f in floors" :key="f" :value="f">{{ f }}樓</option>
         </select>
@@ -14,7 +14,7 @@
 
       <div class="mb-3">
         <label class="form-label">區域</label>
-        <select v-model="values.section" class="form-control" :class="{'is-invalid': errors.section}">
+        <select v-model="values.section" class="form-control" :class="{ 'is-invalid': errors.section }">
           <option value="">選擇區域</option>
           <option v-for="s in sections" :key="s" :value="s">{{ s }}</option>
         </select>
@@ -23,13 +23,14 @@
 
       <div class="mb-3">
         <label class="form-label">列</label>
-        <input v-model.number="values.row" type="number" class="form-control" :class="{'is-invalid': errors.row}" />
+        <input v-model.number="values.row" type="number" class="form-control" :class="{ 'is-invalid': errors.row }" />
         <div v-if="errors.row" class="invalid-feedback">{{ errors.row }}</div>
       </div>
 
       <div class="mb-3">
         <label class="form-label">欄</label>
-        <input v-model.number="values.column" type="number" class="form-control" :class="{'is-invalid': errors.column}" />
+        <input v-model.number="values.column" type="number" class="form-control"
+          :class="{ 'is-invalid': errors.column }" />
         <div v-if="errors.column" class="invalid-feedback">{{ errors.column }}</div>
       </div>
 
