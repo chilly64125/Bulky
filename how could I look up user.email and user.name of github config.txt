@@ -1,5 +1,13 @@
 chilly64125: how could I look up user.email and user.name of github config?
 
+Or if you want to make any code changes, just:
+
+Edit your files
+Run git add .
+Run git commit -m "your message"
+Run git push
+
+
 GitHub Copilot: You can check specific Git config values with:
 
 ```bash
