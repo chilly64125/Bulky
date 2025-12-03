@@ -28,7 +28,7 @@
           <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
           {{ isEdit ? '更新' : '新增' }}
         </button>
-        <router-link to="/category" class="btn btn-secondary">返回</router-link>
+        <router-link to="/app/category" class="btn btn-secondary">返回</router-link>
       </div>
     </form>
   </div>

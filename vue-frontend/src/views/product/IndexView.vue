@@ -2,7 +2,7 @@
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>活動管理</h2>
-      <router-link to="/product/add" class="btn btn-primary">新增活動</router-link>
+      <router-link to="/app/product/add" class="btn btn-primary">新增活動</router-link>
     </div>
 
     <div v-if="loading" class="alert alert-info">加載中...</div>

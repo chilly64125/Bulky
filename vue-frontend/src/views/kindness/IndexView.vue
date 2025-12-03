@@ -2,7 +2,7 @@
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>懷恩塔-塔位清單</h2>
-      <router-link to="/kindness/add" class="btn btn-primary">新增塔位</router-link>
+      <router-link to="/app/kindness/add" class="btn btn-primary">新增塔位</router-link>
     </div>
 
     <div v-if="loading" class="alert alert-info">加載中...</div>

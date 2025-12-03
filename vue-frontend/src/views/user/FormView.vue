@@ -76,7 +76,7 @@
           ></span>
           {{ isEdit ? "更新" : "新增" }}
         </button>
-        <router-link to="/user" class="btn btn-secondary">返回</router-link>
+        <router-link to="/app/user" class="btn btn-secondary">返回</router-link>
       </div>
     </form>
   </div>

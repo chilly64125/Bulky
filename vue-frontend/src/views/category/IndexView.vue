@@ -2,7 +2,7 @@
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2>活動類別</h2>
-      <router-link to="/category/add" class="btn btn-primary">新增類別</router-link>
+      <router-link to="/app/category/add" class="btn btn-primary">新增類別</router-link>
     </div>
 
     <div v-if="loading" class="alert alert-info">加載中...</div>
