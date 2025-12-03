@@ -1,0 +1,26 @@
+chilly64125: how could I look up user.email and user.name of github config?
+
+GitHub Copilot: You can check specific Git config values with:
+
+```bash
+git config user.email
+git config user.name
+```
+
+Or view all Git config settings:
+
+```bash
+git config --list
+```
+
+For GitHub CLI config specifically:
+
+```bash
+gh config list
+```
+
+To check which account you're logged into:
+
+```bash
+gh auth status
+```
