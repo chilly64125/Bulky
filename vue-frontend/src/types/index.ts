@@ -137,15 +137,29 @@ export interface Company {
 
 // Product Type
 export interface Product {
-  productId: number;
+  id: number;
+  productId?: number;
   title: string;
   description?: string;
+  isbn?: string;
   categoryId: number;
   category?: Category;
-  price: number;
+  companyId: number;
+  company?: Company;
+  hDate?: string;
+  heldYN: string;
+  listPrice: number;
+  price?: number;
   imageUrl?: string;
-  isActive: boolean;
-  createdAt: Date;
+  productImages?: ProductImage[];
+  isActive?: boolean;
+  createdAt?: Date;
+}
+
+export interface ProductImage {
+  id: number;
+  productId: number;
+  imageUrl: string;
 }
 
 // Order Type

@@ -1,6 +1,45 @@
 --------------------------------------------------------------------------------------------------------------
 [Good Advice on How to ask Copilot to do things]
 --------------------------------------------------------------------------------------------------------------
+Could I migrate the content of Index.cshtml onto  http://localhost:5173/?
+
+--------------------------------------------------------------
+Could I migrate the content of \Product\index.cshtml onto  http://localhost:5173/app/Product/indexView.vue ?
+Could I migrate the content of \Product\Upsert.cshtml onto  http://localhost:5173/app/Product/FormView.vue ?
+
+
+
+
+
+Could I migrate the content of \Ancestral\index.cshtml onto  http://localhost:5173/app/Ancestral/query Vue Version List
+
+Could I migrate and merges the content of \Ancestral\Application.cshtml,Upsert.cshtml onto 
+http://localhost:5173/app/ancestral/   'Input form' 
+http://localhost:5173/app/ancestral/add  'Create'
+http://localhost:5173/app/ancestral/edit  'Edit'
+
+AND 'EDIT'
+
+Could I migrate the content of \Ancestral\DisplayPosition.cshtml onto  'Query'
+
+--------------------------------------------------------------
+
+Could I migrate the content of \kindness\index.cshtml onto  http://localhost:5173/app/kindness/query  Vue Version List
+
+Could I migrate and merges the content of \kindness\Application.cshtml,Upsert.cshtml onto 
+http://localhost:5173/app/kindness/   'Input form' 
+http://localhost:5173/app/kindness/add  'Create'
+http://localhost:5173/app/kindness/edit  'Edit'
+
+
+Could I migrate the content of \kindness\DisplayPosition.cshtml onto  'Query'
+
+
+
+
+
+
+
 What would you seggest me to do next? Tks!
 
 Which Option(s) or priority would you seggest me to do next(A or B)? Tks!

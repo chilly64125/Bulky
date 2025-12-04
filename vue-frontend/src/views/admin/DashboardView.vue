@@ -29,7 +29,7 @@
             <div class="col-md-3 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title text-muted">客戶</h6>
+                        <h6 class="card-title text-muted">會員</h6>
                         <h3 class="mb-0">{{ stats.customerCount }}</h3>
                     </div>
                 </div>

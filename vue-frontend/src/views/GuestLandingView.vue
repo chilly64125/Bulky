@@ -1,236 +1,188 @@
 <template>
   <div class="guest-landing">
-    <!-- Hero Section -->
-    <section class="hero-section bg-primary text-white py-5">
+    <!-- Ancestral & Kindness Quick Access -->
+    <section class="quick-access bg-secondary bg-gradient py-4">
       <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-6 mb-4 mb-lg-0">
-            <h1 class="display-4 fw-bold mb-4">陳氏宗祠祖先牌位暨懷恩塔家族墓園塔位管理平台</h1>
-            <p class="lead mb-4">一個專為陳氏家族設計的祖先牌位和墓園塔位綜合管理系統</p>
-            <p class="mb-4">輕鬆管理家族祖先牌位資訊、墓園塔位詳情、以及重要的家族紀錄</p>
-            <div class="d-flex gap-3 flex-wrap">
-              <router-link to="/login" class="btn btn-light btn-lg fw-bold">
-                <i class="bi bi-box-arrow-in-right me-2"></i>登入系統
-              </router-link>
-              <router-link to="/register" class="btn btn-outline-light btn-lg">
-                <i class="bi bi-person-plus me-2"></i>註冊帳號
-              </router-link>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <router-link to="/app/admin/ancestral" class="text-decoration-none d-block">
+              <div class="p-4 rounded text-center fw-bold text-white"
+                style="background: #495057; font-size: 24px; cursor: pointer; transition: all 0.3s;">
+                <i class="bi bi-people-fill me-2"></i>陳氏宗祠-牌位查詢
+              </div>
+            </router-link>
+          </div>
+          <div class="col-md-6">
+            <router-link to="/app/admin/kindness" class="text-decoration-none d-block">
+              <div class="p-4 rounded text-center fw-bold text-white"
+                style="background: #495057; font-size: 24px; cursor: pointer; transition: all 0.3s;">
+                <i class="bi bi-tree-fill me-2"></i>懷恩塔-塔位查詢
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Welcome Section -->
+    <section class="welcome-section bg-secondary bg-gradient text-white py-5">
+      <div class="container">
+        <div class="row mb-4">
+          <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">歡迎來到台中市銀同碧湖陳氏宗親會</h1>
+            <p class="lead opacity-75 fw-bold">我們致力於弘揚[穎川陳氏 祖訓]，奉行[先祖不怕艱苦、勤儉打拼的精神與美德]。</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-center">
+            <button @click="showVideoModal = true" class="btn btn-info btn-lg fw-bold text-white">
+              <i class="bi bi-camera-video-fill me-2"></i>
+              台中市銀同碧湖陳氏宗親會-影片
+              <i class="bi bi-camera-video-fill ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Modal -->
+    <div v-if="showVideoModal" class="video-modal" @click="showVideoModal = false">
+      <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333;">
+        <h3 class="mb-3">視頻播放區</h3>
+        <p class="text-muted">影片內容將在此顯示</p>
+        <p class="text-muted small">(按任何地方關閉)</p>
+      </div>
+    </div> <!-- Activities/Events Section Header -->
+    <section class="activities-header bg-light py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h2 class="fw-bold">本會年度祭祖活動一覽表</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Cards -->
+    <section class="activities-section py-5 bg-light">
+      <div class="container">
+        <div class="row" v-if="products.length > 0">
+          <div v-for="product of products" :key="product.id" class="col-lg-3 col-sm-6 mb-4">
+            <div class="card border-0 p-3 shadow border-top border-5 rounded h-100"
+              style="border-top: 5px solid #dc3545;">
+              <div class="card-img-top p-1">
+                <img v-if="product.productImages && product.productImages.length > 0"
+                  :src="product.productImages[0].imageUrl" class="card-img-top rounded"
+                  style="height: 200px; object-fit: cover; width: 100%;" alt="活動圖片" />
+                <img v-else src="https://placehold.co/500x600/png" class="card-img-top rounded"
+                  style="height: 200px; object-fit: cover; width: 100%;" alt="預設圖片" />
+              </div>
+              <div class="card-body pb-0">
+                <div class="pl-1">
+                  <p class="card-title h5 text-dark opacity-75 text-uppercase text-center fw-bold">{{ product.title }}
+                  </p>
+                  <p class="card-title text-warning text-center fw-bold">主辦單位: <b>{{ product.company?.name ||
+                      product.company }}</b></p>
+                </div>
+                <div class="pl-1">
+                  <p class="text-dark text-opacity-75 text-center mb-0 fw-bold">
+                    報名費用: 依主辦單位公佈為主
+                  </p>
+                </div>
+              </div>
+              <div class="card-footer bg-dark">
+                <router-link :to="`/app/customer/product/${product.id}`" class="btn btn-primary w-100">
+                  詳細內容
+                </router-link>
+              </div>
             </div>
           </div>
-          <div class="col-lg-6 text-center">
-            <i class="bi bi-building" style="font-size: 120px; opacity: 0.3;"></i>
+        </div>
+        <div v-else class="row">
+          <div class="col-12 text-center text-muted py-5">
+            <p>目前沒有活動項目</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section py-5 bg-light">
-      <div class="container">
-        <h2 class="text-center mb-5">核心功能</h2>
-        <div class="row">
-          <div class="col-md-6 col-lg-3 mb-4">
-            <router-link to="/login" class="text-decoration-none">
-              <div class="feature-card card h-100">
-                <div class="card-body text-center">
-                  <i class="bi bi-person-vcard" style="font-size: 40px; color: #0d6efd;"></i>
-                  <h5 class="card-title mt-3">祖先牌位查詢</h5>
-                  <p class="card-text">快速查詢陳氏宗祠祖先牌位詳情和位置</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4">
-            <router-link to="/login" class="text-decoration-none">
-              <div class="feature-card card h-100">
-                <div class="card-body text-center">
-                  <i class="bi bi-geo-alt" style="font-size: 40px; color: #198754;"></i>
-                  <h5 class="card-title mt-3">墓園塔位查詢</h5>
-                  <p class="card-text">快速查詢懷恩塔家族墓園的塔位詳情和位置</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4">
-            <router-link to="/login" class="text-decoration-none">
-              <div class="feature-card card h-100">
-                <div class="card-body text-center">
-                  <i class="bi bi-file-earmark-text" style="font-size: 40px; color: #fd7e14;"></i>
-                  <h5 class="card-title mt-3">文件管理</h5>
-                  <p class="card-text">上傳和管理相關文件、照片和紀錄</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4">
-            <router-link to="/login" class="text-decoration-none">
-              <div class="feature-card card h-100">
-                <div class="card-body text-center">
-                  <i class="bi bi-shield-check" style="font-size: 40px; color: #6f42c1;"></i>
-                  <h5 class="card-title mt-3">安全隱私</h5>
-                  <p class="card-text">使用最新的安全技術保護家族資訊</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quick Links Section -->
-    <section class="quick-links-section py-5">
-      <div class="container">
-        <h2 class="text-center mb-5">快速開始</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer"
-              class="text-decoration-none text-dark">
-              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-                <div class="me-3">
-                  <i class="bi bi-question-circle" style="font-size: 30px; color: #0d6efd;"></i>
-                </div>
-                <div>
-                  <h5 class="mb-1">常見問題</h5>
-                  <p class="mb-0 text-muted">了解如何使用系統功能</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-6 mb-3">
-            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer"
-              class="text-decoration-none text-dark">
-              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-                <div class="me-3">
-                  <i class="bi bi-telephone" style="font-size: 30px; color: #198754;"></i>
-                </div>
-                <div>
-                  <h5 class="mb-1">聯絡客服</h5>
-                  <p class="mb-0 text-muted">遇到問題？立即聯絡我們</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-6 mb-3">
-            <a href="#" class="text-decoration-none text-dark">
-              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-                <div class="me-3">
-                  <i class="bi bi-shield-lock" style="font-size: 30px; color: #fd7e14;"></i>
-                </div>
-                <div>
-                  <h5 class="mb-1">隱私政策</h5>
-                  <p class="mb-0 text-muted">查看我們如何保護您的隱私</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-6 mb-3">
-            <a href="#" class="text-decoration-none text-dark">
-              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-                <div class="me-3">
-                  <i class="bi bi-file-text" style="font-size: 30px; color: #6f42c1;"></i>
-                </div>
-                <div>
-                  <h5 class="mb-1">使用條款</h5>
-                  <p class="mb-0 text-muted">了解我們的服務條款</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section bg-primary text-white py-5">
-      <div class="container text-center">
-        <h2 class="mb-4">準備好開始了嗎？</h2>
-        <p class="lead mb-4">加入陳氏家族管理平台，輕鬆管理祖先牌位和墓園資訊</p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <router-link to="/register" class="btn btn-light btn-lg fw-bold">
-            <i class="bi bi-person-plus me-2"></i>立即註冊
-          </router-link>
-          <router-link to="/login" class="btn btn-outline-light btn-lg">
-            <i class="bi bi-box-arrow-in-right me-2"></i>已有帳號？登入
-          </router-link>
-        </div>
-      </div>
-    </section>
+    <!-- Back to Top Button -->
+    <button v-if="showBackToTop" @click="scrollToTop" class="back-to-top btn btn-danger rounded-circle"
+      style="position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; z-index: 99;">
+      <i class="bi bi-arrow-up"></i>
+    </button>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
+    <footer class="footer text-center text-white bg-secondary bg-gradient py-4 mt-5">
       <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <h5>陳氏宗祠祖先牌位暨懷恩塔家族墓園塔位管理平台</h5>
-            <p class="text-muted">為陳氏家族提供專業的祖先牌位和墓園塔位管理服務</p>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <p class="text-muted mb-0">&copy; 2025 版權所有。保留所有權利。</p>
-            <small class="text-muted">聯絡我們: contact@chenclan.com</small>
-          </div>
-        </div>
+        <p class="mb-2">© 2025 財團法人台中市私立銀同碧湖陳氏社會福利基金會. All rights reserved.</p>
+        <p class="mb-2">資料及照片來源:財團法人台中市私立銀同碧湖陳氏社會福利基金會</p>
+        <p class="mb-0">Powered by Vue 3 + ASP.NET Core</p>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-// Guest landing page - no auth required
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
+const showVideoModal = ref(false);
+const showBackToTop = ref(false);
+
+// Get products from server data or fallback
+const products = computed(() => {
+  return authStore.serverProducts || [];
+});
+
+// Handle scroll for back-to-top button
+const handleScroll = () => {
+  showBackToTop.value = window.scrollY > 200;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <style scoped>
 .guest-landing {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-.hero-section {
-  background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
-  min-height: 500px;
+.video-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
-}
-
-.features-section {
-  min-height: 400px;
-}
-
-.feature-card {
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  z-index: 9999;
   cursor: pointer;
 }
 
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+.video-modal video {
+  cursor: auto;
 }
 
-.quick-links-section {
-  min-height: 400px;
+.back-to-top {
+  opacity: 0.7;
+  transition: opacity 0.3s;
 }
 
-.quick-link-card {
-  transition: background-color 0.3s, transform 0.3s;
-  background-color: #f8f9fa;
-  cursor: pointer;
-}
-
-.quick-link-card:hover {
-  background-color: #e9ecef;
-  transform: translateX(5px);
-}
-
-.cta-section {
-  background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-}
-
-footer {
-  margin-top: auto;
+.back-to-top:hover {
+  opacity: 1;
 }
 </style>
