@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { useAuthStore } from "./stores/authStore";
 import { useConfigStore } from "./stores/configStore";
-// router is provided by main.ts; no direct import needed here
 
-// Initialize auth
-const authStore = useAuthStore();
+// Auth is initialized in router before any route checks
 const configStore = useConfigStore();
 
 onMounted(() => {
-  authStore.initializeAuth();
   configStore.loadConfig().catch(console.error);
 });
 </script>

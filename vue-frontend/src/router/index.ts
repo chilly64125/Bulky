@@ -272,14 +272,13 @@ const router = createRouter({
   routes,
 });
 
-// Route guard
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
+// Initialize auth from localStorage on app start
+const authStore = useAuthStore();
+authStore.initializeAuth();
 
-  // Initialize auth from localStorage if not already done
-  if (!authStore.user && !authStore.isAuthenticated) {
-    authStore.initializeAuth();
-  }
+// Route guard
+router.beforeEach((to, _from, next) => {
+  const authStore = useAuthStore();
 
   const requiresAuth = to.meta.requiresAuth !== false;
   const requiredRole = to.meta.requiresRole as string | undefined;
