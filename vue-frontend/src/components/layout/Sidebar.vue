@@ -6,7 +6,7 @@
     <nav class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link class="nav-link" to="/">
+          <router-link class="nav-link" to="/app">
             <i class="bi bi-house-door-fill me-2"></i>
             首頁
           </router-link>
