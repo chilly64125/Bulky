@@ -33,8 +33,8 @@
             <div class="feature-card card h-100">
               <div class="card-body text-center">
                 <i class="bi bi-person-vcard" style="font-size: 40px; color: #0d6efd;"></i>
-                <h5 class="card-title mt-3">祖先牌位管理</h5>
-                <p class="card-text">完整記錄祖先牌位資訊，建檔歷史紀錄，便於家族查詢</p>
+                <h5 class="card-title mt-3">祖先牌位查詢</h5>
+                <p class="card-text">快速查詢陳氏宗祠祖先牌位詳情和位置</p>
               </div>
             </div>
           </div>
