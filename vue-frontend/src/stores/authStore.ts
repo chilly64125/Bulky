@@ -20,7 +20,9 @@ export const useAuthStore = defineStore("auth", () => {
   };
   const isAdmin = computed(() => hasRole("Admin"));
   const isCustomer = computed(() => hasRole("Customer"));
-  const isUnauthenticated = computed(() => hasRole("Unauthenticated"));
+  const isUnauthenticated = computed(() =>
+    hasRole("Unauthenticated, ie :No-Login")
+  );
 
   const login = async (credentials: LoginRequest) => {
     loading.value = true;
@@ -116,11 +118,11 @@ export const useAuthStore = defineStore("auth", () => {
       // Set unauthenticated user after logout
       user.value = {
         id: "unauthenticated",
-        username: "Unauthenticated",
+        username: "Visitor (No-Login)",
         email: "no-login@chen.local",
-        firstName: "Unauthenticated",
-        lastName: "User",
-        roles: ["Unauthenticated"],
+        firstName: "Visitor",
+        lastName: "(No-Login)",
+        roles: ["Unauthenticated, ie :No-Login"],
         isActive: true,
       };
     }
@@ -142,11 +144,11 @@ export const useAuthStore = defineStore("auth", () => {
       // Set unauthenticated user object for visitors (no-login)
       user.value = {
         id: "unauthenticated",
-        username: "Unauthenticated",
+        username: "Visitor (No-Login)",
         email: "no-login@chen.local",
-        firstName: "Unauthenticated",
-        lastName: "User",
-        roles: ["Unauthenticated"],
+        firstName: "Visitor",
+        lastName: "(No-Login)",
+        roles: ["Unauthenticated, ie :No-Login"],
         isActive: true,
       };
     }

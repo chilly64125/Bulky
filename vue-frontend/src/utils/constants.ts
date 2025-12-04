@@ -31,7 +31,7 @@ export const USER_ROLES = {
   ADMIN: "Admin",
   CUSTOMER: "Customer",
   // Unauthenticated indicates a site visitor without login
-  UNAUTHENTICATED: "Unauthenticated",
+  UNAUTHENTICATED: "Unauthenticated, ie :No-Login",
 } as const;
 
 // Grid dimensions
