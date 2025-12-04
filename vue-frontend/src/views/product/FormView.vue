@@ -44,9 +44,9 @@
 
               <!-- Category Select -->
               <div class="form-floating py-2 col-12">
-                <select v-model.number="values.categoryId" class="form-select border-0 shadow"
+                <select v-model="values.categoryId" class="form-select border-0 shadow"
                   :class="{ 'is-invalid': errors.categoryId }">
-                  <option disabled value="">--選活動類別--</option>
+                  <option :value="null" disabled>--選活動類別--</option>
                   <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
                     {{ cat.name }}
                   </option>
@@ -57,9 +57,9 @@
 
               <!-- Company Select -->
               <div class="form-floating py-2 col-12">
-                <select v-model.number="values.companyId" class="form-select border-0 shadow text-bg-info fw-bold"
+                <select v-model="values.companyId" class="form-select border-0 shadow text-bg-info fw-bold"
                   :class="{ 'is-invalid': errors.companyId }">
-                  <option disabled value="">--選主辦單位--</option>
+                  <option :value="null" disabled>--選主辦單位--</option>
                   <option v-for="comp in companies" :key="comp.companyId" :value="comp.companyId">
                     {{ comp.name }}
                   </option>
@@ -167,16 +167,23 @@ const values = reactive<Partial<Product>>({
 const errors = reactive<any>({})
 
 const schema = yup.object({
-  title: yup.string().required('活動名稱為必填'),
-  isbn: yup.string().required('活動簡介為必填'),
-  categoryId: yup.number().required('類別為必填'),
-  companyId: yup.number().required('主辦單位為必填'),
-  listPrice: yup.number().required('費用為必填').min(0)
+  title: yup.string().trim().required('活動名稱為必填'),
+  isbn: yup.string().trim().required('活動簡介為必填'),
+  categoryId: yup.number().typeError('類別為必填').required('類別為必填'),
+  companyId: yup.number().typeError('主辦單位為必填').required('主辦單位為必填'),
+  listPrice: yup.number().typeError('費用為必填').required('費用為必填').min(0, '費用不能為負數')
 })
 
 async function validate() {
   try {
-    await schema.validate(values, { abortEarly: false })
+    // Ensure numeric fields are actually numbers
+    const valuesToValidate = {
+      ...values,
+      categoryId: values.categoryId ? Number(values.categoryId) : undefined,
+      companyId: values.companyId ? Number(values.companyId) : undefined,
+      listPrice: values.listPrice ? Number(values.listPrice) : undefined
+    }
+    await schema.validate(valuesToValidate, { abortEarly: false })
     Object.keys(errors).forEach(k => delete (errors as any)[k])
     return true
   } catch (err: any) {
