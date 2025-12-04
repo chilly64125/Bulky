@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BulkyBook.DataAccess.Repository;
+using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 
 namespace BulkyBookWeb.Controllers.Api
@@ -18,7 +19,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             _unitOfWork = unitOfWork;
         }
-    {
+    
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
@@ -92,7 +93,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var category = _unitOfWork.Category.GetFirstOrDefault(c => c.Id == id);
+                var category = _unitOfWork.Category.Get(c => c.Id == id);
                 if (category == null)
                     return NotFound(new { message = "Category not found" });
 
@@ -118,7 +119,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             _unitOfWork = unitOfWork;
         }
-    {
+    
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
@@ -140,7 +141,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var company = _unitOfWork.Company.GetFirstOrDefault(c => c.Id == id);
+                var company = _unitOfWork.Company.Get(c => c.Id == id);
                 if (company == null)
                     return NotFound(new { message = "Company not found" });
                 return Ok(new { data = company });
@@ -195,7 +196,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var company = _unitOfWork.Company.GetFirstOrDefault(c => c.Id == id);
+                var company = _unitOfWork.Company.Get(c => c.Id == id);
                 if (company == null)
                     return NotFound(new { message = "Company not found" });
 
@@ -221,7 +222,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             _unitOfWork = unitOfWork;
         }
-    {
+    
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
@@ -243,7 +244,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var product = _unitOfWork.Product.GetFirstOrDefault(p => p.Id == id);
+                var product = _unitOfWork.Product.Get(p => p.Id == id);
                 if (product == null)
                     return NotFound(new { message = "Product not found" });
                 return Ok(new { data = product });
@@ -298,7 +299,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var product = _unitOfWork.Product.GetFirstOrDefault(p => p.Id == id);
+                var product = _unitOfWork.Product.Get(p => p.Id == id);
                 if (product == null)
                     return NotFound(new { message = "Product not found" });
 
@@ -324,7 +325,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             _unitOfWork = unitOfWork;
         }
-    {
+    
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
@@ -346,7 +347,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var user = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
+                var user = _unitOfWork.ApplicationUser.Get(u => u.Id == id);
                 if (user == null)
                     return NotFound(new { message = "User not found" });
                 return Ok(new { data = user });
@@ -401,7 +402,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var user = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
+                var user = _unitOfWork.ApplicationUser.Get(u => u.Id == id);
                 if (user == null)
                     return NotFound(new { message = "User not found" });
 
@@ -427,7 +428,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             _unitOfWork = unitOfWork;
         }
-    {
+    
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
@@ -449,7 +450,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var order = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
+                var order = _unitOfWork.OrderHeader.Get(o => o.Id == id);
                 if (order == null)
                     return NotFound(new { message = "Order not found" });
                 return Ok(new { data = order });
@@ -504,7 +505,7 @@ namespace BulkyBookWeb.Controllers.Api
         {
             try
             {
-                var order = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
+                var order = _unitOfWork.OrderHeader.Get(o => o.Id == id);
                 if (order == null)
                     return NotFound(new { message = "Order not found" });
 

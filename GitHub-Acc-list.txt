@@ -7,10 +7,10 @@ Email Accounts: github copilot
 
 -------------------  --------------
 2025 10 29   4code
-chenvue99@gmail.com  		  used   2%   <-- 2025.12.03 17:03
+chenvue99@gmail.com  		  used   38%   <-- 2025.12.03 17:03,12/04 06:00 32%,12/04 09:21 38%,
 -------------------  --------------
 2025 11 21  4code
-chilly64125@hotmail.com		used   32%  <-- rate-limited 2025.12.03 17:03
+chilly64125@hotmail.com		used   32%   <-- rate-limited 2025.12.03 17:03
 -------------------  --------------
 2025 11 11   4code
 chungyong0506@gmail.com		used   0%
@@ -19,11 +19,11 @@ chungyong0506@gmail.com		used   0%
 greenvue933@gmail.com		  used  100%   <--4 days away
 -------------------  --------------
 2025 10 30   4code
-lipinglin27@gmail.com 		used  100% <--4 days away
+lipinglin27@gmail.com 		used  100%   <--4 days away
 -------------------  --------------
 2025 11 17  4code 
 (yahoo email pwd reset:20251118)
-michael112246@yahoo.com.tw used  100% <--10 days away
+michael112246@yahoo.com.tw used  100%   <--10 days away
 
 
 ===============================================
