@@ -176,6 +176,11 @@ const schema = yup.object({
 
 async function validate() {
   try {
+    // Debug: show current values and types to help trace validation issues
+    console.debug('FormView.validate - values.companyId:', values.companyId, 'type:', typeof values.companyId)
+
+    // Clear any previous errors before validating
+    Object.keys(errors).forEach(k => delete (errors as any)[k])
     // Ensure numeric fields are actually numbers
     const valuesToValidate = {
       ...values,
@@ -185,21 +190,22 @@ async function validate() {
     }
 
     // Check required fields manually before yup validation
-    if (!valuesToValidate.categoryId) {
+    if (valuesToValidate.categoryId === null || valuesToValidate.categoryId === undefined) {
       (errors as any).categoryId = '類別為必填'
-      throw new Error('Validation failed')
+      return false
     }
-    if (!valuesToValidate.companyId) {
+    if (valuesToValidate.companyId === null || valuesToValidate.companyId === undefined) {
       (errors as any).companyId = '主辦單位為必填'
-      throw new Error('Validation failed')
+      return false
     }
 
     await schema.validate(valuesToValidate, { abortEarly: false })
+    // Clear errors on successful validation
     Object.keys(errors).forEach(k => delete (errors as any)[k])
     return true
   } catch (err: any) {
     if (err.inner) {
-      Object.keys(errors).forEach(k => delete (errors as any)[k])
+      // already cleared at start; populate errors from yup
       for (const e of err.inner) {
         if (e.path) (errors as any)[e.path] = e.message
       }
