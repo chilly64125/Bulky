@@ -272,13 +272,18 @@ const router = createRouter({
   routes,
 });
 
-// Initialize auth from localStorage on app start
-const authStore = useAuthStore();
-authStore.initializeAuth();
+// Track if auth has been initialized
+let authInitialized = false;
 
 // Route guard
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore();
+
+  // Initialize auth from localStorage on first route check (when Pinia is ready)
+  if (!authInitialized) {
+    authStore.initializeAuth();
+    authInitialized = true;
+  }
 
   const requiresAuth = to.meta.requiresAuth !== false;
   const requiredRole = to.meta.requiresRole as string | undefined;
