@@ -21,9 +21,9 @@
 import { ref } from 'vue'
 
 const cards = ref([
-  { title: '陳氏宗祠-牌位管理', description: '管理與查詢祖先牌位', link: '/ancestral' },
-  { title: '懷恩塔-塔位管理', description: '管理與查詢懷恩塔塔位', link: '/kindness' },
-  { title: '活動管理', description: '活動、分類、報名管理', link: '/category' }
+  { title: '陳氏宗祠-牌位管理', description: '管理與查詢祖先牌位', link: '/app/ancestral' },
+  { title: '懷恩塔-塔位管理', description: '管理與查詢懷恩塔塔位', link: '/app/kindness' },
+  { title: '活動管理', description: '活動、分類、報名管理', link: '/app/category' }
 ])
 </script>
 

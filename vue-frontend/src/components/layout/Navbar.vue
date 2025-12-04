@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
       <!-- Brand -->
-      <router-link class="navbar-brand d-flex align-items-center" to="/">
+      <router-link class="navbar-brand d-flex align-items-center" :to="authStore.isAuthenticated ? '/app' : '/'">
         <i class="bi bi-house-fill me-2"></i>
         <!-- short name on xs, full name on md+ -->
         <span class="d-inline d-md-none">{{ shortName }}</span>
@@ -24,19 +24,19 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <router-link class="dropdown-item" to="/category">活動類別檔</router-link>
+                <router-link class="dropdown-item" to="/app/category">活動類別檔</router-link>
               </li>
               <li>
-                <router-link class="dropdown-item" to="/company">宗親會基本檔</router-link>
+                <router-link class="dropdown-item" to="/app/company">宗親會基本檔</router-link>
               </li>
               <li>
-                <router-link class="dropdown-item" to="/product">活動基本檔</router-link>
+                <router-link class="dropdown-item" to="/app/product">活動基本檔</router-link>
               </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <router-link class="dropdown-item" to="/user">會員管理</router-link>
+                <router-link class="dropdown-item" to="/app/user">會員管理</router-link>
               </li>
             </ul>
           </li>
@@ -48,16 +48,16 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <router-link class="dropdown-item" to="/kindness">懐恩塔-塔位-新增</router-link>
+                <router-link class="dropdown-item" to="/app/kindness">懐恩塔-塔位-新增</router-link>
               </li>
               <li>
-                <router-link class="dropdown-item" to="/kindness/query">懐恩塔-塔位-查詢</router-link>
+                <router-link class="dropdown-item" to="/app/kindness/query">懐恩塔-塔位-查詢</router-link>
               </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <router-link class="dropdown-item" to="/user">會員管理</router-link>
+                <router-link class="dropdown-item" to="/app/user">會員管理</router-link>
               </li>
             </ul>
           </li>
@@ -69,26 +69,26 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <router-link class="dropdown-item" to="/ancestral">陳氏宗祠-牌位-新增</router-link>
+                <router-link class="dropdown-item" to="/app/ancestral">陳氏宗祠-牌位-新增</router-link>
               </li>
               <li>
-                <router-link class="dropdown-item" to="/ancestral/query">陳氏宗祠-牌位-查詢</router-link>
+                <router-link class="dropdown-item" to="/app/ancestral/query">陳氏宗祠-牌位-查詢</router-link>
               </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <router-link class="dropdown-item" to="/user">會員管理</router-link>
+                <router-link class="dropdown-item" to="/app/user">會員管理</router-link>
               </li>
             </ul>
           </li>
 
           <!-- Customer Menu (mobile only) -->
           <li v-if="authStore.isCustomer" class="nav-item d-md-none">
-            <router-link class="nav-link" to="/kindness/query">懐恩塔-塔位查詢</router-link>
+            <router-link class="nav-link" to="/app/kindness/query">懐恩塔-塔位查詢</router-link>
           </li>
           <li v-if="authStore.isCustomer" class="nav-item d-md-none">
-            <router-link class="nav-link" to="/ancestral/query">陳氏宗祠-牌位查詢</router-link>
+            <router-link class="nav-link" to="/app/ancestral/query">陳氏宗祠-牌位查詢</router-link>
           </li>
 
           <!-- User Menu -->
