@@ -169,8 +169,8 @@ const errors = reactive<any>({})
 const schema = yup.object({
   title: yup.string().trim().required('活動名稱為必填'),
   isbn: yup.string().trim().required('活動簡介為必填'),
-  categoryId: yup.number().typeError('類別為必填').required('類別為必填'),
-  companyId: yup.number().typeError('主辦單位為必填').required('主辦單位為必填'),
+  categoryId: yup.number().positive('類別為必填').required('類別為必填'),
+  companyId: yup.number().positive('主辦單位為必填').required('主辦單位為必填'),
   listPrice: yup.number().typeError('費用為必填').required('費用為必填').min(0, '費用不能為負數')
 })
 
@@ -179,16 +179,27 @@ async function validate() {
     // Ensure numeric fields are actually numbers
     const valuesToValidate = {
       ...values,
-      categoryId: values.categoryId ? Number(values.categoryId) : undefined,
-      companyId: values.companyId ? Number(values.companyId) : undefined,
-      listPrice: values.listPrice ? Number(values.listPrice) : undefined
+      categoryId: values.categoryId !== null && values.categoryId !== undefined ? Number(values.categoryId) : null,
+      companyId: values.companyId !== null && values.companyId !== undefined ? Number(values.companyId) : null,
+      listPrice: values.listPrice !== null && values.listPrice !== undefined ? Number(values.listPrice) : 0
     }
+
+    // Check required fields manually before yup validation
+    if (!valuesToValidate.categoryId) {
+      (errors as any).categoryId = '類別為必填'
+      throw new Error('Validation failed')
+    }
+    if (!valuesToValidate.companyId) {
+      (errors as any).companyId = '主辦單位為必填'
+      throw new Error('Validation failed')
+    }
+
     await schema.validate(valuesToValidate, { abortEarly: false })
     Object.keys(errors).forEach(k => delete (errors as any)[k])
     return true
   } catch (err: any) {
-    Object.keys(errors).forEach(k => delete (errors as any)[k])
     if (err.inner) {
+      Object.keys(errors).forEach(k => delete (errors as any)[k])
       for (const e of err.inner) {
         if (e.path) (errors as any)[e.path] = e.message
       }
