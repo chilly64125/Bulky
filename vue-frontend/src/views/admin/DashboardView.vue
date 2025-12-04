@@ -104,7 +104,7 @@
                             新增、編輯和管理活動商品
                         </p>
                         <router-link to="/admin/product" class="btn btn-warning btn-sm">
-                            活動管理
+                            進入活動管理
                         </router-link>
                     </div>
                 </div>
