@@ -37,7 +37,7 @@ let countdownTimer: number | null = null
 
 // Toggle this to true to disable the auto-logout timers (temporary, safer for debugging)
 // Set to false to enable auto-logout behavior
-const DISABLE_AUTO_LOGOUT = false
+const DISABLE_AUTO_LOGOUT = true
 
 const AUTO_LOGOUT_MINUTES = 3
 const WARNING_SECONDS = 5
