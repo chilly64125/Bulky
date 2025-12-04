@@ -126,6 +126,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     app.UseHttpsRedirection();
 }
+else
+{
+    // In development, allow HTTP without redirect
+    Console.WriteLine("Development mode: HTTP enabled (HTTPS redirect disabled)");
+}
 
 // Serve SPA static assets (CSS, JS, images)
 app.UseStaticFiles(new StaticFileOptions
