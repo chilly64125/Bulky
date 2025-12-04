@@ -9,6 +9,8 @@ export const useAuthStore = defineStore("auth", () => {
   const token = ref<AuthToken | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const serverData = ref<any>(null);
+  const serverProducts = ref<any[]>([]);
 
   const isAuthenticated = computed(() => !!user.value && !!token.value);
   const hasRole = (role: string) => {
@@ -152,6 +154,18 @@ export const useAuthStore = defineStore("auth", () => {
         isActive: true,
       };
     }
+
+    // Load server-injected data if available (from MVC render)
+    try {
+      const injectedData = sessionStorage.getItem("__INITIAL_SERVER_DATA__");
+      if (injectedData) {
+        serverData.value = JSON.parse(injectedData);
+        serverProducts.value = serverData.value?.products || [];
+        console.log("📦 Server products loaded:", serverProducts.value);
+      }
+    } catch (err) {
+      console.warn("⚠️ Failed to parse server data:", err);
+    }
   };
 
   const clearError = () => {
@@ -163,6 +177,8 @@ export const useAuthStore = defineStore("auth", () => {
     token,
     loading,
     error,
+    serverData,
+    serverProducts,
     isAuthenticated,
     isAdmin,
     isCustomer,

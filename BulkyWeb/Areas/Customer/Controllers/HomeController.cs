@@ -99,6 +99,61 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             }
 
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,Company,ProductImages");
+
+            // If a built SPA exists under wwwroot/spa, serve its index.html and embed server data
+            try
+            {
+                var webRoot = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                var spaIndexPath = System.IO.Path.Combine(webRoot, "spa", "index.html");
+                if (System.IO.File.Exists(spaIndexPath))
+                {
+                    var html = System.IO.File.ReadAllText(spaIndexPath);
+
+                    // Prepare a lightweight product DTO to serialize into the page
+                    var productsForClient = productList.Select(p => new
+                    {
+                        id = p.Id,
+                        title = p.Title,
+                        company = p.Company?.Name,
+                        image = p.ProductImages != null && p.ProductImages.Any() ? p.ProductImages.FirstOrDefault().ImageUrl : null
+                    }).ToList();
+
+                    var serverData = new
+                    {
+                        publishDate = ViewBag.PublishDate,
+                        autoLogoutMinutes = ViewBag.AUTO_LOGOUT_MINUTE,
+                        warningBeforeLogoutSeconds = ViewBag.WARNING_BEFORE_LOGOUT_SECOND,
+                        workDurationMinutes = ViewBag.Work_Duration,
+                        workWarningSeconds = ViewBag.WORK_WARNING_SECONDS,
+                        systemStartTime = ViewBag.SystemStartTime,
+                        role = TempData["Role"],
+                        products = productsForClient
+                    };
+
+                    var options = new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+                    var serverJson = System.Text.Json.JsonSerializer.Serialize(serverData, options);
+
+                    var inject = $"<script>window.__INITIAL_SERVER_DATA__ = {serverJson};</script>";
+
+                    // Insert just before closing </body>
+                    if (html.Contains("</body>"))
+                    {
+                        html = html.Replace("</body>", inject + "</body>");
+                    }
+                    else
+                    {
+                        html += inject;
+                    }
+
+                    return Content(html, "text/html");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex, "Error while attempting to serve SPA index.html");
+            }
+
+            // Fall back to the original MVC view if SPA not present
             return View(productList);
         }
 
