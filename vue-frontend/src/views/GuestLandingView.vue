@@ -30,40 +30,48 @@
         <h2 class="text-center mb-5">核心功能</h2>
         <div class="row">
           <div class="col-md-6 col-lg-3 mb-4">
-            <div class="feature-card card h-100">
-              <div class="card-body text-center">
-                <i class="bi bi-person-vcard" style="font-size: 40px; color: #0d6efd;"></i>
-                <h5 class="card-title mt-3">祖先牌位查詢</h5>
-                <p class="card-text">快速查詢陳氏宗祠祖先牌位詳情和位置</p>
+            <router-link to="/login" class="text-decoration-none">
+              <div class="feature-card card h-100">
+                <div class="card-body text-center">
+                  <i class="bi bi-person-vcard" style="font-size: 40px; color: #0d6efd;"></i>
+                  <h5 class="card-title mt-3">祖先牌位查詢</h5>
+                  <p class="card-text">快速查詢陳氏宗祠祖先牌位詳情和位置</p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
           <div class="col-md-6 col-lg-3 mb-4">
-            <div class="feature-card card h-100">
-              <div class="card-body text-center">
-                <i class="bi bi-geo-alt" style="font-size: 40px; color: #198754;"></i>
-                <h5 class="card-title mt-3">墓園塔位查詢</h5>
-                <p class="card-text">快速查詢懷恩塔家族墓園的塔位詳情和位置</p>
+            <router-link to="/login" class="text-decoration-none">
+              <div class="feature-card card h-100">
+                <div class="card-body text-center">
+                  <i class="bi bi-geo-alt" style="font-size: 40px; color: #198754;"></i>
+                  <h5 class="card-title mt-3">墓園塔位查詢</h5>
+                  <p class="card-text">快速查詢懷恩塔家族墓園的塔位詳情和位置</p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
           <div class="col-md-6 col-lg-3 mb-4">
-            <div class="feature-card card h-100">
-              <div class="card-body text-center">
-                <i class="bi bi-file-earmark-text" style="font-size: 40px; color: #fd7e14;"></i>
-                <h5 class="card-title mt-3">文件管理</h5>
-                <p class="card-text">上傳和管理相關文件、照片和紀錄</p>
+            <router-link to="/login" class="text-decoration-none">
+              <div class="feature-card card h-100">
+                <div class="card-body text-center">
+                  <i class="bi bi-file-earmark-text" style="font-size: 40px; color: #fd7e14;"></i>
+                  <h5 class="card-title mt-3">文件管理</h5>
+                  <p class="card-text">上傳和管理相關文件、照片和紀錄</p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
           <div class="col-md-6 col-lg-3 mb-4">
-            <div class="feature-card card h-100">
-              <div class="card-body text-center">
-                <i class="bi bi-shield-check" style="font-size: 40px; color: #6f42c1;"></i>
-                <h5 class="card-title mt-3">安全隱私</h5>
-                <p class="card-text">使用最新的安全技術保護家族資訊</p>
+            <router-link to="/login" class="text-decoration-none">
+              <div class="feature-card card h-100">
+                <div class="card-body text-center">
+                  <i class="bi bi-shield-check" style="font-size: 40px; color: #6f42c1;"></i>
+                  <h5 class="card-title mt-3">安全隱私</h5>
+                  <p class="card-text">使用最新的安全技術保護家族資訊</p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -75,48 +83,56 @@
         <h2 class="text-center mb-5">快速開始</h2>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-              <div class="me-3">
-                <i class="bi bi-question-circle" style="font-size: 30px; color: #0d6efd;"></i>
+            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-dark">
+              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
+                <div class="me-3">
+                  <i class="bi bi-question-circle" style="font-size: 30px; color: #0d6efd;"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">常見問題</h5>
+                  <p class="mb-0 text-muted">了解如何使用系統功能</p>
+                </div>
               </div>
-              <div>
-                <h5 class="mb-1">常見問題</h5>
-                <p class="mb-0 text-muted">了解如何使用系統功能</p>
-              </div>
-            </div>
+            </a>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-              <div class="me-3">
-                <i class="bi bi-telephone" style="font-size: 30px; color: #198754;"></i>
+            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-dark">
+              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
+                <div class="me-3">
+                  <i class="bi bi-telephone" style="font-size: 30px; color: #198754;"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">聯絡客服</h5>
+                  <p class="mb-0 text-muted">遇到問題？立即聯絡我們</p>
+                </div>
               </div>
-              <div>
-                <h5 class="mb-1">聯絡客服</h5>
-                <p class="mb-0 text-muted">遇到問題？立即聯絡我們</p>
-              </div>
-            </div>
+            </a>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-              <div class="me-3">
-                <i class="bi bi-shield-lock" style="font-size: 30px; color: #fd7e14;"></i>
+            <a href="#" class="text-decoration-none text-dark">
+              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
+                <div class="me-3">
+                  <i class="bi bi-shield-lock" style="font-size: 30px; color: #fd7e14;"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">隱私政策</h5>
+                  <p class="mb-0 text-muted">查看我們如何保護您的隱私</p>
+                </div>
               </div>
-              <div>
-                <h5 class="mb-1">隱私政策</h5>
-                <p class="mb-0 text-muted">查看我們如何保護您的隱私</p>
-              </div>
-            </div>
+            </a>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="quick-link-card d-flex align-items-center p-4 border rounded">
-              <div class="me-3">
-                <i class="bi bi-file-text" style="font-size: 30px; color: #6f42c1;"></i>
+            <a href="#" class="text-decoration-none text-dark">
+              <div class="quick-link-card d-flex align-items-center p-4 border rounded">
+                <div class="me-3">
+                  <i class="bi bi-file-text" style="font-size: 30px; color: #6f42c1;"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">使用條款</h5>
+                  <p class="mb-0 text-muted">了解我們的服務條款</p>
+                </div>
               </div>
-              <div>
-                <h5 class="mb-1">使用條款</h5>
-                <p class="mb-0 text-muted">了解我們的服務條款</p>
-              </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -182,6 +198,7 @@
   transition: transform 0.3s, box-shadow 0.3s;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .feature-card:hover {
@@ -196,6 +213,7 @@
 .quick-link-card {
   transition: background-color 0.3s, transform 0.3s;
   background-color: #f8f9fa;
+  cursor: pointer;
 }
 
 .quick-link-card:hover {
