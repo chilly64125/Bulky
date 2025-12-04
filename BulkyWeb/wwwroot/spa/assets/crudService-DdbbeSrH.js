@@ -1,1 +1,0 @@
-import{a as e}from"./index-D0JmamB5.js";function t(t){return{list:(a,p)=>e.get(t,{params:{page:a,pageSize:p}}),getAll:(a,p)=>e.get(t,{params:{page:a,pageSize:p}}),getById:a=>e.get(`${t}/${a}`),create:a=>e.post(t,a),update:(a,p)=>e.put(`${t}/${a}`,p),delete:a=>e.delete(`${t}/${a}`)}}export{t as c};

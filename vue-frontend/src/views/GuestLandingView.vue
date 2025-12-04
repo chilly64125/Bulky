@@ -33,13 +33,19 @@
             <p class="lead opacity-75 fw-bold">我們致力於弘揚[穎川陳氏 祖訓]，奉行[先祖不怕艱苦、勤儉打拼的精神與美德]。</p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12 text-center">
+        <div class="row g-3 justify-content-center">
+          <div class="col-auto">
             <button @click="showVideoModal = true" class="btn btn-info btn-lg fw-bold text-white">
               <i class="bi bi-camera-video-fill me-2"></i>
               台中市銀同碧湖陳氏宗親會-影片
               <i class="bi bi-camera-video-fill ms-2"></i>
             </button>
+          </div>
+          <div class="col-auto">
+            <router-link to="/login" class="btn btn-primary btn-lg fw-bold text-white">
+              <i class="bi bi-box-arrow-in-right me-2"></i>
+              登入
+            </router-link>
           </div>
         </div>
       </div>
@@ -82,7 +88,7 @@
                   <p class="card-title h5 text-dark opacity-75 text-uppercase text-center fw-bold">{{ product.title }}
                   </p>
                   <p class="card-title text-warning text-center fw-bold">主辦單位: <b>{{ product.company?.name ||
-                      product.company }}</b></p>
+                    product.company }}</b></p>
                 </div>
                 <div class="pl-1">
                   <p class="text-dark text-opacity-75 text-center mb-0 fw-bold">
