@@ -87,7 +87,7 @@ namespace BulkyBookWeb.Controllers.Api
                     CategoryId = int.Parse(Request.Form["categoryId"]),
                     CompanyId = int.Parse(Request.Form["companyId"]),
                     HDate = Request.Form["hDate"],
-                    HeldYN = Request.Form["heldYN"][0],
+                    HeldYN = string.IsNullOrEmpty(Request.Form["heldYN"].ToString()) ? 'N' : Request.Form["heldYN"].ToString()[0],
                     ListPrice = double.Parse(Request.Form["listPrice"])
                 };
 
@@ -155,7 +155,7 @@ namespace BulkyBookWeb.Controllers.Api
                 product.CategoryId = int.Parse(Request.Form["categoryId"]);
                 product.CompanyId = int.Parse(Request.Form["companyId"]);
                 product.HDate = Request.Form["hDate"];
-                product.HeldYN = Request.Form["heldYN"][0];
+                product.HeldYN = string.IsNullOrEmpty(Request.Form["heldYN"].ToString()) ? 'N' : Request.Form["heldYN"].ToString()[0];
                 product.ListPrice = double.Parse(Request.Form["listPrice"]);
 
                 _unitOfWork.Product.Update(product);
