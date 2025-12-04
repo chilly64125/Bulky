@@ -20,6 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
   const isAdmin = computed(() => hasRole("Admin"));
   const isCustomer = computed(() => hasRole("Customer"));
+  const isGuest = computed(() => hasRole("Guest"));
 
   const login = async (credentials: LoginRequest) => {
     loading.value = true;
@@ -108,11 +109,20 @@ export const useAuthStore = defineStore("auth", () => {
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
-      user.value = null;
       token.value = null;
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      // Set guest user after logout
+      user.value = {
+        id: "guest",
+        username: "Guest",
+        email: "guest@chen.local",
+        firstName: "Guest",
+        lastName: "User",
+        roles: ["Guest"],
+        isActive: true,
+      };
     }
   };
 
@@ -127,6 +137,17 @@ export const useAuthStore = defineStore("auth", () => {
         accessToken,
         refreshToken: refreshToken || "",
         expiresIn: 3600,
+      };
+    } else {
+      // Set guest user if not authenticated
+      user.value = {
+        id: "guest",
+        username: "Guest",
+        email: "guest@chen.local",
+        firstName: "Guest",
+        lastName: "User",
+        roles: ["Guest"],
+        isActive: true,
       };
     }
   };
@@ -143,6 +164,7 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
     isAdmin,
     isCustomer,
+    isGuest,
     hasRole,
     login,
     register,

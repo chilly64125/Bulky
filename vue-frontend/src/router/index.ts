@@ -288,8 +288,8 @@ router.beforeEach((to, _from, next) => {
   const requiresAuth = to.meta.requiresAuth !== false;
   const requiredRole = to.meta.requiresRole as string | undefined;
 
-  // Check authentication
-  if (requiresAuth && !authStore.isAuthenticated) {
+  // Check authentication - guests are allowed on non-authenticated routes
+  if (requiresAuth && !authStore.isAuthenticated && !authStore.isGuest) {
     next({ path: "/login", query: { redirect: to.fullPath } });
     return;
   }
