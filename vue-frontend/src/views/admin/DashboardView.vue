@@ -55,7 +55,7 @@
                         <p class="card-text text-muted small">
                             管理系統使用者、分配角色和權限
                         </p>
-                        <router-link to="/admin/users" class="btn btn-primary btn-sm">
+                        <router-link to="/app/admin/users" class="btn btn-primary btn-sm">
                             進入會員管理
                         </router-link>
                     </div>
@@ -71,7 +71,7 @@
                         <p class="card-text text-muted small">
                             新增、編輯和管理活動類別
                         </p>
-                        <router-link to="/admin/category" class="btn btn-info btn-sm">
+                        <router-link to="/app/category" class="btn btn-info btn-sm">
                             進入類別管理
                         </router-link>
                     </div>
@@ -87,7 +87,7 @@
                         <p class="card-text text-muted small">
                             管理宗親會組織資訊
                         </p>
-                        <router-link to="/admin/company" class="btn btn-success btn-sm">
+                        <router-link to="/app/company" class="btn btn-success btn-sm">
                             進入宗親會管理
                         </router-link>
                     </div>
@@ -103,7 +103,7 @@
                         <p class="card-text text-muted small">
                             新增、編輯和管理活動商品
                         </p>
-                        <router-link to="/admin/product" class="btn btn-warning btn-sm">
+                        <router-link to="/app/product" class="btn btn-warning btn-sm">
                             進入活動管理
                         </router-link>
                     </div>
@@ -119,7 +119,7 @@
                         <p class="card-text text-muted small">
                             管理懷恩塔塔位資訊和位置
                         </p>
-                        <router-link to="/admin/kindness" class="btn btn-danger btn-sm">
+                        <router-link to="/app/kindness" class="btn btn-danger btn-sm">
                             進入塔位管理
                         </router-link>
                     </div>
@@ -135,7 +135,7 @@
                         <p class="card-text text-muted small">
                             管理陳氏宗祠祖先牌位資訊
                         </p>
-                        <router-link to="/admin/ancestral" class="btn btn-secondary btn-sm">
+                        <router-link to="/app/ancestral" class="btn btn-secondary btn-sm">
                             進入牌位管理
                         </router-link>
                     </div>
