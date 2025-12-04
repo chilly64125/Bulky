@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import * as yup from 'yup'
 import type { Product, Category, Company } from '@/types'
@@ -316,6 +316,22 @@ onMounted(async () => {
     }
   }
 })
+
+// Clear field-specific errors when user fixes them by selecting a value
+watch(
+  () => values.companyId,
+  (val) => {
+    console.debug('FormView.watch - companyId changed:', val, 'type:', typeof val)
+    if (val !== null && val !== undefined) delete (errors as any).companyId
+  }
+)
+
+watch(
+  () => values.categoryId,
+  (val) => {
+    if (val !== null && val !== undefined) delete (errors as any).categoryId
+  }
+)
 </script>
 
 <style scoped>
