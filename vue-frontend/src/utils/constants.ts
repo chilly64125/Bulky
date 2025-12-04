@@ -30,7 +30,8 @@ export const APP_CONSTANTS = {
 export const USER_ROLES = {
   ADMIN: "Admin",
   CUSTOMER: "Customer",
-  GUEST: "Guest",
+  // Unauthenticated indicates a site visitor without login
+  UNAUTHENTICATED: "Unauthenticated",
 } as const;
 
 // Grid dimensions

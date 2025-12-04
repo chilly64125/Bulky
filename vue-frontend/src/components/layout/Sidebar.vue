@@ -6,7 +6,7 @@
     <nav class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link class="nav-link" to="/app">
+          <router-link class="nav-link" :to="homeLink">
             <i class="bi bi-house-door-fill me-2"></i>
             首頁
           </router-link>
@@ -103,9 +103,18 @@ import { useAuthStore } from "@/stores/authStore";
 import { useRouter } from "vue-router";
 import { useNotificationStore } from "@/stores/notificationStore";
 
+import { computed } from "vue";
+
 const authStore = useAuthStore();
 const router = useRouter();
 const notificationStore = useNotificationStore();
+
+const homeLink = computed(() => {
+  if (authStore.isAdmin) return "/app/admin";
+  if (authStore.isCustomer) return "/app/customer";
+  // default authenticated home
+  return "/app";
+});
 
 const handleLogout = async () => {
   await authStore.logout();

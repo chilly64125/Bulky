@@ -20,7 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
   const isAdmin = computed(() => hasRole("Admin"));
   const isCustomer = computed(() => hasRole("Customer"));
-  const isGuest = computed(() => hasRole("Guest"));
+  const isUnauthenticated = computed(() => hasRole("Unauthenticated"));
 
   const login = async (credentials: LoginRequest) => {
     loading.value = true;
@@ -113,14 +113,14 @@ export const useAuthStore = defineStore("auth", () => {
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      // Set guest user after logout
+      // Set unauthenticated user after logout
       user.value = {
-        id: "guest",
-        username: "Guest",
-        email: "guest@chen.local",
-        firstName: "Guest",
+        id: "unauthenticated",
+        username: "Unauthenticated",
+        email: "no-login@chen.local",
+        firstName: "Unauthenticated",
         lastName: "User",
-        roles: ["Guest"],
+        roles: ["Unauthenticated"],
         isActive: true,
       };
     }
@@ -139,14 +139,14 @@ export const useAuthStore = defineStore("auth", () => {
         expiresIn: 3600,
       };
     } else {
-      // Set guest user if not authenticated
+      // Set unauthenticated user object for visitors (no-login)
       user.value = {
-        id: "guest",
-        username: "Guest",
-        email: "guest@chen.local",
-        firstName: "Guest",
+        id: "unauthenticated",
+        username: "Unauthenticated",
+        email: "no-login@chen.local",
+        firstName: "Unauthenticated",
         lastName: "User",
-        roles: ["Guest"],
+        roles: ["Unauthenticated"],
         isActive: true,
       };
     }
@@ -164,7 +164,7 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
     isAdmin,
     isCustomer,
-    isGuest,
+    isUnauthenticated,
     hasRole,
     login,
     register,

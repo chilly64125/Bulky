@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
       <!-- Brand -->
-      <router-link class="navbar-brand d-flex align-items-center" :to="authStore.isAuthenticated ? '/app' : '/'">
+      <router-link class="navbar-brand d-flex align-items-center" to="/">
         <i class="bi bi-house-fill me-2"></i>
         <!-- short name on xs, full name on md+ -->
         <span class="d-inline d-md-none">{{ shortName }}</span>
