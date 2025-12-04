@@ -127,6 +127,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// Serve SPA static assets (CSS, JS, images)
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        System.IO.Path.Combine(app.Environment.WebRootPath, "spa")),
+    RequestPath = "/spa"
+});
+
+// Serve wwwroot files normally
+app.UseStaticFiles();
+
 // existing middleware...
 // Note: MapControllers must be called after routing and CORS middleware
 app.UseStaticFiles();
