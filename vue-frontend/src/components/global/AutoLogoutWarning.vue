@@ -34,38 +34,51 @@ const notificationStore = useNotificationStore()
 let logoutTimer: number | null = null
 let countdownTimer: number | null = null
 
+// Toggle this to true to disable the auto-logout timers (temporary, safer for debugging)
+// Set to false to enable auto-logout behavior
+const DISABLE_AUTO_LOGOUT = true
+
 const AUTO_LOGOUT_MINUTES = 3
 const WARNING_SECONDS = 5
 
 onMounted(() => {
-  startInactivityTimer()
-  addActivityListeners()
+  if (!DISABLE_AUTO_LOGOUT) {
+    startInactivityTimer()
+    addActivityListeners()
+  } else {
+    // Ensure any existing timers are cleared when disabling
+    clearTimers()
+  }
 })
 
 onUnmounted(() => {
   clearTimers()
-  removeActivityListeners()
+  if (!DISABLE_AUTO_LOGOUT) removeActivityListeners()
 })
 
 const addActivityListeners = () => {
+  if (DISABLE_AUTO_LOGOUT) return
   document.addEventListener('mousedown', handleActivity)
   document.addEventListener('keydown', handleActivity)
   document.addEventListener('touchstart', handleActivity)
 }
 
 const removeActivityListeners = () => {
+  if (DISABLE_AUTO_LOGOUT) return
   document.removeEventListener('mousedown', handleActivity)
   document.removeEventListener('keydown', handleActivity)
   document.removeEventListener('touchstart', handleActivity)
 }
 
 const handleActivity = () => {
+  if (DISABLE_AUTO_LOGOUT) return
   sessionStore.updateActivity()
   clearTimers()
   startInactivityTimer()
 }
 
 const startInactivityTimer = () => {
+  if (DISABLE_AUTO_LOGOUT) return
   const logoutTimeMs = AUTO_LOGOUT_MINUTES * 60 * 1000
   const warningTimeMs = (AUTO_LOGOUT_MINUTES * 60 - WARNING_SECONDS) * 1000
 
@@ -80,6 +93,7 @@ const startInactivityTimer = () => {
 }
 
 const startCountdown = () => {
+  if (DISABLE_AUTO_LOGOUT) return
   let remaining = WARNING_SECONDS
 
   countdownTimer = window.setInterval(() => {
@@ -93,6 +107,11 @@ const startCountdown = () => {
 }
 
 const handleStayLoggedIn = () => {
+  if (DISABLE_AUTO_LOGOUT) {
+    // No-op when disabled, but keep UX consistent by hiding warning
+    sessionStore.hideWarning()
+    return
+  }
   sessionStore.hideWarning()
   sessionStore.updateActivity()
   clearTimers()
@@ -101,6 +120,11 @@ const handleStayLoggedIn = () => {
 
 const handleLogout = async () => {
   clearTimers()
+  if (DISABLE_AUTO_LOGOUT) {
+    // When disabled, do not perform automatic logout. Keep function available for manual logout.
+    notificationStore.info('自動登出已被暫時停用')
+    return
+  }
   await authStore.logout()
   notificationStore.warning('由於長時間未活動，已自動登出')
   router.push('/login')
@@ -170,6 +194,7 @@ const clearTimers = () => {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -180,6 +205,7 @@ const clearTimers = () => {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
