@@ -29,7 +29,7 @@
               <span v-else class="badge bg-secondary">禁用</span>
             </td>
             <td>
-              <router-link :to="`/category/edit/${cat.categoryId}`" class="btn btn-warning btn-sm">編輯</router-link>
+              <router-link :to="`/app/category/edit/${cat.categoryId}`" class="btn btn-warning btn-sm">編輯</router-link>
               <button class="btn btn-danger btn-sm" @click="deleteCategory(cat.categoryId)">刪除</button>
             </td>
           </tr>

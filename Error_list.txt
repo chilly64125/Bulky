@@ -1,0 +1,59 @@
+http://localhost:5173/
+
+Please give its respective destination link to each clickable item.
+
+------------------------------------------------------------
+
+http://localhost:5173/
+
+Modify:
+祖先牌位管理
+完整記錄祖先牌位資訊，建檔歷史紀錄，便於家族查詢
+
+to
+
+祖先牌位查詢
+快速查詢陳氏宗祠祖先牌位詳情和位置
+
+
+In http://localhost:5173/app/admin
+clicking any Item,redirecting user to  http://localhost:5173/
+should've navigated to respective Admin UI
+
+------------------------------------------------------------
+
+When login as Admin,  pressing 'refresh' button of Browser, 
+it redirects me to http://localhost:5173/login?redirect=/app/admin
+
+
+------------------------------------------------------------
+
+When in http://localhost:5173/app/category
+
+clicking 'Edit' Button: 
+Redirecting to in http://localhost:5173/app/category/edit/1 , I see  'Request failed with status code 404'
+
+
+------------------------------------------------------------
+
+When in http://localhost:5173/app/product/add 
+
+clicking 'Add', New data is not inserted and not displayed in List.
+
+
+------------------------------------------------------------
+
+When I click '立即登出'  on Warning Modal, 
+it didn't redirect to  https://www.facebook.com/groups/654519621275974
+
+------------------------------------------------------------
+
+On Autologout Warning Modal, the  'left-seconds to logout' calculation and displaying is something wrong ,
+please ensure its correct.
+
+------------------------------------------------------------
+
+in http://localhost:5173/app/admin,
+
+in '活動基本檔' 新增、編輯和管理活動商品' section,
+please modify '進入商品管理' -> '活動管理'

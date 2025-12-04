@@ -83,7 +83,8 @@
         <h2 class="text-center mb-5">快速開始</h2>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-dark">
+            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer"
+              class="text-decoration-none text-dark">
               <div class="quick-link-card d-flex align-items-center p-4 border rounded">
                 <div class="me-3">
                   <i class="bi bi-question-circle" style="font-size: 30px; color: #0d6efd;"></i>
@@ -96,7 +97,8 @@
             </a>
           </div>
           <div class="col-md-6 mb-3">
-            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-dark">
+            <a href="https://www.facebook.com/groups/654519621275974" target="_blank" rel="noopener noreferrer"
+              class="text-decoration-none text-dark">
               <div class="quick-link-card d-flex align-items-center p-4 border rounded">
                 <div class="me-3">
                   <i class="bi bi-telephone" style="font-size: 30px; color: #198754;"></i>

@@ -6,9 +6,6 @@ Email Accounts: github copilot
 陳氏宗祠祖先牌位暨懷恩塔家族墓園塔位查詢
 
 -------------------  --------------
-2025 10 29   4code
-chenvue99@gmail.com  		  used   38%   <-- 2025.12.03 17:03,12/04 06:00 32%,12/04 09:21 38%,
--------------------  --------------
 2025 11 21  4code
 chilly64125@hotmail.com		used   32%   <-- rate-limited 2025.12.03 17:03
 -------------------  --------------
@@ -30,16 +27,16 @@ michael112246@yahoo.com.tw used  100%   <--10 days away
 
 --------------------  --------------
 2025 11 19  4code
-detail168@hotmail.com		used  100% 
+detail168@hotmail.com		used    100% 
 -------------------  --------------
 2025 11 12  4code
 dailypower264@hotmail.com	used  100%  
 -------------------  --------------
 2025 11 19  4code
-fall13571@hotmail.com		used  100%  
+fall13571@hotmail.com		used    100%  
 -------------------  --------------
 2025 11 11   4code
-gis20140728@gmail.com		used  100%
+gis20140728@gmail.com		used    100%
 -------------------  --------------
 2025 11 21  4code  (notebook0)
 winter864216@hotmail.com	used  100%
@@ -48,7 +45,7 @@ winter864216@hotmail.com	used  100%
 wangdachung0826@gmail.com	used  100%
 -------------------  --------------
 2025 11 11   4code
-tzengli0607@gmail.com		used  100%
+tzengli0607@gmail.com		used    100%
 -------------------  --------------
 2025 11 20  4code
 windy182764@hotmail.com		used  100%
@@ -66,7 +63,7 @@ balance2461@hotmail.com		used  100%
 lipinglin27@gmail.com 		used  100%
 -------------------  --------------
 2025 11 07   4code
-greenvue933@gmail.com		used  100%
+greenvue933@gmail.com		used    100%
 -------------------  --------------
 2025 11 07   4code
 linliping36@gmail.com 		used  100%
@@ -94,6 +91,10 @@ cloudy125216@hotmail.com	used  100%
 -------------------  --------------
 2025 11 21  4code
 rainy1251000@hotmail.com	used  100%
+-------------------  --------------
+2025 10 29   4code
+chenvue99@gmail.com  		  used  100%   
+
 
 ==================
 2025 11 17 00:19

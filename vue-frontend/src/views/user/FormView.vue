@@ -118,7 +118,7 @@ async function onSubmit() {
       await userService.create(values);
       notificationStore.success("會員已新增");
     }
-    router.push("/user");
+    router.push("/app/user");
   } catch (e: any) {
     error.value = e?.message || "操作失敗";
   } finally {

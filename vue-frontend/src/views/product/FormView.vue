@@ -109,7 +109,7 @@ async function onSubmit() {
       await productService.create(values)
       notificationStore.success('活動已新增')
     }
-    router.push('/product')
+    router.push('/app/product')
   } catch (e: any) {
     error.value = e?.message || '操作失敗'
   } finally {

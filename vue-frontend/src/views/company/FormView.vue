@@ -108,7 +108,7 @@ async function onSubmit() {
       await companyService.create(values);
       notificationStore.success("宗親會已新增");
     }
-    router.push("/company");
+    router.push("/app/company");
   } catch (e: any) {
     error.value = e?.message || "操作失敗";
   } finally {

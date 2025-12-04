@@ -1,12 +1,14 @@
 ﻿
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BulkyBook.Models
 {
     public class Category
     {
         [Key]
+        [JsonPropertyName("categoryId")]
         public int Id { get; set; }
         [Required]
         [MaxLength(30)]

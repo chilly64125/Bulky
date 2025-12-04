@@ -218,6 +218,17 @@ namespace BulkyBookWeb.Controllers.Api
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        // DTO used to accept frontend product payloads (frontend uses different property names)
+        public class ProductCreateDto
+        {
+            public int? productId { get; set; }
+            public string? title { get; set; }
+            public string? description { get; set; }
+            public int? categoryId { get; set; }
+            public double? price { get; set; }
+            public string? imageUrl { get; set; }
+        }
+
         public ProductApiController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -257,12 +268,28 @@ namespace BulkyBookWeb.Controllers.Api
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] Product data)
+        public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
         {
             try
             {
-                if (data == null)
+                if (dto == null)
                     return BadRequest(new { message = "Data is required" });
+
+                // Map frontend DTO to backend Product model
+                var data = new Product
+                {
+                    Title = dto.title ?? string.Empty,
+                    Description = dto.description ?? string.Empty,
+                    // Frontend uses 'price' while backend model uses 'ListPrice'
+                    ListPrice = dto.price ?? 0,
+                    // CategoryId maps directly
+                    CategoryId = dto.categoryId ?? 0,
+                    // Required fields for backend model
+                    ISBN = string.Empty,
+                    CompanyId = 0,
+                    HDate = null,
+                    HeldYN = 'N'
+                };
 
                 _unitOfWork.Product.Add(data);
                 _unitOfWork.Save();
@@ -276,16 +303,23 @@ namespace BulkyBookWeb.Controllers.Api
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, [FromBody] Product data)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductCreateDto dto)
         {
             try
             {
-                if (data == null || data.Id != id)
-                    return BadRequest(new { message = "Invalid data" });
+                var existing = _unitOfWork.Product.Get(p => p.Id == id);
+                if (existing == null)
+                    return NotFound(new { message = "Product not found" });
 
-                _unitOfWork.Product.Update(data);
+                // Map updatable fields
+                existing.Title = dto.title ?? existing.Title;
+                existing.Description = dto.description ?? existing.Description;
+                existing.ListPrice = dto.price ?? existing.ListPrice;
+                existing.CategoryId = dto.categoryId ?? existing.CategoryId;
+
+                _unitOfWork.Product.Update(existing);
                 _unitOfWork.Save();
-                return Ok(new { message = "Product updated", data = data });
+                return Ok(new { message = "Product updated", data = existing });
             }
             catch (Exception ex)
             {

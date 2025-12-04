@@ -87,13 +87,21 @@ async function onSubmit() {
   loading.value = true
   try {
     if (isEdit.value && values.categoryId) {
-      await categoryService.update(values.categoryId, values)
+      const res = await categoryService.update(values.categoryId, values)
+      if (!res || !res.data || !res.data.data) {
+        notificationStore.error('更新失敗：未授權或伺服器回應不正確')
+        return
+      }
       notificationStore.success('類別已更新')
     } else {
-      await categoryService.create(values)
+      const res = await categoryService.create(values)
+      if (!res || !res.data || !res.data.data) {
+        notificationStore.error('新增失敗：未授權或伺服器回應不正確')
+        return
+      }
       notificationStore.success('類別已新增')
     }
-    router.push('/category')
+    router.push('/app/category')
   } catch (e: any) {
     error.value = e?.message || '操作失敗'
   } finally {
