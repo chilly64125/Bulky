@@ -13,6 +13,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" @click="handleStayLoggedIn">保持登入</button>
+        <button type="button" class="btn btn-info" @click="visitOfficialWebsite">宗親會官網</button>
         <button type="button" class="btn btn-danger" @click="handleLogout">立即登出</button>
       </div>
     </div>
@@ -96,6 +97,9 @@ const startCountdown = () => {
   if (DISABLE_AUTO_LOGOUT) return
   let remaining = WARNING_SECONDS
 
+  // Set initial remaining time in the store so modal shows correct value immediately
+  sessionStore.remainingTime = remaining
+
   countdownTimer = window.setInterval(() => {
     remaining--
     sessionStore.remainingTime = remaining
@@ -116,6 +120,11 @@ const handleStayLoggedIn = () => {
   sessionStore.updateActivity()
   clearTimers()
   startInactivityTimer()
+}
+
+const visitOfficialWebsite = () => {
+  // Navigate to official website without logging out
+  window.location.assign('https://www.facebook.com/groups/654519621275974')
 }
 
 const handleLogout = async () => {
