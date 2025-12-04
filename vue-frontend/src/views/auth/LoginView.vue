@@ -29,6 +29,10 @@
         </button>
       </div>
 
+      <div class="text-center mb-3">
+        <button type="button" class="btn btn-outline-secondary" @click="enterAsVisitor">訪客登入</button>
+      </div>
+
       <div v-if="error" class="alert alert-danger alert-dismissible fade show d-flex align-items-start" role="alert">
         <i class="bi bi-exclamation-circle me-2 flex-shrink-0 mt-1"></i>
         <div class="flex-grow-1">
@@ -148,6 +152,13 @@ async function onSubmit() {
   } finally {
     loading.value = false;
   }
+}
+
+function enterAsVisitor() {
+  // Initialize the auth store to visitor/unauthenticated user
+  authStore.initializeAuth();
+  // Navigate to the guest landing page
+  router.push("/");
 }
 </script>
 
