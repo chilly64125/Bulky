@@ -36,7 +36,7 @@ let countdownTimer: number | null = null
 
 // Toggle this to true to disable the auto-logout timers (temporary, safer for debugging)
 // Set to false to enable auto-logout behavior
-const DISABLE_AUTO_LOGOUT = true
+const DISABLE_AUTO_LOGOUT = false
 
 const AUTO_LOGOUT_MINUTES = 3
 const WARNING_SECONDS = 5
@@ -125,9 +125,17 @@ const handleLogout = async () => {
     notificationStore.info('自動登出已被暫時停用')
     return
   }
-  await authStore.logout()
-  notificationStore.warning('由於長時間未活動，已自動登出')
-  router.push('/login')
+
+  try {
+    await authStore.logout()
+  } catch (err) {
+    // ignore logout errors and continue to redirect
+  }
+
+  notificationStore.warning('由於長時間未活動，已自動登出，將導向外部連結')
+
+  // Redirect user to external Facebook group after timeout
+  window.location.assign('https://www.facebook.com/groups/654519621275974')
 }
 
 const clearTimers = () => {
