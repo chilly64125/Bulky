@@ -57,7 +57,7 @@
         style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333; max-width: 90%; max-height: 90%; overflow: auto;">
         <h3 class="mb-3">台中市銀同碧湖陳氏宗親會-影片</h3>
         <video width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls>
-          <source src="/images/Films/ChenClanOpening.mp4" type="video/mp4">
+          <source :src="videoUrl" type="video/mp4">
           您的瀏覽器不支援視頻播放。
         </video>
         <p class="text-muted small mt-3">(點擊視頻外的地方關閉)</p>
@@ -140,6 +140,11 @@ import { useAuthStore } from '@/stores/authStore';
 const authStore = useAuthStore();
 const showVideoModal = ref(false);
 const showBackToTop = ref(false);
+
+// Video URL - served from backend wwwroot
+const videoUrl = computed(() => {
+  return '/images/Films/ChenClanOpening.mp4';
+});
 
 // Get products from server data or fallback
 const products = computed(() => {
