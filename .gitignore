@@ -364,4 +364,13 @@ FodyWeavers.xsd
 
 *.db
 *.db-shm
-*.db-wal
+*.db-wal.DS_Store
+bulky.db
+bulky.db-shm
+bulky.db-wal
+*.png
+*.jpg
+BulkyWeb/bin/
+BulkyWeb/obj/
+vue-frontend/node_modules/
+vue-frontend/dist/

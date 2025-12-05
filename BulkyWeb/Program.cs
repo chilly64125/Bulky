@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection; // Add this line
 using Stripe;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -94,7 +95,14 @@ builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddControllers(); // <- 必要：啟用 API controllers 2025 12 01
+builder.Services.AddControllers() // <- 必要：啟用 API controllers 2025 12 01
+    .AddJsonOptions(opts =>
+    {
+        // Prevent System.Text.Json from throwing on object cycles (EF navigation properties)
+        opts.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        // Optionally increase maximum depth if needed
+        opts.JsonSerializerOptions.MaxDepth = 64;
+    });
 // Allow CORS from the local Vite dev server
 builder.Services.AddCors(options =>
 {
@@ -111,6 +119,17 @@ var app = builder.Build();
 // Add lifecycle logging to help diagnose unexpected shutdowns
 var logger = app.Services.GetService<ILogger<Program>>();
 logger?.LogDebug("Services built and app instance created");
+// Log current process id for diagnostics
+try
+{
+    var pid = System.Diagnostics.Process.GetCurrentProcess().Id;
+    logger?.LogWarning("Process info: PID={pid}", pid);
+    Console.WriteLine($"Process info: PID={pid}");
+}
+catch (Exception ex)
+{
+    logger?.LogDebug(ex, "Failed to log process info");
+}
 if (logger != null)
 {
     app.Lifetime.ApplicationStarted.Register(() => logger.LogInformation("Application lifetime: Started"));
@@ -210,6 +229,46 @@ try
             Console.WriteLine("Error while logging ApplicationStopping: " + ex);
         }
     });
+    // Also capture common OS-level shutdown signals
+    AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+    {
+        try
+        {
+            Console.WriteLine("ProcessExit event fired. Stack trace:\n" + Environment.StackTrace);
+            logger?.LogWarning("ProcessExit event fired. Stack trace: {stack}", Environment.StackTrace);
+        }
+        catch { }
+    };
+    Console.CancelKeyPress += (s, e) =>
+    {
+        try
+        {
+            Console.WriteLine($"Console.CancelKeyPress fired. SpecialKey={e.SpecialKey}, Cancel={e.Cancel}");
+            logger?.LogWarning("Console.CancelKeyPress fired. SpecialKey={key}, Cancel={cancel}", e.SpecialKey, e.Cancel);
+        }
+        catch { }
+    };
+    // Try to register Posix signal handlers where available to get more details
+    try
+    {
+        // Posix signal APIs exist on some runtimes; wrap in try/catch to be safe on Windows
+        var posixType = Type.GetType("System.Runtime.InteropServices.PosixSignalRegistration, System.Runtime.InteropServices", false);
+        if (posixType != null)
+        {
+            var posixEnum = Type.GetType("System.Runtime.InteropServices.PosixSignal, System.Runtime.InteropServices", false);
+            if (posixEnum != null)
+            {
+                var sigInt = Enum.Parse(posixEnum, "SIGINT");
+                var createMethod = posixType.GetMethod("Create", new Type[] { posixEnum, typeof(Action<,>).MakeGenericType(typeof(object), typeof(object)) });
+                // We won't actually call the reflection Create as signatures vary; presence check is sufficient for diagnostics.
+                logger?.LogDebug("PosixSignalRegistration type found; runtime may deliver POSIX signals.");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        logger?.LogDebug(ex, "Posix signal registration check failed");
+    }
     app.Lifetime.ApplicationStopped.Register(() => logger?.LogWarning("ApplicationStopped event fired"));
     app.Run();
     logger?.LogInformation("app.Run() has returned");
