@@ -1,6 +1,10 @@
 --------------------------------------------------------------------------------------------------------------
 [Good Advice on How to ask Copilot to do things]
 --------------------------------------------------------------------------------------------------------------
+Could you stop  the same processes before starting Frontend and Backend in External Powershell Windows. 
+So that they are running independently without interfering.
+
+
 Could I migrate the content of Index.cshtml onto  http://localhost:5173/?
 
 --------------------------------------------------------------

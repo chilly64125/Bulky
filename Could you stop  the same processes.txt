@@ -1,0 +1,35 @@
+Could you stop  the same processes before starting Frontend and Backend in External Powershell Windows. 
+So that they are running independently without interfering. I would like to do manually testing.Tks!
+
+I'll stop any running backend and frontend processes, then provide you with commands to start them fresh in separate PowerShell windows for manual testing. 
+
+Ran terminal command: Get-Process | Where-Object {$_.ProcessName -match 'dotnet|node'} | Select-Object ProcessName, Id, @{Name='StartTime';Expression={$_.StartTime}} | Format-Table
+
+Found 3 running processes. Let me stop them: 
+
+Ran terminal command: Stop-Process -Id 15500, 20040, 10352 -Force ; Start-Sleep -Seconds 2 ; Write-Host "✅ All processes stopped. Ready to restart."
+
+Perfect! ✅ All processes stopped. Now use these commands in two separate external PowerShell windows:
+
+**Window 1 - Backend (ASP.NET Core):**
+```powershell
+cd 'D:\Git\VueChenClan\BulkyWeb'
+dotnet run
+```
+
+**Window 2 - Frontend (Vue 3):**
+```powershell
+cd 'D:\Git\VueChenClan\vue-frontend'
+npm run dev
+```
+
+**Expected Results:**
+- Backend: Runs on `https://localhost:7017` (or similar secure port)
+- Frontend: Runs on `http://localhost:5173`
+
+**For Testing:**
+1. Open browser to `http://localhost:5173`
+2. Login with: `admin@example.com` / `admin123`
+3. All CRUD operations should work independently
+
+The processes are now fresh and won't interfere with each other. Ready for your manual testing! 🚀
