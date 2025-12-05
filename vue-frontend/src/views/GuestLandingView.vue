@@ -143,7 +143,7 @@ const showBackToTop = ref(false);
 
 // Video URL - served from backend wwwroot
 const videoUrl = computed(() => {
-  return '/images/Films/ChenClanOpening.mp4';
+  return 'http://localhost:5064/images/Films/ChenClanOpening.mp4';
 });
 
 // Get products from server data or fallback
