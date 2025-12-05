@@ -40,10 +40,6 @@ Could I migrate the content of \kindness\DisplayPosition.cshtml onto  'Query'
 
 
 
-
-
-
-
 What would you seggest me to do next? Tks!
 
 Which Option(s) or priority would you seggest me to do next(A or B)? Tks!
