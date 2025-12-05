@@ -18,6 +18,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
+      "/images": {
+        target: "http://localhost:5064",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/images/, "/images"),
+      },
     },
   },
   build: {

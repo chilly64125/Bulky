@@ -141,9 +141,9 @@ const authStore = useAuthStore();
 const showVideoModal = ref(false);
 const showBackToTop = ref(false);
 
-// Video URL - served from backend wwwroot
+// Video URL - served from backend wwwroot via proxy
 const videoUrl = computed(() => {
-  return 'http://localhost:5064/images/Films/ChenClanOpening.mp4';
+  return '/images/Films/ChenClanOpening.mp4';
 });
 
 // Get products from server data or fallback
