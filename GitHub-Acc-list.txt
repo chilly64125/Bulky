@@ -9,10 +9,10 @@ dec16811@hotmail.com
 
 -------------------  --------------
 2025 11 21  4code
-chilly64125@hotmail.com		used   32%   <-- rate-limited 2025.12.03 17:03
+chilly64125@hotmail.com		used  100%   <-- rate-limited 2025.12.03 17:03
 -------------------  --------------
 2025 11 11   4code
-chungyong0506@gmail.com		used   0%
+chungyong0506@gmail.com		used  100%
 -------------------  --------------
 2025 11 07   4code
 greenvue933@gmail.com		  used  100%   <--4 days away

@@ -24,7 +24,11 @@
 
 
 
+**---------------------------------------------------**
 
+**2025 12 05 15:00 OK**
+
+**---------------------------------------------------**
 
 **In http://localhost:5173/app/kindness  :**  
 
@@ -210,7 +214,7 @@
 
 **---------------------------------------------------**
 
-**2025 12 04**
+**2025 12 04 OK**
 
 **---------------------------------------------------**
 
@@ -314,7 +318,9 @@ When in http://localhost:5173/app/category
 
 clicking 'Edit' Button: 
 
-Redirecting to in http://localhost:5173/app/category/edit/1 , I see  'Request failed with status code 404'
+Redirecting to in http://localhost:5173/app/category/edit/1 , 
+
+I see  'Request failed with status code 404'
 
 
 
@@ -348,7 +354,9 @@ it didn't redirect to  https://www.facebook.com/groups/654519621275974
 
 
 
-On Autologout Warning Modal, the  'left-seconds to logout' calculation and displaying is something wrong ,
+On Autologout Warning Modal, the  'left-seconds to logout' 
+
+calculation and displaying is something wrong ,
 
 please ensure its correct.
 
