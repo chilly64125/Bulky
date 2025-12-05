@@ -135,9 +135,8 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
                     var inject = $"<script>window.__INITIAL_SERVER_DATA__ = {serverJson};</script>";
 
-                    // Rewrite asset paths to include /spa prefix (use simple Replace to avoid regex parsing issues)
-                    html = html.Replace("href=\"/assets/", "href=\"/spa/assets/");
-                    html = html.Replace("src=\"/assets/", "src=\"/spa/assets/");
+                    // Rewrite asset paths to include /spa prefix (replace all occurrences of /assets/)
+                    html = html.Replace("/assets/", "/spa/assets/");
 
                     // Insert script and server data just before closing </body>
                     if (html.Contains("</body>"))
