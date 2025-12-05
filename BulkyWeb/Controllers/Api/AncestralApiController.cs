@@ -49,6 +49,33 @@ namespace BulkyBookWeb.Controllers.Api
         }
 
         /// <summary>
+        /// Query ancestral positions by section
+        /// </summary>
+        [HttpGet("positions/query")]
+        [AllowAnonymous]
+        public IActionResult QueryPositions([FromQuery] string? section = null)
+        {
+            try
+            {
+                var positions = _unitOfWork.Ancestral.GetAll().ToList();
+
+                if (!string.IsNullOrEmpty(section))
+                    positions = positions.Where(p => p.Section == section).ToList();
+
+                return Ok(new
+                {
+                    success = true,
+                    data = positions,
+                    total = positions.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Get ancestral position by ID
         /// </summary>
         [HttpGet("{id}")]

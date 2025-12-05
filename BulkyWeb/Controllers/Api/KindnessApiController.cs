@@ -49,6 +49,36 @@ namespace BulkyBookWeb.Controllers.Api
         }
 
         /// <summary>
+        /// Query kindness positions by floor and section
+        /// </summary>
+        [HttpGet("positions/query")]
+        [AllowAnonymous]
+        public IActionResult QueryPositions([FromQuery] int? floor = null, [FromQuery] string? section = null)
+        {
+            try
+            {
+                var positions = _unitOfWork.Kindness.GetAll().ToList();
+
+                if (floor.HasValue)
+                    positions = positions.Where(p => p.Floor == floor.Value).ToList();
+
+                if (!string.IsNullOrEmpty(section))
+                    positions = positions.Where(p => p.Section == section).ToList();
+
+                return Ok(new
+                {
+                    success = true,
+                    data = positions,
+                    total = positions.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Get kindness position by ID
         /// </summary>
         [HttpGet("{id}")]
