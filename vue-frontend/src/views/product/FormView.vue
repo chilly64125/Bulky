@@ -136,6 +136,7 @@ import * as yup from 'yup'
 import type { Product, Category, Company } from '@/types'
 import { crudService } from '@/services/crudService'
 import { useNotificationStore } from '@/stores/notificationStore'
+import apiClient from '@/services/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -225,8 +226,8 @@ async function handleFileChange(event: Event) {
 async function deleteImage(imageId: number) {
   if (!confirm('確定要刪除此圖片嗎？')) return
   try {
-    // Call backend to delete image
-    await fetch(`/api/product/image/${imageId}`, { method: 'DELETE' })
+    // Call backend to delete image (use axios instance with credentials)
+    await apiClient.delete(`/product/image/${imageId}`)
     notificationStore.success('圖片已刪除')
     // Reload product data
     if (isEdit.value && route.params.id) {
@@ -261,15 +262,14 @@ async function onSubmit() {
     }
 
     if (isEdit.value && values.id) {
-      await fetch(`/api/product/${values.id}`, {
-        method: 'PUT',
-        body: formData
+      await apiClient.put(`/product/${values.id}`, formData, {
+        // Let axios set the content-type for FormData
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       notificationStore.success('活動已更新')
     } else {
-      await fetch('/api/product', {
-        method: 'POST',
-        body: formData
+      await apiClient.post('/product', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       notificationStore.success('活動已新增')
     }

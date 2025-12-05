@@ -72,7 +72,8 @@ namespace BulkyBookWeb.Controllers.Api
 
                             ProductImage productImage = new()
                             {
-                                ImageUrl = @"\images\products\product-" + product.Id + "\\" + fileName,
+                                // Use web-friendly forward slashes for ImageUrl
+                                ImageUrl = "/images/products/product-" + product.Id + "/" + fileName,
                                 ProductId = product.Id,
                             };
 
@@ -189,7 +190,7 @@ namespace BulkyBookWeb.Controllers.Api
 
                             ProductImage productImage = new()
                             {
-                                ImageUrl = @"\images\products\product-" + product.Id + @"\" + fileName,
+                                ImageUrl = "/images/products/product-" + product.Id + "/" + fileName,
                                 ProductId = product.Id,
                             };
 
@@ -256,7 +257,7 @@ namespace BulkyBookWeb.Controllers.Api
 
                             ProductImage productImage = new()
                             {
-                                ImageUrl = @"\images\products\product-" + product.Id + @"\" + fileName,
+                                ImageUrl = "/images/products/product-" + product.Id + "/" + fileName,
                                 ProductId = product.Id,
                             };
 
