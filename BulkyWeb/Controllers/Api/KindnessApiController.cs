@@ -53,14 +53,14 @@ namespace BulkyBookWeb.Controllers.Api
         /// </summary>
         [HttpGet("positions/query")]
         [AllowAnonymous]
-        public IActionResult QueryPositions([FromQuery] int? floor = null, [FromQuery] string? section = null)
+        public IActionResult QueryPositions([FromQuery] string? floor = null, [FromQuery] string? section = null)
         {
             try
             {
                 var positions = _unitOfWork.Kindness.GetAll().ToList();
 
-                if (floor.HasValue)
-                    positions = positions.Where(p => p.Floor == floor.Value).ToList();
+                if (!string.IsNullOrEmpty(floor))
+                    positions = positions.Where(p => p.Floor == floor).ToList();
 
                 if (!string.IsNullOrEmpty(section))
                     positions = positions.Where(p => p.Section == section).ToList();
