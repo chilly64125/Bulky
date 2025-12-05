@@ -20,6 +20,78 @@ namespace BulkyBookWeb.Controllers.Api
         }
 
         /// <summary>
+        /// Development-only test endpoint to create product without auth (only in Development)
+        /// </summary>
+        [HttpPost("test-create")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestCreate()
+        {
+            try
+            {
+                // Only allow in Development environment
+                if (!(_webHostEnvironment.EnvironmentName?.Equals("Development", StringComparison.OrdinalIgnoreCase) ?? false))
+                {
+                    return Forbid();
+                }
+
+                var product = new Product
+                {
+                    Title = Request.Form["title"],
+                    Description = Request.Form["description"],
+                    ISBN = Request.Form["isbn"],
+                    CategoryId = int.Parse(Request.Form["categoryId"]),
+                    CompanyId = int.Parse(Request.Form["companyId"]),
+                    HDate = Request.Form["hDate"],
+                    HeldYN = string.IsNullOrEmpty(Request.Form["heldYN"].ToString()) ? 'N' : Request.Form["heldYN"].ToString()[0],
+                    ListPrice = double.Parse(Request.Form["listPrice"])
+                };
+
+                _unitOfWork.Product.Add(product);
+                _unitOfWork.Save();
+
+                // Handle file uploads (same as production handler)
+                var files = Request.Form.Files;
+                if (files.Count > 0)
+                {
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            string productPath = Path.Combine(wwwRootPath, @"images\products\product-" + product.Id);
+                            string finalPath = Path.Combine(productPath, fileName);
+
+                            if (!Directory.Exists(productPath))
+                                Directory.CreateDirectory(productPath);
+
+                            using (var fileStream = new FileStream(finalPath, FileMode.Create))
+                            {
+                                file.CopyTo(fileStream);
+                            }
+
+                            ProductImage productImage = new()
+                            {
+                                ImageUrl = @"\images\products\product-" + product.Id + "\\" + fileName,
+                                ProductId = product.Id,
+                            };
+
+                            product.ProductImages.Add(productImage);
+                        }
+                    }
+                    _unitOfWork.Product.Update(product);
+                    _unitOfWork.Save();
+                }
+
+                return Ok(new { success = true, data = product, message = "Test product created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Get all products
         /// </summary>
         [HttpGet]
