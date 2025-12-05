@@ -374,3 +374,5 @@ BulkyWeb/bin/
 BulkyWeb/obj/
 vue-frontend/node_modules/
 vue-frontend/dist/
+BulkyWeb/scripts/
+*.db-wal
