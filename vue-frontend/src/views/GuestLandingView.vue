@@ -5,7 +5,7 @@
       <div class="container">
         <div class="row g-3">
           <div class="col-md-6">
-            <router-link to="/app/admin/ancestral" class="text-decoration-none d-block">
+            <router-link to="/app/ancestral/query" class="text-decoration-none d-block">
               <div class="p-4 rounded text-center fw-bold text-white"
                 style="background: #495057; font-size: 24px; cursor: pointer; transition: all 0.3s;">
                 <i class="bi bi-people-fill me-2"></i>陳氏宗祠-牌位查詢
@@ -13,7 +13,7 @@
             </router-link>
           </div>
           <div class="col-md-6">
-            <router-link to="/app/admin/kindness" class="text-decoration-none d-block">
+            <router-link to="/app/kindness/query" class="text-decoration-none d-block">
               <div class="p-4 rounded text-center fw-bold text-white"
                 style="background: #495057; font-size: 24px; cursor: pointer; transition: all 0.3s;">
                 <i class="bi bi-tree-fill me-2"></i>懷恩塔-塔位查詢
@@ -53,10 +53,15 @@
 
     <!-- Video Modal -->
     <div v-if="showVideoModal" class="video-modal" @click="showVideoModal = false">
-      <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333;">
-        <h3 class="mb-3">視頻播放區</h3>
-        <p class="text-muted">影片內容將在此顯示</p>
-        <p class="text-muted small">(按任何地方關閉)</p>
+      <div
+        style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333; max-width: 90%; max-height: 90%; overflow: auto;">
+        <h3 class="mb-3">台中市銀同碧湖陳氏宗親會-影片</h3>
+        <video width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls>
+          <source src="/images/Films/ChenClanOpening.mp4" type="video/mp4">
+          <source src="/images/Films/ChenClanOpening.webm" type="video/webm">
+          您的瀏覽器不支援視頻播放。
+        </video>
+        <p class="text-muted small mt-3">(點擊視頻外的地方關閉)</p>
       </div>
     </div> <!-- Activities/Events Section Header -->
     <section class="activities-header bg-light py-4">
