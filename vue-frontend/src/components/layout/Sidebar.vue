@@ -42,7 +42,7 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/app/kindness">
               <i class="bi bi-door-closed me-2"></i>
-              懐恩塔管理
+              懷恩塔塔位管理
             </router-link>
           </li>
           <li class="nav-item">

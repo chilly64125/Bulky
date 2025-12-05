@@ -44,7 +44,7 @@
           <!-- Kindness Menu (mobile only) -->
           <li v-if="authStore.isAdmin" class="nav-item dropdown d-md-none">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              二.懷恩塔-塔位管理
+              二.懷恩塔塔位管理
             </a>
             <ul class="dropdown-menu">
               <li>
@@ -65,7 +65,7 @@
           <!-- Ancestral Menu (mobile only) -->
           <li v-if="authStore.isAdmin" class="nav-item dropdown d-md-none">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              三.陳氏宗祠-祖先牌位管理
+              三.宗祠牌位管理
             </a>
             <ul class="dropdown-menu">
               <li>

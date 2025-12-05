@@ -3,6 +3,27 @@ a glossary of technical terms
 術語彙編
 
 ------------------------------------------------------------
+2025 12 05 14:16
+hashtag "#"
+------------------------------------------------------------
+A hashtag is a word or phrase preceded by the "#" symbol, 
+used on social media to categorize content and make it more discoverable. 
+By clicking on a hashtag, users can see other posts with the same tag, 
+which helps them find topics or conversations they are interested in. 
+For example, using #skincare on a post about a new moisturizer helps 
+people searching for "skincare" find your content. 
+Function: Hashtags serve as a way to tag and cross-reference content by topic or theme, 
+turning them into searchable links.
+Usage: You create a hashtag by placing the "#" symbol directly before a keyword 
+or phrase without spaces or special characters, such as #autumnleaves.
+Purpose: They make it easier for users to find and engage with content relevant 
+to their interests. They also act as a signal for algorithms to categorize 
+and recommend posts.
+Placement: Hashtags can be included anywhere within a post.
+History: The symbol "#" is known as a number sign, hash, or pound sign, 
+and its use as a hashtag was popularized on platforms like X (formerly Twitter). 
+
+------------------------------------------------------------
 2025 11 28 15:43
 BCrypt（Blowfish Crypt）是一種哈希函數和密碼加密算法
 ------------------------------------------------------------

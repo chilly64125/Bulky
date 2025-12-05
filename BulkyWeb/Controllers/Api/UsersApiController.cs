@@ -251,17 +251,6 @@ namespace BulkyBookWeb.Controllers.Api
     }
 
     /// <summary>
-    /// DTO for user with roles
-    /// </summary>
-    public class UserRoleDto
-    {
-        public string Id { get; set; } = string.Empty;
-        public string UserName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public List<string> Roles { get; set; } = new List<string>();
-    }
-
-    /// <summary>
     /// Request body for updating user roles
     /// </summary>
     public class UpdateRolesRequest

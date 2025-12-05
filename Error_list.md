@@ -24,7 +24,63 @@
 
 
 
+
+
+**In http://localhost:5173/app/kindness  :**  
+
+**Change 懷恩塔-塔位清單 --> 懷恩塔塔位管理**
+
+
+
+**In http://localhost:5173/app/ancestral :**
+
+**Change 陳氏宗祠-牌位清單 -->宗祠牌位管理**
+
+
+
+
+
+**1.On Sidebar:**
+
+	**Change 懷恩塔-塔位清單 --> 懷恩塔塔位管理**
+
+	**Change 陳氏宗祠-牌位清單 -->宗祠牌位管理**
+
+
+
+**2.會員管理 http://localhost:5173/app/user**
+
+	**Request failed with status code 404**
+
+
+
+**3.懷恩塔塔位管理**
+
+	**http://localhost:5173/app/kindness**
+
+	**Request failed with status code 404**
+
+
+
+**4.宗祠牌位管理**
+
+	**http://localhost:5173/app/ancestral**
+
+	**Request failed with status code 404**
+
+
+
+**5.訂單管理**
+
+	**http://localhost:5173/app/order**
+
+	**Request failed with status code 404**
+
+
+
 **-------------------------------------------------------------------------------------------**
+
+
 
 
 

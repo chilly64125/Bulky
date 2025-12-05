@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2>陳氏宗祠-牌位清單</h2>
+      <h2>宗祠牌位管理</h2>
       <router-link to="/app/ancestral/add" class="btn btn-primary">新增牌位</router-link>
     </div>
 
