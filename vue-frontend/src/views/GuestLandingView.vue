@@ -35,7 +35,7 @@
         </div>
         <div class="row g-3 justify-content-center">
           <div class="col-auto">
-            <button @click="showVideoModal = true" class="btn btn-info btn-lg fw-bold text-white">
+            <button @click="openVideoModal" class="btn btn-info btn-lg fw-bold text-white">
               <i class="bi bi-camera-video-fill me-2"></i>
               台中市銀同碧湖陳氏宗親會-影片
               <i class="bi bi-camera-video-fill ms-2"></i>
@@ -56,10 +56,18 @@
       <div
         style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333; max-width: 90%; max-height: 90%; overflow: auto;">
         <h3 class="mb-3">台中市銀同碧湖陳氏宗親會-影片</h3>
-            <video ref="landingVideo" width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls autoplay muted playsinline preload="auto">
-              <source :src="videoUrl" type="video/mp4">
-              您的瀏覽器不支援視頻播放。
-            </video>
+        <video ref="landingVideo" width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls muted playsinline preload="auto">
+          <source :src="videoUrl" type="video/mp4">
+          您的瀏覽器不支援視頻播放。
+        </video>
+        <div v-if="autoplayBlocked" class="mt-3">
+          <div class="alert alert-warning py-2 mb-0">
+            自動播放被瀏覽器阻擋。請按下影片上的播放按鈕，或使用下方按鈕以啟用聲音並播放。
+            <div class="mt-2">
+              <button @click.stop.prevent="playWithSound" class="btn btn-sm btn-secondary">啟用聲音並播放</button>
+            </div>
+          </div>
+        </div>
         <p class="text-muted small mt-3">(點擊視頻外的地方關閉)</p>
       </div>
     </div> <!-- Activities/Events Section Header -->
@@ -142,6 +150,8 @@ const showVideoModal = ref(false);
 // video element reference so we can call play() programmatically
 const landingVideo = ref<HTMLVideoElement | null>(null);
 const showBackToTop = ref(false);
+// flag to indicate whether autoplay was blocked
+const autoplayBlocked = ref(false);
 
 // Video URL - served from backend wwwroot via proxy
 const videoUrl = computed(() => {
@@ -162,20 +172,30 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-
-  // Open modal and attempt autoplay on mount. Many browsers require videos to be muted
-  // for autoplay to work; we set `muted` attribute above. We still call play() to
-  // ensure the playback starts when possible and gracefully handle rejection.
+function openVideoModal() {
   showVideoModal.value = true;
+  autoplayBlocked.value = false;
   nextTick(() => {
     if (landingVideo.value) {
-      landingVideo.value.play().catch((err) => {
-        // autoplay might be blocked; ignore the error. The user can still click play.
+      // Attempt to play muted video. If the browser blocks autoplay, set flag so we
+      // can show a hint and provide a play-with-sound button.
+      landingVideo.value.play().catch(() => {
+        autoplayBlocked.value = true;
       });
     }
   });
+}
+
+function playWithSound() {
+  if (!landingVideo.value) return;
+  landingVideo.value.muted = false;
+  landingVideo.value.play().catch(() => {
+    autoplayBlocked.value = true;
+  });
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
