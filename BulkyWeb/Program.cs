@@ -97,8 +97,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 // Add health checks for containerized deployment
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<ApplicationDbContext>();
+builder.Services.AddHealthChecks();
 
 // Add CORS for frontend during development
 if (builder.Environment.IsDevelopment())
