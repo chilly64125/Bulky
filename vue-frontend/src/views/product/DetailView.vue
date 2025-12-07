@@ -47,6 +47,14 @@
 
                                         <div class="image-overlay btn-group" role="group" aria-label="image actions">
                                             <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="zoomOut(image.id)" title="Zoom Out">
+                                                <i class="bi bi-zoom-out"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="zoomIn(image.id)" title="Zoom In">
+                                                <i class="bi bi-zoom-in"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light"
                                                 @click.prevent="rotateImage(image.id)" title="Rotate 90">
                                                 <i class="bi bi-arrow-clockwise"></i>
                                             </button>
@@ -260,13 +268,13 @@ function normalizeImageUrl(url: string | undefined | null) {
 }
 // Image transform state and helpers for augmentation controls
 
-const imageTransforms = ref<Record<number, { rotate: number; flipH: boolean; filter: string }>>({});
+const imageTransforms = ref<Record<number, { rotate: number; flipH: boolean; filter: string; scale: number }>>({});
 
 function ensureTransform(id: number | string | undefined) {
     if (id == null) return;
     const key = Number(id);
     if (!imageTransforms.value[key]) {
-        imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '' };
+        imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '', scale: 1 };
     }
 }
 
@@ -294,7 +302,28 @@ function toggleFilter(id: number | string | undefined, filter: string) {
 function resetImage(id: number | string | undefined) {
     if (id == null) return;
     const key = Number(id);
-    imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '' };
+    imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '', scale: 1 };
+}
+
+// Zoom helpers: adjust scale between 0.2 and 3.0
+function clampScale(s: number) {
+    return Math.min(3, Math.max(0.2, s));
+}
+
+function zoomIn(id: number | string | undefined, step = 0.2) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    const cur = imageTransforms.value[key].scale ?? 1;
+    imageTransforms.value[key].scale = clampScale(cur + step);
+}
+
+function zoomOut(id: number | string | undefined, step = 0.2) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    const cur = imageTransforms.value[key].scale ?? 1;
+    imageTransforms.value[key].scale = clampScale(cur - step);
 }
 
 function imageStyle(id: number | string | undefined) {
@@ -303,7 +332,9 @@ function imageStyle(id: number | string | undefined) {
     const t = imageTransforms.value[key] || { rotate: 0, flipH: false, filter: '' };
     const transforms = [];
     transforms.push(`rotate(${t.rotate}deg)`);
+    const scale = t.scale ?? 1;
     if (t.flipH) transforms.push('scaleX(-1)');
+    if (scale !== 1) transforms.push(`scale(${scale})`);
     return {
         transform: transforms.join(' '),
         filter: t.filter || 'none',
@@ -381,6 +412,7 @@ table tbody tr:last-child td {
     right: 8px;
     z-index: 10;
 }
+
 .image-overlay .btn {
     opacity: 0.92;
 }
