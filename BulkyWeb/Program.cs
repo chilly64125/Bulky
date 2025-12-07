@@ -95,6 +95,25 @@ builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+// Add health checks for containerized deployment
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
+
+// Add CORS for frontend during development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DevelopmentCors", builder =>
+        {
+            builder.WithOrigins("http://localhost:5173", "http://localhost:3000")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
+}
+
 builder.Services.AddControllers() // <- 必要：啟用 API controllers 2025 12 01
     .AddJsonOptions(opts =>
     {
@@ -169,9 +188,20 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey"
 app.UseRouting();
 // Enable CORS for requests from the frontend dev server
 app.UseCors("AllowLocal");
+
+// Add CORS for development
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("DevelopmentCors");
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+
+// Map health check endpoint for container orchestration
+app.MapHealthChecks("/health");
+
 // Map attribute-routed API controllers (e.g. /api/auth/login)
 app.MapControllers();
 logger?.LogDebug("MapControllers() executed");

@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # Backend API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chenclan-api
+    ports:
+      - "5064:5064"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5064
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/chenclan.db
+      - Stripe__SecretKey=${STRIPE_SECRET_KEY}
+      - Stripe__PublishableKey=${STRIPE_PUBLISHABLE_KEY}
+      - EmailSettings__SmtpServer=${EMAIL_SMTP_SERVER}
+      - EmailSettings__SmtpPort=${EMAIL_SMTP_PORT}
+      - EmailSettings__SenderEmail=${EMAIL_SENDER}
+      - EmailSettings__SenderPassword=${EMAIL_PASSWORD}
+    volumes:
+      - ./BulkyWeb/wwwroot:/app/wwwroot
+      - chenclan-data:/app/data
+    depends_on:
+      - db
+    networks:
+      - chenclan-network
+    restart: unless-stopped
+
+  # SQL Server database service (optional - for production-like environment)
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: chenclan-db
+    environment:
+      SA_PASSWORD: ${DB_SA_PASSWORD:-YourStrong@Password123}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    networks:
+      - chenclan-network
+    restart: unless-stopped
+    # Uncomment to use SQLite instead of SQL Server
+    # profiles:
+    #   - disabled
+
+  # Nginx reverse proxy (optional - for production simulation)
+  nginx:
+    image: nginx:alpine
+    container_name: chenclan-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - api
+    networks:
+      - chenclan-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  mssql-data:
+  chenclan-data:
+
+networks:
+  chenclan-network:
+    driver: bridge

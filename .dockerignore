@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vs
+.vscode
+*.sln.iml
+*.user
+*.suo
+
+# Build artifacts
+bin/
+obj/
+dist/
+node_modules/
+.npm
+
+# Node
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+*.txt
+
+# Scripts and CI
+.github/
+scripts/
+tests/
+
+# Cache
+.eslintcache
+.cache
+
+# Temporary files
+tmp_*
+*~
+*.tmp
+
+# Screenshots and media
+screenshots/

@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker - Backend",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-build",
+      "docker": {
+        "image": "${tag}",
+        "file": "Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      },
+      "netCore": {
+        "address": "localhost:5064"
+      }
+    },
+    {
+      "name": "Local - Backend (Kestrel)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/BulkyWeb/bin/Debug/net8.0/ChenClanWeb.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/BulkyWeb",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Backend + Frontend)",
+      "configurations": ["Local - Backend (Kestrel)", "Frontend - Dev Server"],
+      "preLaunchTask": "build"
+    }
+  ]
+}
