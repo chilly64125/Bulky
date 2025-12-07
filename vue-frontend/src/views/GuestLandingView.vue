@@ -61,17 +61,18 @@
           <source :src="videoUrl" type="video/mp4">
           您的瀏覽器不支援視頻播放。
         </video>
-        <!-- Transient toast shown when autoplay blocked (unless user dismissed) -->
-        <div v-if="autoplayBlocked && !dontShowHint" class="video-toast position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
-          <div class="toast show align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-              <div class="toast-body">
-                自動播放被瀏覽器阻擋。請按下影片上的播放按鈕或使用下方按鈕啟用聲音並播放。
-              </div>
-              <div class="ps-2 pe-2 d-flex align-items-center">
-                <button @click.stop.prevent="playWithSound" class="btn btn-sm btn-secondary me-2">啟用聲音並播放</button>
-                <button @click.stop.prevent="dismissHint" class="btn btn-sm btn-outline-dark">不再顯示</button>
-              </div>
+        style="z-index: 10000;">
+        <!-- Custom animated toast shown when autoplay blocked (unless user dismissed) -->
+        <div v-if="autoplayBlocked && !dontShowHint" class="custom-toast" role="status" aria-live="polite">
+          <div class="toast-inner">
+            <div class="toast-text">自動播放被瀏覽器阻擋。請按下影片上的播放按鈕或使用下方按鈕啟用聲音並播放。</div>
+            <div class="toast-actions">
+              <button @click.stop.prevent="playWithSound" @keydown.enter.prevent="playWithSound"
+                @keydown.space.prevent="playWithSound" class="btn btn-sm btn-secondary"
+                aria-label="Play with sound">啟用聲音並播放</button>
+              <button @click.stop.prevent="dismissHint" @keydown.enter.prevent="dismissHint"
+                @keydown.space.prevent="dismissHint" class="btn btn-sm btn-outline-dark"
+                aria-label="Dismiss autoplay hint">不再顯示</button>
             </div>
           </div>
         </div>
@@ -79,6 +80,18 @@
         <div v-if="!isPlaying" class="video-overlay" @click.stop.prevent="overlayPlay">
           <div class="overlay-inner text-center">
             <button class="btn btn-light btn-lg rounded-circle play-icon" @click.stop.prevent="overlayPlay">
+              <i class="bi bi-play-fill" style="font-size: 28px;"></i>
+            </button>
+            <div class="mt-2 text-white small">點擊播放</div>
+          </div>
+        </div>
+        <!-- Play overlay: visible when video not playing to encourage tap/click; keyboard accessible -->
+        <div v-if="!isPlaying" class="video-overlay" @click.stop.prevent="overlayPlay" tabindex="0"
+          @keydown.enter.prevent="overlayPlay" @keydown.space.prevent="overlayPlay" role="button"
+          aria-label="Play video">
+          <div class="overlay-inner text-center">
+            <button class="btn btn-light btn-lg rounded-circle play-icon" @click.stop.prevent="overlayPlay"
+              @keydown.enter.prevent="overlayPlay" @keydown.space.prevent="overlayPlay" aria-label="Play video button">
               <i class="bi bi-play-fill" style="font-size: 28px;"></i>
             </button>
             <div class="mt-2 text-white small">點擊播放</div>
@@ -153,6 +166,10 @@
         <p class="mb-2">© 2025 財團法人台中市私立銀同碧湖陳氏社會福利基金會. All rights reserved.</p>
         <p class="mb-2">資料及照片來源:財團法人台中市私立銀同碧湖陳氏社會福利基金會</p>
         <p class="mb-0">Powered by Vue 3 + ASP.NET Core</p>
+        <div class="mt-2 small text-white">
+          影片自動播放: <strong>{{ autoplayPreference === 'auto' ? '自動' : '手動' }}</strong>
+          <button @click.prevent="toggleAutoplayPreference" class="btn btn-sm btn-light ms-2">切換</button>
+        </div>
       </div>
     </footer>
   </div>
@@ -221,7 +238,7 @@ function playWithSound() {
 
 function dismissHint() {
   dontShowHint.value = true;
-  try { localStorage.setItem('videoAutoplayHintDismissed', 'true'); } catch {}
+  try { localStorage.setItem('videoAutoplayHintDismissed', 'true'); } catch { }
 }
 
 function overlayPlay() {
@@ -247,6 +264,14 @@ onMounted(() => {
     }
   });
 });
+
+// Autoplay preference for site: 'auto' or 'manual'. Stored in localStorage so it's site-wide.
+const autoplayPreference = ref(localStorage.getItem('videoAutoplayPreference') || 'auto');
+
+function toggleAutoplayPreference() {
+  autoplayPreference.value = autoplayPreference.value === 'auto' ? 'manual' : 'auto';
+  try { localStorage.setItem('videoAutoplayPreference', autoplayPreference.value); } catch { }
+}
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
@@ -288,11 +313,13 @@ onUnmounted(() => {
   justify-content: center;
   pointer-events: auto;
 }
+
 .video-overlay .overlay-inner {
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   padding: 16px;
   border-radius: 8px;
 }
+
 .video-overlay .play-icon {
   width: 72px;
   height: 72px;
