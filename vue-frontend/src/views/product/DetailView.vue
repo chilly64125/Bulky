@@ -41,7 +41,15 @@
                             <div class="row g-3">
                                 <div v-for="image in product.productImages" :key="image.id"
                                     class="col-12 col-md-6 col-lg-4">
-                                    <div class="image-wrapper position-relative">
+                                    <div class="image-wrapper position-relative"
+                                        @wheel.prevent="onWheel($event, image.id)"
+                                        @mousedown.prevent="startPan($event, image.id)"
+                                        @mousemove.prevent="onPanMove($event, image.id)"
+                                        @mouseup.prevent="endPan($event, image.id)"
+                                        @mouseleave.prevent="endPan($event, image.id)"
+                                        @touchstart.passive="startPanTouch($event, image.id)"
+                                        @touchmove.prevent="onPanMoveTouch($event, image.id)"
+                                        @touchend.prevent="endPan($event, image.id)">
                                         <img :src="normalizeImageUrl(image.imageUrl)" :style="imageStyle(image.id)"
                                             alt="活動圖片" class="img-fluid rotated-image" />
 
@@ -268,7 +276,7 @@ function normalizeImageUrl(url: string | undefined | null) {
 }
 // Image transform state and helpers for augmentation controls
 
-const imageTransforms = ref<Record<number, { rotate: number; flipH: boolean; filter: string; scale: number }>>({});
+const imageTransforms = ref<Record<number, { rotate: number; flipH: boolean; filter: string; scale: number; panX?: number; panY?: number; originX?: number; originY?: number }>>({});
 
 function ensureTransform(id: number | string | undefined) {
     if (id == null) return;
@@ -331,15 +339,128 @@ function imageStyle(id: number | string | undefined) {
     const key = Number(id);
     const t = imageTransforms.value[key] || { rotate: 0, flipH: false, filter: '' };
     const transforms = [];
+    // Apply pan/translate first, then rotate/flip/scale
+    const panX = t.panX || 0;
+    const panY = t.panY || 0;
+    transforms.push(`translate(${panX}px, ${panY}px)`);
     transforms.push(`rotate(${t.rotate}deg)`);
     const scale = t.scale ?? 1;
     if (t.flipH) transforms.push('scaleX(-1)');
     if (scale !== 1) transforms.push(`scale(${scale})`);
-    return {
+    const styleObj: Record<string, string> = {
         transform: transforms.join(' '),
         filter: t.filter || 'none',
-        transition: 'transform 0.25s ease, filter 0.25s ease',
-    } as Record<string, string>;
+        transition: 'transform 0.12s ease, filter 0.12s ease',
+    };
+    if (typeof t.originX === 'number' && typeof t.originY === 'number') {
+        styleObj.transformOrigin = `${t.originX}px ${t.originY}px`;
+    }
+    return styleObj;
+}
+
+// Pan/zoom interaction state
+const panState = ref<Record<number, { panning: boolean; lastX: number; lastY: number }>>({});
+
+function startPan(evt: MouseEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    panState.value[key] = { panning: true, lastX: evt.clientX, lastY: evt.clientY };
+}
+
+function startPanTouch(evt: TouchEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const t = evt.touches[0];
+    if (!t) return;
+    const key = Number(id);
+    ensureTransform(key);
+    panState.value[key] = { panning: true, lastX: t.clientX, lastY: t.clientY };
+}
+
+function onPanMove(evt: MouseEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    const state = panState.value[key];
+    if (!state || !state.panning) return;
+    const dx = evt.clientX - state.lastX;
+    const dy = evt.clientY - state.lastY;
+    imageTransforms.value[key].panX = (imageTransforms.value[key].panX || 0) + dx;
+    imageTransforms.value[key].panY = (imageTransforms.value[key].panY || 0) + dy;
+    state.lastX = evt.clientX;
+    state.lastY = evt.clientY;
+    scheduleSaveTransform(key);
+}
+
+function onPanMoveTouch(evt: TouchEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const t = evt.touches[0];
+    if (!t) return;
+    const key = Number(id);
+    const state = panState.value[key];
+    if (!state || !state.panning) return;
+    const dx = t.clientX - state.lastX;
+    const dy = t.clientY - state.lastY;
+    imageTransforms.value[key].panX = (imageTransforms.value[key].panX || 0) + dx;
+    imageTransforms.value[key].panY = (imageTransforms.value[key].panY || 0) + dy;
+    state.lastX = t.clientX;
+    state.lastY = t.clientY;
+    scheduleSaveTransform(key);
+}
+
+function endPan(_evt: Event | null, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    if (panState.value[key]) panState.value[key].panning = false;
+}
+
+// Wheel zoom centered at pointer
+function onWheel(evt: WheelEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    const wrapper = (evt.currentTarget as HTMLElement);
+    const rect = wrapper.getBoundingClientRect();
+    const px = evt.clientX - rect.left;
+    const py = evt.clientY - rect.top;
+    imageTransforms.value[key].originX = px;
+    imageTransforms.value[key].originY = py;
+    const step = evt.deltaY > 0 ? -0.1 : 0.1;
+    const cur = imageTransforms.value[key].scale ?? 1;
+    imageTransforms.value[key].scale = clampScale(cur + step);
+    scheduleSaveTransform(key);
+}
+
+// Debounced save to server/localStorage
+const saveTimers: Record<number, number> = {};
+function scheduleSaveTransform(key: number) {
+    if (saveTimers[key]) window.clearTimeout(saveTimers[key]);
+    saveTimers[key] = window.setTimeout(() => saveTransform(key), 700);
+}
+
+async function saveTransform(imageId: number) {
+    try {
+        const prodId = product.value?.id;
+        if (!prodId) return;
+        const t = imageTransforms.value[imageId];
+        if (!t) return;
+        // Attempt to POST to an endpoint; backend may not have this route — fail silently
+        await fetch(`/api/product/${prodId}/image/${imageId}/transform`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(t),
+        });
+    } catch (err) {
+        // fallback: persist transforms to localStorage
+        try {
+            const prodId = product.value?.id as any;
+            const key = `product_${prodId}_imageTransforms`;
+            const existing = JSON.parse(localStorage.getItem(key) || '{}');
+            existing[imageId] = imageTransforms.value[imageId];
+            localStorage.setItem(key, JSON.stringify(existing));
+        } catch (e) {
+            console.error('Failed to persist transform', e);
+        }
+    }
 }
 </script>
 
