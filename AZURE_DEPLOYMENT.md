@@ -1,19 +1,21 @@
-# Azure Web App Deployment Guide
+# Azure Web App Deployment Guide (F1 Free Tier + SQLite)
 
-This guide explains how to deploy the VueChenClan application (Frontend + Backend) to Azure Web Apps.
+**Cost: FREE! 🎉** Deploy your entire full-stack application to Azure at zero cost with the F1 Free Tier and SQLite database.
+
+This guide explains how to deploy the VueChenClan application (Frontend + Backend) to Azure Web Apps using the F1 Free Tier.
 
 ## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Azure Cloud                             │
+│                   Azure Cloud (F1 Free Tier)                │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────────┐        ┌──────────────────────────┐  │
-│  │  Azure Web App   │◄─────►│  Azure SQL Database      │  │
-│  │  (Backend)       │        │  (chenclan-db)          │  │
-│  │  chenclan-api    │        └──────────────────────────┘  │
-│  │  :5064           │                                       │
+│  │  Azure Web App   │◄─────►│  SQLite Database         │  │
+│  │  (Backend)       │        │  (Local File in App)     │  │
+│  │  chenclan-api    │        │  /home/site/wwwroot/data│  │
+│  │  :5064           │        └──────────────────────────┘  │
 │  └──────────────────┘                                       │
 │         ▲                                                    │
 │         │                                                    │
@@ -26,11 +28,13 @@ This guide explains how to deploy the VueChenClan application (Frontend + Backen
 │  │  :80/:443        │                                       │
 │  └──────────────────┘                                       │
 │                                                              │
-│  ┌──────────────────┐                                       │
-│  │ Azure App Service│                                       │
-│  │ Plan             │                                       │
-│  │ (B1-B3)          │                                       │
-│  └──────────────────┘                                       │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Azure App Service Plan (F1 - Free)                   │  │
+│  │ • $0.00/month (always free)                          │  │
+│  │ • 1 GB storage                                       │  │
+│  │ • 60 minutes compute time per day                    │  │
+│  │ • Shared infrastructure                             │  │
+│  └──────────────────────────────────────────────────────┘  │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -43,15 +47,14 @@ This guide explains how to deploy the VueChenClan application (Frontend + Backen
 - .NET 8 SDK
 - Node.js 18+
 - Git
-- Azure subscription with billing enabled
+- Azure subscription (free tier doesn't require billing!)
 
 ### Azure Resources
 
 - Azure Resource Group
-- Azure App Service Plan
+- Azure App Service Plan (F1 - Free)
 - Two Azure Web Apps (backend + frontend)
-- Azure SQL Database (optional, can use SQLite)
-- Azure Key Vault (for secrets management)
+- SQLite database (embedded, no setup required)
 
 ---
 
@@ -78,48 +81,42 @@ az group create --name chenclan-rg --location eastus
 az group show --name chenclan-rg
 ```
 
-#### 1.3 Create App Service Plan
+#### 1.3 Create App Service Plan (F1 Free Tier)
 
 ```powershell
-# Create an App Service Plan (defines compute resources)
-# B1 = Basic (1 GB RAM, shared core) - cheapest option ~$7/month
-# B2 = Standard (3.5 GB RAM, dedicated) - ~$52/month
-# P1V2 = Premium (3.5 GB RAM, better performance) - ~$82/month
+# Create an App Service Plan with F1 Free Tier
+# F1 = Free ($0.00/month, 60 min/day, 1 GB storage, shared infrastructure)
+# B1 = Basic ($7/month, unlimited compute, dedicated) - for when you need more
 
 az appservice plan create \
   --name chenclan-plan \
   --resource-group chenclan-rg \
-  --sku B1 \
+  --sku F1 \
   --is-linux
+
+# Verify creation
+az appservice plan show --name chenclan-plan --resource-group chenclan-rg
 ```
 
-#### 1.4 Create Azure SQL Database (Optional)
+#### 1.4 About SQLite with Azure Web Apps
 
-If you want persistent database instead of SQLite:
+SQLite is **perfect for Azure Web Apps** because:
 
-```powershell
-# Create SQL Server
-az sql server create \
-  --name chenclan-sqlserver \
-  --resource-group chenclan-rg \
-  --admin-user sqladmin \
-  --admin-password 'YourStrong@Password123'
+- **Embedded**: Database file stored in `/home/site/wwwroot/data/chenclan.db`
+- **Zero cost**: No separate database service needed
+- **Simple**: No connection strings, firewall rules, or complicated setup
+- **Local**: Faster than cloud database, no latency
+- **Persistent**: Data persists across restarts (stored in App Service storage)
 
-# Create database
-az sql db create \
-  --server chenclan-sqlserver \
-  --name chenclan-db \
-  --resource-group chenclan-rg \
-  --sku Standard
+⚠️ **Important Limitation**: F1 Free Tier sleeps after 60 minutes of inactivity. When it wakes up, the application restarts fresh. SQLite file persists, so data is not lost.
 
-# Allow Azure services to access SQL
-az sql server firewall-rule create \
-  --name AllowAzureServices \
-  --server chenclan-sqlserver \
-  --resource-group chenclan-rg \
-  --start-ip-address 0.0.0.0 \
-  --end-ip-address 0.0.0.0
+**No setup required!** The connection string is simply:
+
 ```
+Data Source=/home/site/wwwroot/data/chenclan.db;Cache=Shared
+```
+
+Skip Step 1.4 (SQL Server creation) - you don't need it!
 
 ---
 
@@ -135,10 +132,10 @@ az webapp create \
   --runtime "dotnet:8"
 ```
 
-#### 2.2 Configure App Settings
+#### 2.2 Configure App Settings (SQLite)
 
 ```powershell
-# Database connection string
+# Set environment and SQLite connection string
 az webapp config appsettings set \
   --name chenclan-api \
   --resource-group chenclan-rg \
@@ -146,9 +143,15 @@ az webapp config appsettings set \
     ASPNETCORE_ENVIRONMENT=Production \
     ConnectionStrings__DefaultConnection="Data Source=/home/site/wwwroot/data/chenclan.db;Cache=Shared"
 
-# Or use Azure SQL instead:
-# ConnectionStrings__DefaultConnection="Server=tcp:chenclan-sqlserver.database.windows.net,1433;Initial Catalog=chenclan-db;Persist Security Info=False;User Id=sqladmin;Password=YourStrong@Password123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+# Verify settings
+az webapp config appsettings list --name chenclan-api --resource-group chenclan-rg
 ```
+
+**What's happening:**
+
+- `ASPNETCORE_ENVIRONMENT=Production` → Release mode, no debug info, optimized performance
+- `ConnectionStrings__DefaultConnection` → Tells your backend where the SQLite database file is
+- `/home/site/wwwroot/data/chenclan.db` → Standard Azure Web Apps persistent storage path
 
 #### 2.3 Enable Managed Identity (for secure Key Vault access)
 
@@ -355,20 +358,63 @@ az webapp restart --name chenclan-ui --resource-group chenclan-rg
 
 ## Cost Estimation
 
-| Resource                 | SKU              | Monthly Cost   |
-| ------------------------ | ---------------- | -------------- |
-| App Service Plan (B1)    | Basic            | $7.00          |
-| Azure Web App (Backend)  | Included in plan | Included       |
-| Azure Web App (Frontend) | Included in plan | Included       |
-| Azure SQL Database       | Standard (S0)    | $15.00         |
-| **Total**                | -                | **~$22/month** |
+| Resource                 | SKU              | Monthly Cost    |
+| ------------------------ | ---------------- | --------------- |
+| App Service Plan (F1)    | Free             | **$0.00**       |
+| Azure Web App (Backend)  | Included in plan | Included        |
+| Azure Web App (Frontend) | Included in plan | Included        |
+| SQLite Database          | Embedded         | Included        |
+| **Total**                | -                | **$0.00/month** |
 
-**Budget Tips:**
+🎉 **Your deployment is completely free!**
 
-- Use **Shared tier** ($0.00-$0.02/hour) for dev/test
-- Use **Free tier** (F1) for learning (limited: 1 GB storage, 60 min/day compute)
-- Scale up during peak times, scale down otherwise
-- Set spending limits in Azure Cost Management
+### F1 Limitations
+
+The F1 Free Tier has these trade-offs:
+
+| Feature              | F1 Free        | B1 Basic    |
+| -------------------- | -------------- | ----------- |
+| **Cost**             | $0.00/month    | $7.00/month |
+| **Compute Time/Day** | 60 minutes     | Unlimited   |
+| **Storage**          | 1 GB           | 10 GB       |
+| **Always On**        | ❌ No (sleeps) | ✅ Yes      |
+| **SSL Certificate**  | ✅ Free        | ✅ Free     |
+| **Custom Domain**    | ✅ Yes         | ✅ Yes      |
+| **Deployment Slots** | ❌ No          | ✅ 1 slot   |
+
+**When to Upgrade:**
+
+- Your application needs to run 24/7 without sleeping
+- You hit the 60-minute daily compute limit
+- You need more than 1 GB storage
+- You want faster performance (dedicated vs shared)
+
+**How to Upgrade:**
+
+```powershell
+# Scale up from F1 to B1 (takes 2-3 minutes)
+az appservice plan update \
+  --name chenclan-plan \
+  --resource-group chenclan-rg \
+  --sku B1
+```
+
+### SQLite vs Azure SQL Database
+
+| Feature        | SQLite (F1)       | Azure SQL (B1)    |
+| -------------- | ----------------- | ----------------- |
+| **Cost**       | $0 (embedded)     | ~$15/month        |
+| **Setup Time** | 0 seconds         | 10+ minutes       |
+| **Backup**     | Automatic (daily) | Automatic (daily) |
+| **Scaling**    | Single file       | Full cloud power  |
+| **Use Case**   | Dev, test, small  | Production, large |
+
+For learning and small projects, **SQLite is perfect!** When you're ready for production scale, just:
+
+1. Create Azure SQL Database (15 minutes)
+2. Update connection string (1 minute)
+3. Run migrations (2 minutes)
+4. Done! Upgrade complete
 
 ---
 
