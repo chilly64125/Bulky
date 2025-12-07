@@ -42,7 +42,8 @@
                                 <div v-for="image in product.productImages" :key="image.id"
                                     class="col-12 col-md-6 col-lg-4">
                                     <div class="image-wrapper">
-                                        <img :src="image.imageUrl" alt="活動圖片" class="img-fluid rotated-image" />
+                                        <img :src="normalizeImageUrl(image.imageUrl)" alt="活動圖片"
+                                            class="img-fluid rotated-image" />
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +218,8 @@ onMounted(async () => {
         }
 
         const data = await response.json();
-        product.value = data;
+        // API sometimes returns a wrapper { success, data }, so unwrap if needed
+        product.value = data && data.data ? data.data : data;
     } catch (err) {
         error.value = err instanceof Error ? err.message : '載入失敗，請稍後重試';
         console.error('Error loading product:', err);
@@ -225,6 +227,17 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+// Normalize image path returned from backend (convert backslashes to forward slashes
+// and ensure leading slash so Vite proxy can resolve /images)
+function normalizeImageUrl(url: string | undefined | null) {
+    if (!url) return '';
+    // Replace backslashes with forward slashes
+    let u = url.replace(/\\/g, '/');
+    // Ensure it begins with a slash
+    if (!u.startsWith('/')) u = '/' + u;
+    return u;
+}
 </script>
 
 <style scoped>
@@ -271,7 +284,8 @@ table tbody tr:last-child td {
 }
 
 .product-images-card .rotated-image {
-    transform: rotate(90deg);
+    /* no rotation: restore normal orientation */
+    transform: none;
     transform-origin: center;
     height: 100%;
     width: auto;
@@ -279,9 +293,9 @@ table tbody tr:last-child td {
     display: block;
 }
 
-/* Placeholder rotation consistency */
+/* Placeholder image: normal orientation */
 .card-img-top.rotated-image {
-    transform: rotate(90deg);
+    transform: none;
     transform-origin: center;
     height: 400px;
     width: auto;
