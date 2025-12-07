@@ -61,7 +61,6 @@
           <source :src="videoUrl" type="video/mp4">
           您的瀏覽器不支援視頻播放。
         </video>
-        style="z-index: 10000;">
         <!-- Custom animated toast shown when autoplay blocked (unless user dismissed) -->
         <div v-if="autoplayBlocked && !dontShowHint" class="custom-toast" role="status" aria-live="polite">
           <div class="toast-inner">
