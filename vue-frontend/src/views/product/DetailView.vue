@@ -47,9 +47,9 @@
                                         @mousemove.prevent="onPanMove($event, image.id)"
                                         @mouseup.prevent="endPan($event, image.id)"
                                         @mouseleave.prevent="endPan($event, image.id)"
-                                        @touchstart.passive="startPanTouch($event, image.id)"
-                                        @touchmove.prevent="onPanMoveTouch($event, image.id)"
-                                        @touchend.prevent="endPan($event, image.id)">
+                                        @touchstart="onTouchStart($event, image.id)"
+                                        @touchmove.prevent="onTouchMove($event, image.id)"
+                                        @touchend.prevent="onTouchEnd($event, image.id)">
                                         <img :src="normalizeImageUrl(image.imageUrl)" :style="imageStyle(image.id)"
                                             alt="活動圖片" class="img-fluid rotated-image" />
 
@@ -368,15 +368,6 @@ function startPan(evt: MouseEvent, id: number | string | undefined) {
     panState.value[key] = { panning: true, lastX: evt.clientX, lastY: evt.clientY };
 }
 
-function startPanTouch(evt: TouchEvent, id: number | string | undefined) {
-    if (id == null) return;
-    const t = evt.touches[0];
-    if (!t) return;
-    const key = Number(id);
-    ensureTransform(key);
-    panState.value[key] = { panning: true, lastX: t.clientX, lastY: t.clientY };
-}
-
 function onPanMove(evt: MouseEvent, id: number | string | undefined) {
     if (id == null) return;
     const key = Number(id);
@@ -388,22 +379,6 @@ function onPanMove(evt: MouseEvent, id: number | string | undefined) {
     imageTransforms.value[key].panY = (imageTransforms.value[key].panY || 0) + dy;
     state.lastX = evt.clientX;
     state.lastY = evt.clientY;
-    scheduleSaveTransform(key);
-}
-
-function onPanMoveTouch(evt: TouchEvent, id: number | string | undefined) {
-    if (id == null) return;
-    const t = evt.touches[0];
-    if (!t) return;
-    const key = Number(id);
-    const state = panState.value[key];
-    if (!state || !state.panning) return;
-    const dx = t.clientX - state.lastX;
-    const dy = t.clientY - state.lastY;
-    imageTransforms.value[key].panX = (imageTransforms.value[key].panX || 0) + dx;
-    imageTransforms.value[key].panY = (imageTransforms.value[key].panY || 0) + dy;
-    state.lastX = t.clientX;
-    state.lastY = t.clientY;
     scheduleSaveTransform(key);
 }
 
@@ -420,14 +395,65 @@ function onWheel(evt: WheelEvent, id: number | string | undefined) {
     ensureTransform(key);
     const wrapper = (evt.currentTarget as HTMLElement);
     const rect = wrapper.getBoundingClientRect();
-    const px = evt.clientX - rect.left;
-    const py = evt.clientY - rect.top;
-    imageTransforms.value[key].originX = px;
-    imageTransforms.value[key].originY = py;
+    const cursorX = evt.clientX - rect.left;
+    const cursorY = evt.clientY - rect.top;
+    const t = imageTransforms.value[key];
+    const oldScale = t.scale ?? 1;
+    const oldPanX = t.panX ?? 0;
+    const oldPanY = t.panY ?? 0;
     const step = evt.deltaY > 0 ? -0.1 : 0.1;
-    const cur = imageTransforms.value[key].scale ?? 1;
-    imageTransforms.value[key].scale = clampScale(cur + step);
+    const newScale = clampScale(oldScale + step);
+    // Pixel-perfect zoom: keep cursor pixel fixed
+    if (oldScale !== 0) {
+        const panAdjustX = (cursorX * (oldScale - newScale)) / oldScale;
+        const panAdjustY = (cursorY * (oldScale - newScale)) / oldScale;
+        t.panX = oldPanX + panAdjustX;
+        t.panY = oldPanY + panAdjustY;
+    }
+    t.scale = newScale;
+    t.originX = cursorX;
+    t.originY = cursorY;
     scheduleSaveTransform(key);
+}
+
+// Pinch-to-zoom for touch devices
+const pinchState = ref<Record<number, { initialDistance: number; initialScale: number }>>({});
+
+function onTouchStart(evt: TouchEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    if (evt.touches.length === 2) {
+        const t1 = evt.touches[0];
+        const t2 = evt.touches[1];
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const cur = imageTransforms.value[key]?.scale ?? 1;
+        pinchState.value[key] = { initialDistance: dist, initialScale: cur };
+    }
+}
+
+function onTouchMove(evt: TouchEvent, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    if (evt.touches.length === 2) {
+        ensureTransform(key);
+        const t1 = evt.touches[0];
+        const t2 = evt.touches[1];
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const state = pinchState.value[key];
+        if (state) {
+            const scaleFactor = dist / state.initialDistance;
+            const newScale = clampScale(state.initialScale * scaleFactor);
+            imageTransforms.value[key].scale = newScale;
+            scheduleSaveTransform(key);
+        }
+    }
+}
+
+function onTouchEnd(evt: Event | null, id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    if (pinchState.value[key]) delete pinchState.value[key];
+    endPan(evt, id);
 }
 
 // Debounced save to server/localStorage

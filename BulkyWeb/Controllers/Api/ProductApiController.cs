@@ -344,5 +344,35 @@ namespace BulkyBookWeb.Controllers.Api
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Save image transform metadata (rotate, flip, filter, scale, pan, etc.)
+        /// Guests and authenticated users can save their viewing preferences client-side via localStorage.
+        /// This endpoint is optional and can be used if backend persistence is desired.
+        /// </summary>
+        [HttpPost("{productId}/image/{imageId}/transform")]
+        [AllowAnonymous]
+        public IActionResult SaveImageTransform(int productId, int imageId, [FromBody] dynamic transform)
+        {
+            try
+            {
+                // Validate product and image exist
+                var product = _unitOfWork.Product.Get(u => u.Id == productId);
+                if (product == null)
+                    return NotFound(new { success = false, message = "Product not found" });
+
+                var productImage = _unitOfWork.ProductImage.Get(u => u.Id == imageId && u.ProductId == productId);
+                if (productImage == null)
+                    return NotFound(new { success = false, message = "Image not found for this product" });
+
+                // Currently just acknowledge receipt — store transforms client-side only
+                // Future: add ImageTransform table to DB if persistent server-side storage is needed
+                return Ok(new { success = true, message = "Transform saved (client-side storage)" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
