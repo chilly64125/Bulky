@@ -41,9 +41,29 @@
                             <div class="row g-3">
                                 <div v-for="image in product.productImages" :key="image.id"
                                     class="col-12 col-md-6 col-lg-4">
-                                    <div class="image-wrapper">
-                                        <img :src="normalizeImageUrl(image.imageUrl)" alt="活動圖片"
-                                            class="img-fluid rotated-image" />
+                                    <div class="image-wrapper position-relative">
+                                        <img :src="normalizeImageUrl(image.imageUrl)" :style="imageStyle(image.id)"
+                                            alt="活動圖片" class="img-fluid rotated-image" />
+
+                                        <div class="image-overlay btn-group" role="group" aria-label="image actions">
+                                            <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="rotateImage(image.id)" title="Rotate 90">
+                                                <i class="bi bi-arrow-clockwise"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="toggleFlip(image.id)" title="Flip Horizontal">
+                                                <i class="bi bi-arrow-left-right"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="toggleFilter(image.id, 'grayscale(100%)')"
+                                                title="Toggle Grayscale">
+                                                <i class="bi bi-circle-half"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-light"
+                                                @click.prevent="resetImage(image.id)" title="Reset">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -238,6 +258,58 @@ function normalizeImageUrl(url: string | undefined | null) {
     if (!u.startsWith('/')) u = '/' + u;
     return u;
 }
+// Image transform state and helpers for augmentation controls
+
+const imageTransforms = ref<Record<number, { rotate: number; flipH: boolean; filter: string }>>({});
+
+function ensureTransform(id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    if (!imageTransforms.value[key]) {
+        imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '' };
+    }
+}
+
+function rotateImage(id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    imageTransforms.value[key].rotate = (imageTransforms.value[key].rotate + 90) % 360;
+}
+
+function toggleFlip(id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    imageTransforms.value[key].flipH = !imageTransforms.value[key].flipH;
+}
+
+function toggleFilter(id: number | string | undefined, filter: string) {
+    if (id == null) return;
+    const key = Number(id);
+    ensureTransform(key);
+    imageTransforms.value[key].filter = imageTransforms.value[key].filter === filter ? '' : filter;
+}
+
+function resetImage(id: number | string | undefined) {
+    if (id == null) return;
+    const key = Number(id);
+    imageTransforms.value[key] = { rotate: 0, flipH: false, filter: '' };
+}
+
+function imageStyle(id: number | string | undefined) {
+    if (id == null) return {};
+    const key = Number(id);
+    const t = imageTransforms.value[key] || { rotate: 0, flipH: false, filter: '' };
+    const transforms = [];
+    transforms.push(`rotate(${t.rotate}deg)`);
+    if (t.flipH) transforms.push('scaleX(-1)');
+    return {
+        transform: transforms.join(' '),
+        filter: t.filter || 'none',
+        transition: 'transform 0.25s ease, filter 0.25s ease',
+    } as Record<string, string>;
+}
 </script>
 
 <style scoped>
@@ -300,5 +372,16 @@ table tbody tr:last-child td {
     height: 400px;
     width: auto;
     object-fit: cover;
+}
+
+/* Overlay controls for image augmentation */
+.image-overlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+.image-overlay .btn {
+    opacity: 0.92;
 }
 </style>
