@@ -123,7 +123,7 @@
             <p>{{ productsError }}</p>
           </div>
         </div>
-        <div v-else class="row" v-if="products.length > 0">
+        <div v-else-if="products.length > 0" class="row">
           <div v-for="product of products" :key="product.id" class="col-lg-3 col-sm-6 mb-4">
             <div class="card border-0 p-3 shadow border-top border-5 rounded h-100"
               style="border-top: 5px solid #dc3545;">

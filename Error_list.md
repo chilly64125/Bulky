@@ -10,10 +10,14 @@
 
 **---------------------------------------------------**
 
-**2025 12 05**
+**2025 12 07**
 
 **---------------------------------------------------**
 
+How could I transform this project structure Visual-Studio-able, e.g. it could be run in Visual studio and
+
+deploy onto Azure by Docker?
+
 
 
 **-------------------------------------------------------------------------------------------**
@@ -21,6 +25,40 @@
 
 
 **-------------------------------------------------------------------------------------------**
+
+
+
+**-------------------------------------------------------------------------------------------**
+
+
+
+**-------------------------------------------------------------------------------------------**
+
+
+
+**-------------------------------------------------------------------------------------------**
+
+Please list content of 'http://localhost:5173/app/product' 
+
+onto '本會年度祭祖活動一覽表' section in 'http://localhost:5173/'.
+
+
+
+Please click '詳細內容' button, it displays details of each item.
+
+
+
+
+
+In http://localhost:5173/app/customer/product/10,
+
+please rotate all images in images tag.
+
+and display each column.
+
+**-------------------------------------------------------------------------------------------**
+
+Could I make this video auto play when opening?
 
 
 
@@ -30,7 +68,7 @@
 
 **---------------------------------------------------**
 
-**In http://localhost:5173/app/kindness  :**  
+**In http://localhost:5173/app/kindness  :**
 
 **Change 懷恩塔-塔位清單 --> 懷恩塔塔位管理**
 
@@ -46,39 +84,54 @@
 
 **1.On Sidebar:**
 
-	**Change 懷恩塔-塔位清單 --> 懷恩塔塔位管理**
+\*\*Change 懷恩塔-塔位清單 --> 懷恩塔塔位管理\*\*
 
-	**Change 陳氏宗祠-牌位清單 -->宗祠牌位管理**
+	\*\*Change 陳氏宗祠-牌位清單 -->宗祠牌位管理\*\*
+
+
+
 
 
 
 **2.會員管理 http://localhost:5173/app/user**
 
-	**Request failed with status code 404**
+\*\*Request failed with status code 404\*\*
+
+
+
 
 
 
 **3.懷恩塔塔位管理**
 
-	**http://localhost:5173/app/kindness**
+\*\*http://localhost:5173/app/kindness\*\*
 
-	**Request failed with status code 404**
+	\*\*Request failed with status code 404\*\*
+
+
+
 
 
 
 **4.宗祠牌位管理**
 
-	**http://localhost:5173/app/ancestral**
+\*\*http://localhost:5173/app/ancestral\*\*
 
-	**Request failed with status code 404**
+	\*\*Request failed with status code 404\*\*
+
+
+
 
 
 
 **5.訂單管理**
 
-	**http://localhost:5173/app/order**
+\*\*http://localhost:5173/app/order\*\*
 
-	**Request failed with status code 404**
+	\*\*Request failed with status code 404\*\*
+
+
+
 
 
 
@@ -100,7 +153,7 @@
 
 **2.懷恩塔-塔位查詢**
 
-**3.台中市銀同碧湖陳氏宗親會 影片 (FYI:wwwroot\\images\\Films\\ChenClanOpening.mpr)**
+**3.台中市銀同碧湖陳氏宗親會 影片 (FYI: D:\\Git\\VueChenClan\\BulkyWeb\\wwwroot\\images\\Films\\ChenClanOpening.mpr)**
 
 **-------------------------------------------------------------------------------------------**
 
@@ -162,7 +215,7 @@
 
 **In 懷恩塔管理 http://localhost:5173/app/kindness**
 
-**Pressing '新增塔位',**  
+**Pressing '新增塔位',**
 
 **When in 'http://localhost:5173/app/kindness/add'**
 
@@ -240,7 +293,7 @@
 
 
 
-**4.When logined as Admin,clicking '首頁' leading to 'http://localhost:5173/app/admin'**   
+**4.When logined as Admin,clicking '首頁' leading to 'http://localhost:5173/app/admin'**
 
 
 
@@ -250,7 +303,7 @@
 
 
 
-------------------------------------------------------------------------------------------------
+---
 
 http://localhost:5173/
 
@@ -260,7 +313,7 @@ Please give its respective destination link to each clickable item.
 
 
 
-------------------------------------------------------------
+---
 
 
 
@@ -296,11 +349,11 @@ should've navigated to respective Admin UI
 
 
 
-------------------------------------------------------------
+---
 
 
 
-When login as Admin,  pressing 'refresh' button of Browser, 
+When login as Admin,  pressing 'refresh' button of Browser,
 
 it redirects me to http://localhost:5173/login?redirect=/app/admin
 
@@ -308,7 +361,7 @@ it redirects me to http://localhost:5173/login?redirect=/app/admin
 
 
 
-------------------------------------------------------------
+---
 
 
 
@@ -316,9 +369,9 @@ When in http://localhost:5173/app/category
 
 
 
-clicking 'Edit' Button: 
+clicking 'Edit' Button:
 
-Redirecting to in http://localhost:5173/app/category/edit/1 , 
+Redirecting to in http://localhost:5173/app/category/edit/1 ,
 
 I see  'Request failed with status code 404'
 
@@ -326,11 +379,11 @@ I see  'Request failed with status code 404'
 
 
 
-------------------------------------------------------------
+---
 
 
 
-When in http://localhost:5173/app/product/add 
+When in http://localhost:5173/app/product/add
 
 
 
@@ -340,21 +393,21 @@ clicking 'Add', New data is not inserted and not displayed in List.
 
 
 
-------------------------------------------------------------
+---
 
 
 
-When I click '立即登出'  on Warning Modal, 
+When I click '立即登出'  on Warning Modal,
 
 it didn't redirect to  https://www.facebook.com/groups/654519621275974
 
 
 
-------------------------------------------------------------
+---
 
 
 
-On Autologout Warning Modal, the  'left-seconds to logout' 
+On Autologout Warning Modal, the  'left-seconds to logout'
 
 calculation and displaying is something wrong ,
 
@@ -362,7 +415,7 @@ please ensure its correct.
 
 
 
-------------------------------------------------------------
+---
 
 
 
