@@ -56,18 +56,35 @@
       <div
         style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333; max-width: 90%; max-height: 90%; overflow: auto;">
         <h3 class="mb-3">台中市銀同碧湖陳氏宗親會-影片</h3>
-        <video ref="landingVideo" width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls muted playsinline preload="auto">
+        <video ref="landingVideo" width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls
+          muted playsinline preload="auto">
           <source :src="videoUrl" type="video/mp4">
           您的瀏覽器不支援視頻播放。
         </video>
-        <div v-if="autoplayBlocked" class="mt-3">
-          <div class="alert alert-warning py-2 mb-0">
-            自動播放被瀏覽器阻擋。請按下影片上的播放按鈕，或使用下方按鈕以啟用聲音並播放。
-            <div class="mt-2">
-              <button @click.stop.prevent="playWithSound" class="btn btn-sm btn-secondary">啟用聲音並播放</button>
+        <!-- Transient toast shown when autoplay blocked (unless user dismissed) -->
+        <div v-if="autoplayBlocked && !dontShowHint" class="video-toast position-fixed bottom-0 end-0 p-3" style="z-index: 10000;">
+          <div class="toast show align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body">
+                自動播放被瀏覽器阻擋。請按下影片上的播放按鈕或使用下方按鈕啟用聲音並播放。
+              </div>
+              <div class="ps-2 pe-2 d-flex align-items-center">
+                <button @click.stop.prevent="playWithSound" class="btn btn-sm btn-secondary me-2">啟用聲音並播放</button>
+                <button @click.stop.prevent="dismissHint" class="btn btn-sm btn-outline-dark">不再顯示</button>
+              </div>
             </div>
           </div>
         </div>
+        <!-- Play overlay: visible when video not playing to encourage tap/click -->
+        <div v-if="!isPlaying" class="video-overlay" @click.stop.prevent="overlayPlay">
+          <div class="overlay-inner text-center">
+            <button class="btn btn-light btn-lg rounded-circle play-icon" @click.stop.prevent="overlayPlay">
+              <i class="bi bi-play-fill" style="font-size: 28px;"></i>
+            </button>
+            <div class="mt-2 text-white small">點擊播放</div>
+          </div>
+        </div>
+
         <p class="text-muted small mt-3">(點擊視頻外的地方關閉)</p>
       </div>
     </div> <!-- Activities/Events Section Header -->
@@ -152,6 +169,10 @@ const landingVideo = ref<HTMLVideoElement | null>(null);
 const showBackToTop = ref(false);
 // flag to indicate whether autoplay was blocked
 const autoplayBlocked = ref(false);
+// whether the user chose to dismiss the hint
+const dontShowHint = ref(localStorage.getItem('videoAutoplayHintDismissed') === 'true');
+// whether video is playing
+const isPlaying = ref(false);
 
 // Video URL - served from backend wwwroot via proxy
 const videoUrl = computed(() => {
@@ -188,14 +209,43 @@ function openVideoModal() {
 
 function playWithSound() {
   if (!landingVideo.value) return;
+  // user interaction — unmute and play with sound
   landingVideo.value.muted = false;
-  landingVideo.value.play().catch(() => {
+  landingVideo.value.play().then(() => {
+    autoplayBlocked.value = false;
+    isPlaying.value = true;
+  }).catch(() => {
+    autoplayBlocked.value = true;
+  });
+}
+
+function dismissHint() {
+  dontShowHint.value = true;
+  try { localStorage.setItem('videoAutoplayHintDismissed', 'true'); } catch {}
+}
+
+function overlayPlay() {
+  if (!landingVideo.value) return;
+  // clicking overlay is a user gesture — attempt to play with sound
+  landingVideo.value.muted = false;
+  landingVideo.value.play().then(() => {
+    autoplayBlocked.value = false;
+    isPlaying.value = true;
+  }).catch(() => {
     autoplayBlocked.value = true;
   });
 }
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  // attach play/pause listeners to update isPlaying if video ref exists
+  nextTick(() => {
+    if (landingVideo.value) {
+      landingVideo.value.addEventListener('play', () => (isPlaying.value = true));
+      landingVideo.value.addEventListener('pause', () => (isPlaying.value = false));
+      landingVideo.value.addEventListener('ended', () => (isPlaying.value = false));
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -224,6 +274,36 @@ onUnmounted(() => {
 
 .video-modal video {
   cursor: auto;
+}
+
+/* Play overlay styles */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+.video-overlay .overlay-inner {
+  background: rgba(0,0,0,0.35);
+  padding: 16px;
+  border-radius: 8px;
+}
+.video-overlay .play-icon {
+  width: 72px;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toast wrapper spacing */
+.video-toast .toast-body {
+  font-size: 0.95rem;
 }
 
 .back-to-top {
