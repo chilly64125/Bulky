@@ -113,7 +113,17 @@
     <!-- Activity Cards -->
     <section class="activities-section py-5 bg-light">
       <div class="container">
-        <div class="row" v-if="products.length > 0">
+        <div v-if="productsLoading" class="row">
+          <div class="col-12 text-center text-muted py-5">
+            <p>正在載入活動項目...</p>
+          </div>
+        </div>
+        <div v-else-if="productsError" class="row">
+          <div class="col-12 text-center text-danger py-5">
+            <p>{{ productsError }}</p>
+          </div>
+        </div>
+        <div v-else class="row" v-if="products.length > 0">
           <div v-for="product of products" :key="product.id" class="col-lg-3 col-sm-6 mb-4">
             <div class="card border-0 p-3 shadow border-top border-5 rounded h-100"
               style="border-top: 5px solid #dc3545;">
@@ -176,9 +186,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
 
-const authStore = useAuthStore();
 const showVideoModal = ref(false);
 // video element reference so we can call play() programmatically
 const landingVideo = ref<HTMLVideoElement | null>(null);
@@ -189,16 +197,34 @@ const autoplayBlocked = ref(false);
 const dontShowHint = ref(localStorage.getItem('videoAutoplayHintDismissed') === 'true');
 // whether video is playing
 const isPlaying = ref(false);
+// products fetched from API
+const products = ref<any[]>([]);
+// loading state for API call
+const productsLoading = ref(false);
+// error state for API call
+const productsError = ref<string | null>(null);
 
 // Video URL - served from backend wwwroot via proxy
 const videoUrl = computed(() => {
   return '/images/Films/ChenClanOpening.mp4';
 });
 
-// Get products from server data or fallback
-const products = computed(() => {
-  return authStore.serverProducts || [];
-});
+// Fetch products from API
+async function fetchProducts() {
+  productsLoading.value = true;
+  productsError.value = null;
+  try {
+    const response = await fetch('/api/product');
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
+    const data = await response.json();
+    products.value = Array.isArray(data) ? data : data.data || [];
+  } catch (err) {
+    productsError.value = err instanceof Error ? err.message : 'Failed to load products';
+    console.error('fetchProducts error:', err);
+  } finally {
+    productsLoading.value = false;
+  }
+}
 
 // Handle scroll for back-to-top button
 const handleScroll = () => {
@@ -254,6 +280,8 @@ function overlayPlay() {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  // fetch products from API
+  fetchProducts();
   // attach play/pause listeners to update isPlaying if video ref exists
   nextTick(() => {
     if (landingVideo.value) {
