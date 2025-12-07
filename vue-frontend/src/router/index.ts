@@ -38,6 +38,7 @@ const CompanyFormView = () => import("@/views/company/FormView.vue");
 // Product Views
 const ProductIndexView = () => import("@/views/product/IndexView.vue");
 const ProductFormView = () => import("@/views/product/FormView.vue");
+const ProductDetailView = () => import("@/views/product/DetailView.vue");
 
 // User Views
 const UserIndexView = () => import("@/views/user/IndexView.vue");
@@ -109,6 +110,11 @@ const routes: RouteRecordRaw[] = [
             path: "",
             component: CustomerDashboardView,
             meta: { title: "客戶儀表板" },
+          },
+          {
+            path: "product/:id",
+            component: ProductDetailView,
+            meta: { title: "活動詳細", requiresAuth: false },
           },
         ],
       },
