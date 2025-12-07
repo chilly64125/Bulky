@@ -56,10 +56,10 @@
       <div
         style="background: white; padding: 40px; border-radius: 8px; text-align: center; color: #333; max-width: 90%; max-height: 90%; overflow: auto;">
         <h3 class="mb-3">台中市銀同碧湖陳氏宗親會-影片</h3>
-        <video width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls>
-          <source :src="videoUrl" type="video/mp4">
-          您的瀏覽器不支援視頻播放。
-        </video>
+            <video ref="landingVideo" width="100%" height="auto" style="max-width: 800px; border-radius: 8px;" controls autoplay muted playsinline preload="auto">
+              <source :src="videoUrl" type="video/mp4">
+              您的瀏覽器不支援視頻播放。
+            </video>
         <p class="text-muted small mt-3">(點擊視頻外的地方關閉)</p>
       </div>
     </div> <!-- Activities/Events Section Header -->
@@ -134,11 +134,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 
 const authStore = useAuthStore();
 const showVideoModal = ref(false);
+// video element reference so we can call play() programmatically
+const landingVideo = ref<HTMLVideoElement | null>(null);
 const showBackToTop = ref(false);
 
 // Video URL - served from backend wwwroot via proxy
@@ -162,6 +164,18 @@ const scrollToTop = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+
+  // Open modal and attempt autoplay on mount. Many browsers require videos to be muted
+  // for autoplay to work; we set `muted` attribute above. We still call play() to
+  // ensure the playback starts when possible and gracefully handle rejection.
+  showVideoModal.value = true;
+  nextTick(() => {
+    if (landingVideo.value) {
+      landingVideo.value.play().catch((err) => {
+        // autoplay might be blocked; ignore the error. The user can still click play.
+      });
+    }
+  });
 });
 
 onUnmounted(() => {
