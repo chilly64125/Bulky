@@ -38,6 +38,7 @@ This guide explains how to deploy the VueChenClan application (Frontend + Backen
 ## Prerequisites
 
 ### Software
+
 - Azure CLI (`az` command)
 - .NET 8 SDK
 - Node.js 18+
@@ -45,6 +46,7 @@ This guide explains how to deploy the VueChenClan application (Frontend + Backen
 - Azure subscription with billing enabled
 
 ### Azure Resources
+
 - Azure Resource Group
 - Azure App Service Plan
 - Two Azure Web Apps (backend + frontend)
@@ -58,6 +60,7 @@ This guide explains how to deploy the VueChenClan application (Frontend + Backen
 ### Phase 1: Azure Setup (One-time)
 
 #### 1.1 Login to Azure
+
 ```powershell
 az login
 # Browser window opens for authentication
@@ -66,6 +69,7 @@ az account show
 ```
 
 #### 1.2 Create Resource Group
+
 ```powershell
 # Create a resource group (regional container for all resources)
 az group create --name chenclan-rg --location eastus
@@ -75,6 +79,7 @@ az group show --name chenclan-rg
 ```
 
 #### 1.3 Create App Service Plan
+
 ```powershell
 # Create an App Service Plan (defines compute resources)
 # B1 = Basic (1 GB RAM, shared core) - cheapest option ~$7/month
@@ -89,7 +94,9 @@ az appservice plan create \
 ```
 
 #### 1.4 Create Azure SQL Database (Optional)
+
 If you want persistent database instead of SQLite:
+
 ```powershell
 # Create SQL Server
 az sql server create \
@@ -119,6 +126,7 @@ az sql server firewall-rule create \
 ### Phase 2: Deploy Backend Web App
 
 #### 2.1 Create Backend Web App
+
 ```powershell
 az webapp create \
   --name chenclan-api \
@@ -128,6 +136,7 @@ az webapp create \
 ```
 
 #### 2.2 Configure App Settings
+
 ```powershell
 # Database connection string
 az webapp config appsettings set \
@@ -142,6 +151,7 @@ az webapp config appsettings set \
 ```
 
 #### 2.3 Enable Managed Identity (for secure Key Vault access)
+
 ```powershell
 az webapp identity assign \
   --name chenclan-api \
@@ -149,6 +159,7 @@ az webapp identity assign \
 ```
 
 #### 2.4 Configure CORS for Frontend
+
 ```powershell
 az webapp config appsettings set \
   --name chenclan-api \
@@ -158,6 +169,7 @@ az webapp config appsettings set \
 ```
 
 #### 2.5 Deploy Backend Code
+
 ```powershell
 # Clone and build
 cd D:\Git\VueChenClan
@@ -173,6 +185,7 @@ az webapp deployment source config-zip \
 ```
 
 Or use **Git deployment**:
+
 ```powershell
 # Configure Git deployment
 az webapp deployment user set --user-name <username> --password <password>
@@ -189,6 +202,7 @@ git push azure master
 ### Phase 3: Deploy Frontend Web App
 
 #### 3.1 Create Frontend Web App
+
 ```powershell
 az webapp create \
   --name chenclan-ui \
@@ -198,6 +212,7 @@ az webapp create \
 ```
 
 #### 3.2 Build Frontend for Production
+
 ```powershell
 cd D:\Git\VueChenClan\vue-frontend
 
@@ -213,6 +228,7 @@ npm run build
 ```
 
 #### 3.3 Configure Frontend App Settings
+
 ```powershell
 az webapp config appsettings set \
   --name chenclan-ui \
@@ -224,6 +240,7 @@ az webapp config appsettings set \
 ```
 
 #### 3.4 Deploy Frontend
+
 ```powershell
 # Option A: Deploy dist folder directly
 cd D:\Git\VueChenClan\vue-frontend\dist
@@ -247,6 +264,7 @@ az webapp up \
 ### Phase 4: Configure Custom Domain (Optional)
 
 #### 4.1 Point Domain to Azure
+
 ```powershell
 # Get Azure IP
 az webapp show --name chenclan-api --resource-group chenclan-rg --query defaultHostName
@@ -257,6 +275,7 @@ az webapp show --name chenclan-api --resource-group chenclan-rg --query defaultH
 ```
 
 #### 4.2 Add Custom Domain to Web Apps
+
 ```powershell
 # Backend
 az webapp config hostname add \
@@ -276,6 +295,7 @@ az webapp config hostname add \
 ### Phase 5: Enable HTTPS/SSL
 
 #### 5.1 Add Free SSL Certificate
+
 ```powershell
 # Azure provides free SSL certificates for Web Apps
 # Just add custom domain and certificate is auto-created
@@ -287,6 +307,7 @@ az webapp config ssl bind \
 ```
 
 #### 5.2 Enforce HTTPS
+
 ```powershell
 az webapp update \
   --name chenclan-api \
@@ -304,6 +325,7 @@ az webapp update \
 ## Monitoring & Troubleshooting
 
 ### View Logs
+
 ```powershell
 # Stream application logs (real-time)
 az webapp log tail --name chenclan-api --resource-group chenclan-rg
@@ -313,6 +335,7 @@ az webapp deployment log show --name chenclan-api --resource-group chenclan-rg
 ```
 
 ### Check Application Health
+
 ```powershell
 # Backend health check
 curl https://chenclan-api.azurewebsites.net/health
@@ -322,6 +345,7 @@ curl https://chenclan-ui.azurewebsites.net
 ```
 
 ### Restart Web Apps
+
 ```powershell
 az webapp restart --name chenclan-api --resource-group chenclan-rg
 az webapp restart --name chenclan-ui --resource-group chenclan-rg
@@ -331,15 +355,16 @@ az webapp restart --name chenclan-ui --resource-group chenclan-rg
 
 ## Cost Estimation
 
-| Resource | SKU | Monthly Cost |
-|----------|-----|-------------|
-| App Service Plan (B1) | Basic | $7.00 |
-| Azure Web App (Backend) | Included in plan | Included |
-| Azure Web App (Frontend) | Included in plan | Included |
-| Azure SQL Database | Standard (S0) | $15.00 |
-| **Total** | - | **~$22/month** |
+| Resource                 | SKU              | Monthly Cost   |
+| ------------------------ | ---------------- | -------------- |
+| App Service Plan (B1)    | Basic            | $7.00          |
+| Azure Web App (Backend)  | Included in plan | Included       |
+| Azure Web App (Frontend) | Included in plan | Included       |
+| Azure SQL Database       | Standard (S0)    | $15.00         |
+| **Total**                | -                | **~$22/month** |
 
 **Budget Tips:**
+
 - Use **Shared tier** ($0.00-$0.02/hour) for dev/test
 - Use **Free tier** (F1) for learning (limited: 1 GB storage, 60 min/day compute)
 - Scale up during peak times, scale down otherwise
@@ -371,7 +396,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0'
+          dotnet-version: "8.0"
       - run: dotnet publish BulkyWeb -c Release -o ./backend
       - uses: azure/webapps-deploy@v2
         with:
@@ -385,7 +410,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - run: |
           cd vue-frontend
           npm install
@@ -420,7 +445,9 @@ az group delete --name chenclan-rg --yes --no-wait
 ## Troubleshooting Common Issues
 
 ### Issue: Frontend can't reach backend API
+
 **Solution:** Check CORS settings in backend
+
 ```powershell
 az webapp config appsettings set \
   --name chenclan-api \
@@ -429,7 +456,9 @@ az webapp config appsettings set \
 ```
 
 ### Issue: Database connection string not working
+
 **Solution:** Verify connection string format and firewall rules
+
 ```powershell
 # Allow local IP to test
 az sql server firewall-rule create \
@@ -441,7 +470,9 @@ az sql server firewall-rule create \
 ```
 
 ### Issue: Deployment fails with "file locked"
+
 **Solution:** Restart the web app
+
 ```powershell
 az webapp restart --name chenclan-api --resource-group chenclan-rg
 ```
