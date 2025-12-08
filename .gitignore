@@ -376,3 +376,6 @@ vue-frontend/node_modules/
 vue-frontend/dist/
 BulkyWeb/scripts/
 *.db-wal
+
+*-deploy.zip
+*.zip
