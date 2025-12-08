@@ -1,0 +1,84 @@
+
+I'll create a comprehensive Azure deployment guide that covers deploying both frontend (5173) and backend (5064) as web services. Let me first check the current deployment guide and then enhance it with Azure-specific instructions.
+
+Created 4 todos
+
+Let me create a detailed Azure deployment guide:
+
+Created AZURE_DEPLOYMENT.md
+
+Starting: Create Azure Resource Manager (ARM) template for IaC (2/4)
+
+Now let me create Azure CLI deployment scripts:
+
+Created azure-setup.sh
+
+Created deploy-backend.sh
+
+Created deploy-frontend.sh
+
+Now let me create a PowerShell version for Windows users:
+
+Created azure-setup.ps1
+
+Created deploy-backend.ps1
+
+Created deploy-frontend.ps1
+
+Starting: Update GitHub Actions for Azure deployment (4/4)
+
+Now let me commit all these Azure deployment files:
+
+Completed: Update GitHub Actions for Azure deployment (4/4)
+
+✅ Complete Azure Deployment Solution Created!
+
+I've created a comprehensive Azure Web Apps deployment setup for your frontend (5173) and backend (5064). Here's what's included:
+
+📄 AZURE_DEPLOYMENT.md (300+ lines)
+Full guide covering:
+
+Architecture diagram showing separate Web Apps for frontend & backend
+5-phase deployment:
+Azure resource setup (Resource Group, App Service Plan, SQL Database)
+Backend Web App configuration & deployment
+Frontend Web App configuration & deployment
+Custom domain setup
+HTTPS/SSL configuration
+Cost estimation: ~$22/month (B1 Basic tier)
+Monitoring & troubleshooting
+CI/CD with GitHub Actions template
+🔧 Deployment Scripts (Both Bash & PowerShell)
+Bash versions (for Linux/Mac):
+
+azure-setup.sh — Creates all Azure resources
+deploy-backend.sh — Builds & deploys .NET backend
+deploy-frontend.sh — Builds & deploys Vue frontend
+PowerShell versions (for Windows):
+
+azure-setup.ps1 — Creates all Azure resources
+deploy-backend.ps1 — Builds & deploys .NET backend
+deploy-frontend.ps1 — Builds & deploys Vue frontend
+🚀 Quick Start (Windows)
+📊 Architecture
+✨ Key Features
+✅ Separate Web Apps = independent scaling
+✅ CORS configuration for frontend↔backend
+✅ HTTPS enforcement
+✅ Azure SQL Database optional
+✅ Health check endpoints
+✅ Deployment verification
+✅ GitHub Actions CI/CD ready
+✅ Error handling & troubleshooting
+
+All files committed & pushed! 🎉## ✨ Key Features
+✅ Separate Web Apps = independent scaling
+✅ CORS configuration for frontend↔backend
+✅ HTTPS enforcement
+✅ Azure SQL Database optional
+✅ Health check endpoints
+✅ Deployment verification
+✅ GitHub Actions CI/CD ready
+✅ Error handling & troubleshooting
+
+All files committed & pushed! 🎉

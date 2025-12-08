@@ -19,12 +19,12 @@ Write-Host "`n[1] Creating resource group: $ResourceGroup" -ForegroundColor Yell
 az group create --name $ResourceGroup --location $Location
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-# Step 2: Create App Service Plan (F1 Free Tier)
-Write-Host "`n[2] Creating App Service Plan: $AppServicePlan (F1 - FREE)" -ForegroundColor Yellow
+# Step 2: Create App Service Plan (B1 Basic Tier - $7/month)
+Write-Host "`n[2] Creating App Service Plan: $AppServicePlan (B1 Basic - $7/month)" -ForegroundColor Yellow
 az appservice plan create `
   --name $AppServicePlan `
   --resource-group $ResourceGroup `
-  --sku F1 `
+  --sku B1 `
   --is-linux
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -83,7 +83,7 @@ az webapp update --name $FrontendAppName --resource-group $ResourceGroup --https
 
 Write-Host "`n===========================================" -ForegroundColor Green
 Write-Host "✓ Azure Resources Created Successfully!" -ForegroundColor Green
-Write-Host "✓ Cost: $0.00/month (F1 Free Tier)" -ForegroundColor Green
+Write-Host "✓ Cost: $7/month (B1 Basic Tier)" -ForegroundColor Green
 Write-Host "===========================================" -ForegroundColor Green
 
 Write-Host "`nEndpoints:" -ForegroundColor Cyan
